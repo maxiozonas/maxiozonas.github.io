@@ -1,0 +1,544 @@
+---
+import type { Locale } from "../data/content";
+import {
+  content,
+  profile,
+  skills,
+  skillLabels,
+  GITHUB_USER,
+} from "../data/content";
+import Controls from "./Controls.astro";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = content[locale];
+const ui = c.ui;
+const labels = skillLabels[locale];
+const role = locale === "es" ? profile.roleEs : profile.roleEn;
+
+const skillData = skills.map((g) => ({
+  label: labels[g.key],
+  items: g.items,
+  agents: g.key === "agents",
+}));
+
+const cmdLabels: Record<string, string> = {
+  about: ui.navAbout,
+  experience: ui.navExp,
+  projects: ui.navProjects,
+  skills: ui.navSkills,
+  github: ui.navGithub,
+  education: ui.navEducation,
+  languages: ui.navLanguages,
+  contact: ui.navContact,
+};
+
+const DATA = {
+  locale,
+  ps1: "maxiozonas@portfolio:~$",
+  user: GITHUB_USER,
+  ui,
+  about: c.about,
+  jobs: c.jobs,
+  projects: c.projects,
+  skills: skillData,
+  education: c.education,
+  languages: c.languages,
+  cmdLabels,
+  profile: {
+    email: profile.email,
+    phone: profile.phone,
+    linkedin: profile.linkedin,
+    linkedinUrl: profile.linkedinUrl,
+    github: profile.github,
+    githubUrl: profile.githubUrl,
+    location: profile.location,
+  },
+};
+
+const chips = [
+  { cmd: "about", label: ui.navAbout },
+  { cmd: "experience", label: ui.navExp },
+  { cmd: "projects", label: ui.navProjects },
+  { cmd: "skills", label: ui.navSkills },
+  { cmd: "github", label: ui.navGithub },
+  { cmd: "education", label: ui.navEducation },
+  { cmd: "contact", label: ui.navContact },
+];
+---
+
+<main class="mx-auto w-full max-w-[900px] px-4 py-8 sm:py-12">
+  <article class="term" data-reveal>
+    <header class="term-bar">
+      <span class="dot dot-r"></span>
+      <span class="dot dot-y"></span>
+      <span class="dot dot-g"></span>
+      <span class="term-title">maxiozonas — portfolio</span>
+      <Controls locale={locale} />
+    </header>
+
+    <div class="term-body">
+      <div class="repl-log" id="repl-log" aria-live="polite"></div>
+
+      <div class="repl-toolbar" id="repl-toolbar" role="group" aria-label="commands">
+        {
+          chips.map((ch) => (
+            <button class="chip" type="button" data-cmd={ch.cmd}>
+              <span class="pfx">#</span>
+              {ch.label}
+            </button>
+          ))
+        }
+        <button class="chip chip-ghost" type="button" data-cmd="help">help</button>
+        <button class="chip chip-ghost" type="button" data-cmd="clear">clear</button>
+      </div>
+
+      <div class="repl-row" id="repl-row">
+        <span class="repl-ps1">{DATA.ps1}</span>
+        <input
+          class="repl-input"
+          id="repl-input"
+          type="text"
+          placeholder={ui.termPlaceholder}
+          autocomplete="off"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+          aria-label="interactive terminal input"
+        />
+      </div>
+    </div>
+  </article>
+
+  <!-- SEO / no-JS fallback: full content, hidden once the terminal takes over -->
+  <section class="seo" aria-hidden="false">
+    <h1>{profile.name} — {role}</h1>
+    <p>{c.about}</p>
+
+    <h2>{locale === "es" ? "Experiencia" : "Experience"}</h2>
+    {
+      c.jobs.map((j) => (
+        <div>
+          <h3>{j.company} · {j.role} — {j.period}</h3>
+          <ul>{j.bullets.map((b) => <li>{b}</li>)}</ul>
+        </div>
+      ))
+    }
+
+    <h2>{locale === "es" ? "Proyectos" : "Projects"}</h2>
+    {
+      c.projects.map((p) => (
+        <div>
+          <h3>{p.dir} · {p.kind} · {p.period}</h3>
+          <p>{p.stack.join(" · ")}</p>
+          <ul>{p.bullets.map((b) => <li>{b}</li>)}</ul>
+        </div>
+      ))
+    }
+
+    <h2>{locale === "es" ? "Stack" : "Skills"}</h2>
+    <ul>{skillData.map((g) => <li>{g.label}: {g.items.join(", ")}</li>)}</ul>
+
+    <h2>{locale === "es" ? "Educación" : "Education"}</h2>
+    <ul>{c.education.map((e) => <li>{e.period} · {e.title} — {e.place}</li>)}</ul>
+
+    <h2>{locale === "es" ? "Idiomas" : "Languages"}</h2>
+    <ul>{c.languages.map((l) => <li>{l.label}: {l.value}</li>)}</ul>
+
+    <h2>{locale === "es" ? "Contacto" : "Contact"}</h2>
+    <ul>
+      <li>email: <a href={`mailto:${profile.email}`}>{profile.email}</a></li>
+      <li>linkedin: <a href={profile.linkedinUrl}>{profile.linkedin}</a></li>
+      <li>github: <a href={profile.githubUrl}>{profile.github}</a></li>
+      <li>{profile.location}</li>
+    </ul>
+  </section>
+
+  <script type="application/json" id="portfolio-data" set:html={JSON.stringify(DATA)} is:inline></script>
+</main>
+
+<script>
+  const DATA = JSON.parse(document.getElementById("portfolio-data")!.textContent!);
+  const ui = DATA.ui;
+  const log = document.getElementById("repl-log")!;
+  const input = document.getElementById("repl-input") as HTMLInputElement;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const esc = (s: string) =>
+    String(s).replace(/[&<>"']/g, (m) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[m]!,
+    );
+
+  function el(html: string, cls = "repl-out"): HTMLParagraphElement {
+    const p = document.createElement("p");
+    p.className = cls;
+    p.innerHTML = html;
+    log.appendChild(p);
+    log.scrollTop = log.scrollHeight;
+    return p;
+  }
+
+  const cmdLink = (cmd: string, label?: string) =>
+    `<span class="cmd-link" data-cmd="${cmd}">${esc(label || cmd)}</span>`;
+
+  // ---------- printers ----------
+  function pAbout() {
+    el(`<span class="tool">${esc(ui.readWhoami)}</span>`, "blk");
+    el(`<span style="color:var(--fg-2);max-width:74ch;display:inline-block">${esc(DATA.about)}</span>`);
+  }
+
+  function pExperience() {
+    el(`<span class="tool">${esc(ui.experienceTool)}</span>`, "blk");
+    for (const j of DATA.jobs) {
+      el(
+        `<span class="amber" style="font-weight:700">${esc(j.hash)}</span>` +
+          `<span style="color:var(--fg-2)"> ${esc(j.company)} · ${esc(j.role)} — ${esc(j.period)}</span>` +
+          (j.head ? ` <span class="dim">(${esc(ui.head)})</span>` : ""),
+        "blk",
+      );
+      if (j.industry)
+        el(`<span style="color:var(--amber-2)">!</span> <span class="amber">${esc(j.industry)}</span>`);
+      for (const b of j.bullets)
+        el(`<span style="color:var(--green)">+</span> <span style="color:var(--fg-3)">${esc(b)}</span>`);
+    }
+  }
+
+  function pProjects() {
+    el(`<span class="tool">ls ~/projects/freelance</span>`, "blk");
+    for (const p of DATA.projects) {
+      el(
+        `<span style="color:var(--fg)">${esc(p.dir)}</span>` +
+          `<span class="muted"> · ${esc(p.kind)} · ${esc(p.period)}</span>`,
+        "blk",
+      );
+      el(`<span class="blue">${esc(p.stack.join(" · "))}</span>`);
+      for (const b of p.bullets)
+        el(`<span style="color:var(--green)">+</span> <span style="color:var(--fg-3)">${esc(b)}</span>`);
+    }
+  }
+
+  function pSkills() {
+    el(`<span class="tool">${esc(ui.skillsTool)}</span>`, "blk");
+    for (const g of DATA.skills) {
+      el(
+        `<span class="blue" style="display:inline-block;min-width:84px">${esc(g.label)}</span>` +
+          `<span style="color:var(--fg-2)">${esc(g.items.join(" · "))}</span>` +
+          (g.agents ? ` <span class="green">· daily</span>` : ""),
+      );
+    }
+  }
+
+  function pEducation() {
+    el(`<span class="tool">${esc(ui.education)}</span>`, "blk");
+    for (const e of DATA.education) {
+      el(
+        `<span class="amber">${esc(e.period)}</span><span style="color:var(--fg)"> · ${esc(e.title)}</span>`,
+        "blk",
+      );
+      el(`<span class="muted">${esc(e.place)}</span>`);
+    }
+  }
+
+  function pLanguages() {
+    el(`<span class="tool">locale</span>`, "blk");
+    for (const l of DATA.languages)
+      el(
+        `<span class="blue" style="display:inline-block;min-width:84px">${esc(l.label)}</span>` +
+          `<span style="color:var(--fg-2)">${esc(l.value)}</span>`,
+      );
+  }
+
+  function pContact() {
+    const p = DATA.profile;
+    el(`<span class="muted">/connect</span>`, "blk");
+    const row = (k: string, v: string, href?: string, blank = false) =>
+      el(
+        `<span class="blue" style="display:inline-block;min-width:92px">${k}</span>` +
+          (href
+            ? `<a href="${href}" ${blank ? 'target="_blank" rel="noopener"' : ""} style="color:var(--fg-2);border-bottom:1px dotted var(--border)">${esc(v)}</a>`
+            : `<span style="color:var(--fg-2)">${esc(v)}</span>`),
+      );
+    row("email", p.email, "mailto:" + p.email);
+    row("phone", p.phone, "tel:" + p.phone.replace(/[^+\d]/g, ""));
+    row("linkedin", p.linkedin, p.linkedinUrl, true);
+    row("github", p.github, p.githubUrl, true);
+    row("location", p.location);
+  }
+
+  // ---------- github activity ----------
+  function fmtDate(iso: string) {
+    const dt = new Date(iso + "T00:00:00");
+    return dt.toLocaleDateString(DATA.locale === "es" ? "es-AR" : "en-US", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  }
+
+  async function pGithub() {
+    el(`<span class="tool">GET /users/${DATA.user}/contributions</span>`, "blk");
+    const status = el(`<span class="muted">${esc(ui.loadingGithub)}</span>`);
+    try {
+      const res = await fetch(
+        `https://github-contributions-api.jogruber.de/v4/${DATA.user}?y=last`,
+      );
+      if (!res.ok) throw new Error(String(res.status));
+      const data = await res.json();
+      const days = data.contributions as { date: string; count: number; level: number }[];
+      const total = data.total.lastYear ?? data.total["lastYear"];
+      const best = days.reduce((a, b) => (b.count > a.count ? b : a), days[0]);
+      let streak = 0;
+      for (let i = days.length - 1; i >= 0; i--) {
+        if (days[i].count > 0) streak++;
+        else if (i !== days.length - 1) break;
+      }
+      const stat = (val: string, label: string) =>
+        `<span><span class="green" style="font-weight:700">${val}</span> <span class="muted">${label}</span></span>`;
+      status.innerHTML =
+        `<span style="display:inline-flex;flex-wrap:wrap;gap:6px 18px">` +
+        stat(String(total), ui.contribLast) +
+        stat(String(best.count), ui.bestDay) +
+        stat(`${streak} ${ui.days}`, ui.currentStreak) +
+        `</span>`;
+
+      const wrap = document.createElement("div");
+      wrap.className = "blk";
+      wrap.style.overflowX = "auto";
+      const grid = document.createElement("div");
+      grid.className = "heat-grid";
+      wrap.appendChild(grid);
+      log.appendChild(wrap);
+
+      const first = new Date(days[0].date + "T00:00:00").getDay();
+      for (let i = 0; i < first; i++) {
+        const pad = document.createElement("span");
+        pad.className = "heat-cell";
+        pad.style.visibility = "hidden";
+        grid.appendChild(pad);
+      }
+      const cells: HTMLElement[] = [];
+      for (const day of days) {
+        const cell = document.createElement("span");
+        cell.className = reduce ? "heat-cell" : "heat-cell q";
+        cell.setAttribute("data-level", String(day.level));
+        cell.title = `${day.count} · ${fmtDate(day.date)}`;
+        grid.appendChild(cell);
+        cells.push(cell);
+      }
+      if (!reduce)
+        cells.forEach((c, i) =>
+          window.setTimeout(() => c.classList.replace("q", "lit"), Math.min(i * 3, 700)),
+        );
+
+      const legend = document.createElement("p");
+      legend.className = "muted";
+      legend.style.cssText = "display:flex;align-items:center;gap:5px;font-size:.78rem;margin-top:6px";
+      legend.innerHTML =
+        `<span>${esc(ui.less)}</span>` +
+        [0, 1, 2, 3, 4].map((l) => `<span class="heat-cell" data-level="${l}"></span>`).join("") +
+        `<span>${esc(ui.more)}</span>`;
+      log.appendChild(legend);
+      log.scrollTop = log.scrollHeight;
+    } catch (e) {
+      status.innerHTML = `<a href="https://github.com/${DATA.user}" target="_blank" rel="noopener" class="muted" style="text-decoration:underline">${esc(ui.githubError)}</a>`;
+    }
+  }
+
+  // ---------- neofetch ----------
+  function pNeofetch() {
+    const ascii = ["   ✱✱✱✱✱  ", "  ✱     ✱ ", "  ✱✱✱✱✱✱✱ ", "  ✱     ✱ ", "  ✱     ✱ "];
+    const info = [
+      "maxiozonas@portfolio",
+      "--------------------",
+      "role: Full Stack Developer",
+      DATA.locale === "es" ? "lugar: Bahía Blanca, AR" : "location: Bahía Blanca, AR",
+      "stack: Laravel · React · Next.js · TS",
+      DATA.locale === "es" ? "uptime: 3+ años" : "uptime: 3+ years",
+      "agents: claude-code · opencode · codex",
+    ];
+    const rows = Math.max(ascii.length, info.length);
+    let out = "";
+    for (let i = 0; i < rows; i++) out += (ascii[i] || "         ") + "  " + (info[i] || "") + "\n";
+    el(out.replace(/✱/g, '<span style="color:var(--accent)">✱</span>'), "repl-ascii blk");
+  }
+
+  // ---------- help ----------
+  function pHelp() {
+    el(`<span class="muted">${esc(ui.termHelpTitle)}</span>`, "blk");
+    const main = ["about", "experience", "projects", "skills", "github", "education", "languages", "contact"];
+    el(main.map((cmd) => cmdLink(cmd, DATA.cmdLabels[cmd] || cmd)).join("&nbsp;&nbsp;"));
+    const extra = ["theme", "lang", "neofetch", "clear"];
+    el(`<span class="dim">extras:</span> ` + extra.map((cmd) => cmdLink(cmd)).join("&nbsp;&nbsp;"));
+  }
+
+  // ---------- command router ----------
+  const ALIASES: Record<string, string> = {
+    help: "help", "?": "help", man: "help",
+    whoami: "about", about: "about", "sobre-mi": "about", bio: "about",
+    experience: "experience", exp: "experience", work: "experience", experiencia: "experience",
+    projects: "projects", ls: "projects", proyectos: "projects",
+    skills: "skills", stack: "skills", habilidades: "skills",
+    github: "github", gh: "github", activity: "github", actividad: "github",
+    education: "education", edu: "education", educacion: "education", "educación": "education",
+    languages: "languages", idiomas: "languages", locale: "languages",
+    contact: "contact", connect: "contact", conectar: "contact", contacto: "contact",
+    theme: "theme", lang: "lang", neofetch: "neofetch",
+    clear: "clear", cls: "clear", date: "date", fecha: "date",
+    echo: "echo", coffee: "coffee", cafe: "coffee", "café": "coffee",
+    sudo: "sudo", exit: "exit", quit: "exit",
+  };
+  const COMPLETIONS = [
+    "help", "about", "experience", "projects", "skills", "github", "education",
+    "languages", "contact", "theme", "lang", "neofetch", "clear", "coffee", "sudo hire-me",
+  ];
+
+  function setTheme(mode: string) {
+    document.documentElement.setAttribute("data-theme", mode);
+    try { localStorage.setItem("theme", mode); } catch (e) {}
+  }
+
+  function run(raw: string) {
+    const cmd = (raw || "").trim();
+    el(`<span style="color:var(--green)">${esc(DATA.ps1)}</span> ${esc(cmd)}`, "repl-echo");
+    if (!cmd) return;
+    const parts = cmd.split(/\s+/);
+    const key = ALIASES[parts[0].toLowerCase()];
+    const args = parts.slice(1);
+
+    if (!key) {
+      el(`<span class="repl-err">${DATA.locale === "es" ? "comando no encontrado" : "command not found"}: ${esc(parts[0])}</span> — ${cmdLink("help")}`);
+      return;
+    }
+    switch (key) {
+      case "help": pHelp(); break;
+      case "about": pAbout(); break;
+      case "experience": pExperience(); break;
+      case "projects": pProjects(); break;
+      case "skills": pSkills(); break;
+      case "github": pGithub(); break;
+      case "education": pEducation(); break;
+      case "languages": pLanguages(); break;
+      case "contact": pContact(); break;
+      case "neofetch": pNeofetch(); break;
+      case "clear": log.innerHTML = ""; break;
+      case "date": el(`<span class="muted">${esc(new Date().toString())}</span>`); break;
+      case "echo": el(`<span style="color:var(--fg-2)">${esc(args.length ? args.join(" ") : "")}</span>`); break;
+      case "coffee":
+        el(`<span style="color:var(--fg-2)">☕ ${DATA.locale === "es" ? "sirviendo café... commit && push && repeat" : "brewing coffee... commit && push && repeat"}</span>`);
+        break;
+      case "exit":
+        el(`<span class="muted">${DATA.locale === "es" ? "no se puede salir de un buen portfolio 😉 (probá clear)" : "you can't exit a good portfolio 😉 (try clear)"}</span>`);
+        break;
+      case "theme": {
+        const a = (args[0] || "").toLowerCase();
+        const cur = document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+        const next = a === "light" || a === "dark" ? a : cur === "light" ? "dark" : "light";
+        setTheme(next);
+        el(`<span class="muted">theme → ${next}</span>`);
+        break;
+      }
+      case "lang": {
+        const a = (args[0] || "").toLowerCase();
+        if (a === "es" || a === "en") {
+          try { localStorage.setItem("lang", a); } catch (e) {}
+          window.location.href = "/" + a + "/";
+        } else {
+          el(`<span class="muted">${DATA.locale === "es" ? "idioma: español · usá 'lang en' o el toggle ↗" : "language: english · use 'lang es' or the toggle ↗"}</span>`);
+        }
+        break;
+      }
+      case "sudo": {
+        const sub = args.join(" ").toLowerCase();
+        if (sub.includes("hire") || sub.includes("contrat"))
+          el(`<span class="green">${DATA.locale === "es" ? "acceso concedido ✓ — escribime a " + DATA.profile.email + " y lo hablamos 🤝" : "access granted ✓ — email me at " + DATA.profile.email + " and let's talk 🤝"}</span>`);
+        else
+          el(`<span class="muted">${DATA.locale === "es" ? "permiso concedido — ya sos root acá 😎" : "permission granted — you're root here 😎"}</span>`);
+        break;
+      }
+    }
+  }
+
+  // ---------- boot ----------
+  function typeInto(p: HTMLElement, text: string) {
+    return new Promise<void>((resolve) => {
+      const chars = Array.from(text);
+      let i = 0;
+      const tick = () => {
+        p.textContent = chars.slice(0, i).join("");
+        i++;
+        log.scrollTop = log.scrollHeight;
+        if (i <= chars.length) window.setTimeout(tick, 14 + Math.random() * 20);
+        else resolve();
+      };
+      tick();
+    });
+  }
+
+  async function boot() {
+    let firstVisit = true;
+    try {
+      firstVisit = !sessionStorage.getItem("booted");
+      sessionStorage.setItem("booted", "1");
+    } catch (e) {}
+    const greet = el(`<span class="accent">✱</span> <span style="color:var(--fg)"></span>`);
+    const gspan = greet.querySelector("span:last-child") as HTMLElement;
+    if (!reduce && firstVisit) await typeInto(gspan, ui.termGreeting);
+    else gspan.textContent = ui.termGreeting;
+    el(`<span class="muted">${esc(ui.termIntro)}</span>`);
+    pHelp();
+  }
+
+  // ---------- wiring ----------
+  function exec(cmd: string) {
+    run(cmd);
+    input.scrollIntoView({ block: "nearest" });
+  }
+
+  // any element with data-cmd (toolbar chips + inline cmd-links) runs that command
+  document.addEventListener("click", (e) => {
+    const t = (e.target as HTMLElement).closest("[data-cmd]") as HTMLElement | null;
+    if (!t) return;
+    e.preventDefault();
+    exec(t.dataset.cmd || "");
+    input.focus();
+  });
+
+  const history: string[] = [];
+  let hIdx = -1;
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      const v = input.value;
+      if (v.trim()) { history.push(v); hIdx = history.length; }
+      input.value = "";
+      exec(v);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (history.length && hIdx > 0) { hIdx--; input.value = history[hIdx]; }
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (hIdx < history.length - 1) { hIdx++; input.value = history[hIdx]; }
+      else { hIdx = history.length; input.value = ""; }
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      const v = input.value.trim().toLowerCase();
+      if (v) {
+        const m = COMPLETIONS.find((c) => c.startsWith(v));
+        if (m) input.value = m;
+      }
+    } else if (e.key === "l" && e.ctrlKey) {
+      e.preventDefault();
+      log.innerHTML = "";
+    }
+  });
+
+  document.getElementById("repl-row")?.addEventListener("click", () => input.focus());
+
+  // fade the terminal in on load
+  document.querySelectorAll("[data-reveal]").forEach((e) =>
+    requestAnimationFrame(() => (e as HTMLElement).classList.add("in")),
+  );
+
+  boot();
+</script>

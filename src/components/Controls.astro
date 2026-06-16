@@ -1,0 +1,89 @@
+---
+import type { Locale } from "../data/content";
+import { content } from "../data/content";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const ui = content[locale].ui;
+const other: Locale = locale === "es" ? "en" : "es";
+---
+
+<div class="flex items-center gap-2">
+  <a
+    href={`/${other}/`}
+    id="lang-toggle"
+    data-other={other}
+    title={ui.langToggle}
+    aria-label={ui.langToggle}
+    class="ctrl-btn"
+  >
+    <span class="cur">{locale}</span><span class="sep">/</span><span class="alt">{other}</span>
+  </a>
+
+  <button id="theme-toggle" type="button" title={ui.themeToggle} aria-label={ui.themeToggle} class="ctrl-btn">
+    <svg class="ic-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <circle cx="12" cy="12" r="4"></circle>
+      <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"></path>
+    </svg>
+    <svg class="ic-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+    </svg>
+  </button>
+</div>
+
+<style>
+  .ctrl-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    height: 26px;
+    min-width: 26px;
+    padding: 0 7px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: transparent;
+    color: var(--fg-3);
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    cursor: pointer;
+    transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  }
+  .ctrl-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--row-hover);
+  }
+  .cur { color: var(--fg-2); font-weight: 600; }
+  .sep { color: var(--fg-4); margin: 0 1px; }
+  .alt { color: var(--fg-4); }
+  .ctrl-btn:hover .alt { color: var(--accent); }
+
+  /* icon visibility follows the active theme */
+  .ic-moon { display: none; }
+  :global([data-theme="light"]) .ic-sun { display: none; }
+  :global([data-theme="light"]) .ic-moon { display: inline; }
+</style>
+
+<script>
+  // Theme toggle — persists to localStorage; default is dark (set pre-paint in <head>).
+  const tbtn = document.getElementById("theme-toggle");
+  tbtn?.addEventListener("click", () => {
+    const cur = document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+    const next = cur === "light" ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", next);
+    try {
+      localStorage.setItem("theme", next);
+    } catch (e) {}
+  });
+
+  // Language toggle — remember the explicit choice so the root redirect honours it.
+  const lbtn = document.getElementById("lang-toggle");
+  lbtn?.addEventListener("click", () => {
+    try {
+      localStorage.setItem("lang", (lbtn as HTMLElement).dataset.other || "en");
+    } catch (e) {}
+  });
+</script>

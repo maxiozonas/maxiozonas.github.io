@@ -1,0 +1,49 @@
+---
+// Root entry — detects the visitor's language and redirects to /en/ or /es/.
+// Static page (GitHub Pages friendly): detection runs client-side.
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Máximo Ozonas — Full Stack Developer</title>
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href="https://maxiozonas.github.io/en/" />
+    <style>
+      html { background: #0a0e13; color: #7d8794; }
+      body { font-family: ui-monospace, Menlo, Consolas, monospace; margin: 0; }
+    </style>
+    <script is:inline>
+      (function () {
+        var supported = ["en", "es"];
+        var target = "en";
+        try {
+          var saved = localStorage.getItem("lang");
+          if (saved && supported.indexOf(saved) !== -1) {
+            target = saved;
+          } else {
+            var langs = navigator.languages || [navigator.language || "en"];
+            for (var i = 0; i < langs.length; i++) {
+              var code = (langs[i] || "").slice(0, 2).toLowerCase();
+              if (supported.indexOf(code) !== -1) {
+                target = code;
+                break;
+              }
+            }
+          }
+        } catch (e) {}
+        location.replace("/" + target + "/");
+      })();
+    </script>
+    <noscript>
+      <meta http-equiv="refresh" content="0; url=/en/" />
+    </noscript>
+  </head>
+  <body>
+    <noscript>
+      <p style="padding:24px">Redirecting… <a href="/en/" style="color:#e0785f">English</a> · <a href="/es/" style="color:#e0785f">Español</a></p>
+    </noscript>
+  </body>
+</html>

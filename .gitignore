@@ -1,0 +1,17 @@
+# build output
+dist/
+# astro generated
+.astro/
+# dependencies
+node_modules/
+# logs
+*.log
+npm-debug.log*
+# environment
+.env
+.env.production
+# os / editor
+.DS_Store
+.vscode/
+# playwright mcp artifacts
+.playwright-mcp/
