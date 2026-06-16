@@ -366,6 +366,11 @@ const extraChips = [
       wrap.appendChild(grid);
       log.appendChild(wrap);
 
+      // on phones, stop at today so the future doesn't leave a block of empty
+      // cells; desktop keeps the full-year grid
+      const isNarrow = window.matchMedia("(max-width: 640px)").matches;
+      const cellDays = isNarrow ? days.filter((d) => d.date <= today) : days;
+
       const first = new Date(days[0].date + "T00:00:00").getDay();
       for (let i = 0; i < first; i++) {
         const pad = document.createElement("span");
@@ -374,7 +379,7 @@ const extraChips = [
         grid.appendChild(pad);
       }
       const cells: HTMLElement[] = [];
-      for (const day of days) {
+      for (const day of cellDays) {
         const cell = document.createElement("span");
         cell.className = reduce ? "heat-cell" : "heat-cell q";
         cell.setAttribute("data-level", String(day.level));
