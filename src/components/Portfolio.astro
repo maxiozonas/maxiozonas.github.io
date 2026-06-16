@@ -42,6 +42,9 @@ const DATA = {
   user: GITHUB_USER,
   banner: bannerRaw.replace(/\n+$/, ""),
   cvUrl: "/cv-maximo-ozonas-en.pdf",
+  name: profile.name,
+  role,
+  tagline: ui.tagline,
   ui,
   about: c.about,
   jobs: c.jobs,
@@ -70,9 +73,17 @@ const chips = [
   { cmd: "education", label: ui.navEducation },
   { cmd: "contact", label: ui.navContact },
 ];
+
+const extraChips = [
+  { cmd: "cv", label: "cv" },
+  { cmd: "weather", label: locale === "es" ? "clima" : "weather" },
+  { cmd: "theme", label: locale === "es" ? "tema" : "theme" },
+  { cmd: "neofetch", label: "neofetch" },
+  { cmd: "banner", label: "banner" },
+];
 ---
 
-<main class="mx-auto w-full max-w-[900px] px-4 py-8 sm:py-12">
+<main class="app-main">
   <article class="term" data-reveal>
     <header class="term-bar">
       <span class="dot dot-r"></span>
@@ -90,6 +101,14 @@ const chips = [
           chips.map((ch) => (
             <button class="chip" type="button" data-cmd={ch.cmd}>
               <span class="pfx">#</span>
+              {ch.label}
+            </button>
+          ))
+        }
+        <span class="chip-sep" aria-hidden="true"></span>
+        {
+          extraChips.map((ch) => (
+            <button class="chip chip-ghost" type="button" data-cmd={ch.cmd}>
               {ch.label}
             </button>
           ))
@@ -397,9 +416,22 @@ const chips = [
     el(out.replace(/✱/g, '<span style="color:var(--accent)">✱</span>'), "repl-ascii blk");
   }
 
-  // ---------- banner ----------
+  // ---------- banner + presentation ----------
   function pBanner() {
-    el(esc(DATA.banner), "repl-ascii blk");
+    el(esc(DATA.banner), "hero-banner blk");
+  }
+
+  function pPresentation() {
+    el(
+      `<span class="hero-name">${esc(DATA.name)}</span>` +
+        `<span class="hero-role"> — ${esc(DATA.role)}</span>`,
+      "hero-line",
+    );
+    el(
+      `<span class="hero-meta">${esc(DATA.profile.location)}</span>` +
+        `<span class="muted"> · ${esc(DATA.tagline)}</span>`,
+      "hero-sub",
+    );
   }
 
   // ---------- weather (open-meteo) ----------
@@ -470,7 +502,7 @@ const chips = [
     education: "education", edu: "education", educacion: "education",
     languages: "languages", idiomas: "languages", locale: "languages",
     contact: "contact", connect: "contact", conectar: "contact", contacto: "contact",
-    theme: "theme", lang: "lang", neofetch: "neofetch",
+    theme: "theme", tema: "theme", lang: "lang", idioma: "lang", neofetch: "neofetch",
     clear: "clear", cls: "clear", date: "date", fecha: "date",
     echo: "echo", coffee: "coffee", cafe: "coffee",
     cv: "cv", resume: "cv", curriculum: "cv",
@@ -596,10 +628,9 @@ const chips = [
       firstVisit = !sessionStorage.getItem("booted");
       sessionStorage.setItem("booted", "1");
     } catch (e) {}
-    if (firstVisit) {
-      await pBoot();
-      pBanner();
-    }
+    if (firstVisit) await pBoot();
+    pBanner();
+    pPresentation();
     const greet = el(`<span class="accent">✱</span> <span style="color:var(--fg)"></span>`);
     const gspan = greet.querySelector("span:last-child") as HTMLElement;
     if (!reduce && firstVisit) await typeInto(gspan, ui.termGreeting);

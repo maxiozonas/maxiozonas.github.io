@@ -82,7 +82,10 @@ html {
 
 body {
   margin: 0;
-  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
   font-family: var(--font-mono);
   background:
     radial-gradient(1200px 600px at 50% -10%, var(--bg-glow), transparent 70%),
@@ -92,6 +95,58 @@ body {
   text-rendering: optimizeLegibility;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
+
+/* centered shell — terminal sits in the middle of the screen on desktop */
+.app-main {
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
+  padding: clamp(18px, 4vw, 44px) 16px;
+}
+
+/* ---- animated wallpaper: drifting aurora blobs (CSS-only, GPU-light) ---- */
+.bg-fx {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.28;
+  will-change: transform;
+}
+.blob-1 {
+  width: 46vw;
+  height: 46vw;
+  top: -12%;
+  left: -8%;
+  background: radial-gradient(circle, var(--accent), transparent 68%);
+  animation: float1 24s ease-in-out infinite alternate;
+}
+.blob-2 {
+  width: 40vw;
+  height: 40vw;
+  right: -8%;
+  bottom: -14%;
+  background: radial-gradient(circle, var(--blue), transparent 68%);
+  animation: float2 30s ease-in-out infinite alternate;
+}
+.blob-3 {
+  width: 32vw;
+  height: 32vw;
+  top: 34%;
+  left: 52%;
+  background: radial-gradient(circle, var(--amber), transparent 70%);
+  animation: float3 27s ease-in-out infinite alternate;
+}
+:root[data-theme="light"] .blob { opacity: 0.42; }
+@keyframes float1 { to { transform: translate(14vw, 10vh) scale(1.1); } }
+@keyframes float2 { to { transform: translate(-12vw, -8vh) scale(1.08); } }
+@keyframes float3 { to { transform: translate(-8vw, 6vh) scale(0.92); } }
 
 ::selection {
   background: var(--accent);
@@ -110,7 +165,9 @@ a {
   border-radius: 14px;
   background: linear-gradient(180deg, var(--term-top), var(--term-bot));
   overflow: hidden;
-  box-shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.55);
+  box-shadow:
+    0 24px 60px -28px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .term-bar {
@@ -243,6 +300,42 @@ a {
 .repl-err { color: var(--accent); }
 .repl-ascii { color: var(--accent); line-height: 1.35; font-size: 0.86rem; }
 
+/* ---- boot hero: figlet banner + presentation ---- */
+.hero-banner {
+  margin: 6px 0 2px;
+  line-height: 1.12;
+  font-size: clamp(0.46rem, 2.1vw, 0.86rem);
+  white-space: pre;
+  word-break: normal;
+  overflow-x: auto;
+  background: linear-gradient(96deg, var(--accent), var(--amber) 72%, var(--amber-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 2px 16px color-mix(in srgb, var(--accent) 22%, transparent));
+}
+.hero-banner::-webkit-scrollbar { height: 0; }
+.hero-line { margin-top: 8px; font-size: 1.02rem; }
+.hero-name { color: var(--fg); font-weight: 700; letter-spacing: 0.2px; }
+.hero-role { color: var(--fg-3); }
+.hero-sub {
+  margin: 3px 0 4px;
+  padding-left: 11px;
+  font-size: 0.86rem;
+  border-left: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.hero-meta { color: var(--blue); }
+
+/* divider between primary and extra command chips */
+.chip-sep {
+  width: 1px;
+  align-self: stretch;
+  min-height: 20px;
+  margin: 0 4px;
+  background: var(--border);
+}
+
 /* clickable command words inside output */
 .cmd-link {
   color: var(--accent);
@@ -352,6 +445,37 @@ a {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* ---- mobile: terminal becomes a full-screen app, edge to edge ---- */
+@media (max-width: 640px) {
+  .app-main {
+    max-width: none;
+    height: 100dvh;
+    margin: 0;
+    padding: 0;
+  }
+  .term {
+    height: 100%;
+    border: none;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: none;
+  }
+  .term-body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .repl-log {
+    flex: 1;
+    max-height: none;
+    min-height: 0;
+  }
+  /* the full-screen terminal already covers it — skip the wallpaper work */
+  .bg-fx { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
