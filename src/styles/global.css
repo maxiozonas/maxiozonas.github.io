@@ -301,6 +301,43 @@ a {
 }
 .repl-input::placeholder { color: var(--fg-4); }
 
+/* prompt symbol — reflects the last command's exit status */
+.repl-sym { color: var(--green); transition: color 0.15s ease; }
+.repl-sym.err { color: var(--accent); }
+
+/* block cursor: native caret is hidden, a measured block sits at the caret x */
+.repl-field { position: relative; flex: 1; min-width: 0; }
+.repl-field .repl-input { width: 100%; flex: none; caret-color: transparent; }
+.repl-measure {
+  position: absolute;
+  left: 0;
+  top: 0;
+  visibility: hidden;
+  white-space: pre;
+  pointer-events: none;
+  font: inherit;
+  letter-spacing: inherit;
+}
+.repl-cursor {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.55em;
+  height: 1.05em;
+  background: var(--accent);
+  opacity: 0.9;
+  pointer-events: none;
+  animation: caret-blink 1.05s steps(1) infinite;
+}
+.repl-field.idle .repl-cursor { animation: none; opacity: 0.3; }
+@keyframes caret-blink {
+  0%, 50% { opacity: 0.9; }
+  50.01%, 100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .repl-cursor { animation: none; opacity: 0.6; }
+}
+
 /* SEO / no-JS fallback: visible without JS, sr-only when JS takes over */
 .seo h2 { font-size: 1rem; color: var(--fg); margin: 18px 0 6px; }
 .seo h3 { font-size: 0.92rem; color: var(--fg-2); margin: 12px 0 2px; }

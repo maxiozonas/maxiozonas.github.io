@@ -7,6 +7,7 @@ import {
   skillLabels,
   GITHUB_USER,
 } from "../data/content";
+import bannerRaw from "../data/banner.txt?raw";
 import Controls from "./Controls.astro";
 
 interface Props {
@@ -39,6 +40,8 @@ const DATA = {
   locale,
   ps1: "maxiozonas@portfolio:~$",
   user: GITHUB_USER,
+  banner: bannerRaw.replace(/\n+$/, ""),
+  cvUrl: "/cv-maximo-ozonas-en.pdf",
   ui,
   about: c.about,
   jobs: c.jobs,
@@ -96,18 +99,24 @@ const chips = [
       </div>
 
       <div class="repl-row" id="repl-row">
-        <span class="repl-ps1">{DATA.ps1}</span>
-        <input
-          class="repl-input"
-          id="repl-input"
-          type="text"
-          placeholder={ui.termPlaceholder}
-          autocomplete="off"
-          autocapitalize="off"
-          autocorrect="off"
-          spellcheck="false"
-          aria-label="interactive terminal input"
-        />
+        <span class="repl-ps1"
+          >maxiozonas@portfolio:~<span class="repl-sym" id="repl-sym">$</span></span
+        >
+        <span class="repl-field" id="repl-field">
+          <input
+            class="repl-input"
+            id="repl-input"
+            type="text"
+            placeholder={ui.termPlaceholder}
+            autocomplete="off"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            aria-label="interactive terminal input"
+          />
+          <span class="repl-measure" id="repl-measure" aria-hidden="true"></span>
+          <span class="repl-cursor" id="repl-cursor" aria-hidden="true"></span>
+        </span>
       </div>
     </div>
   </article>
@@ -164,12 +173,31 @@ const chips = [
   const ui = DATA.ui;
   const log = document.getElementById("repl-log")!;
   const input = document.getElementById("repl-input") as HTMLInputElement;
+  const sym = document.getElementById("repl-sym")!;
+  const field = document.getElementById("repl-field")!;
+  const measure = document.getElementById("repl-measure")!;
+  const cursor = document.getElementById("repl-cursor") as HTMLElement;
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // place the block cursor at the input's caret position
+  function syncCursor() {
+    const pos = input.selectionStart ?? input.value.length;
+    measure.textContent = input.value.slice(0, pos);
+    cursor.style.left = measure.offsetWidth + "px";
+  }
+  // the prompt symbol turns red when the last command was not found
+  function setStatus(ok: boolean) {
+    sym.classList.toggle("err", !ok);
+  }
 
   const esc = (s: string) =>
     String(s).replace(/[&<>"']/g, (m) =>
       ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[m]!,
     );
+
+  // normalize input so accented and unaccented commands match (café → cafe)
+  const stripAccents = (s: string) =>
+    s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
   function el(html: string, cls = "repl-out"): HTMLParagraphElement {
     const p = document.createElement("p");
@@ -281,13 +309,18 @@ const chips = [
     el(`<span class="tool">GET /users/${DATA.user}/contributions</span>`, "blk");
     const status = el(`<span class="muted">${esc(ui.loadingGithub)}</span>`);
     try {
+      const year = new Date().getFullYear();
       const res = await fetch(
-        `https://github-contributions-api.jogruber.de/v4/${DATA.user}?y=last`,
+        `https://github-contributions-api.jogruber.de/v4/${DATA.user}?y=${year}`,
       );
       if (!res.ok) throw new Error(String(res.status));
       const data = await res.json();
-      const days = data.contributions as { date: string; count: number; level: number }[];
-      const total = data.total.lastYear ?? data.total["lastYear"];
+      const today = new Date().toISOString().slice(0, 10);
+      // keep the current year only, up to today (future days come back as 0 and
+      // would otherwise break the streak and leave half the heatmap empty)
+      const days = (data.contributions as { date: string; count: number; level: number }[])
+        .filter((d) => d.date <= today);
+      const total = data.total[year];
       const best = days.reduce((a, b) => (b.count > a.count ? b : a), days[0]);
       let streak = 0;
       for (let i = days.length - 1; i >= 0; i--) {
@@ -298,7 +331,7 @@ const chips = [
         `<span><span class="green" style="font-weight:700">${val}</span> <span class="muted">${label}</span></span>`;
       status.innerHTML =
         `<span style="display:inline-flex;flex-wrap:wrap;gap:6px 18px">` +
-        stat(String(total), ui.contribLast) +
+        stat(String(total), `${ui.contribLast} ${year}`) +
         stat(String(best.count), ui.bestDay) +
         stat(`${streak} ${ui.days}`, ui.currentStreak) +
         `</span>`;
@@ -364,12 +397,65 @@ const chips = [
     el(out.replace(/✱/g, '<span style="color:var(--accent)">✱</span>'), "repl-ascii blk");
   }
 
+  // ---------- banner ----------
+  function pBanner() {
+    el(esc(DATA.banner), "repl-ascii blk");
+  }
+
+  // ---------- weather (open-meteo) ----------
+  // wttr.in only serves plain text to terminal user-agents; from a browser it
+  // returns HTML and fetch can't spoof the UA. open-meteo gives clean JSON + CORS.
+  function wmo(code: number): { icon: string; es: string; en: string } {
+    if (code === 0) return { icon: "☀️", es: "despejado", en: "clear" };
+    if (code <= 2) return { icon: "🌤️", es: "parcialmente nublado", en: "partly cloudy" };
+    if (code === 3) return { icon: "☁️", es: "nublado", en: "overcast" };
+    if (code <= 48) return { icon: "🌫️", es: "niebla", en: "fog" };
+    if (code <= 57) return { icon: "🌦️", es: "llovizna", en: "drizzle" };
+    if (code <= 67) return { icon: "🌧️", es: "lluvia", en: "rain" };
+    if (code <= 77) return { icon: "🌨️", es: "nieve", en: "snow" };
+    if (code <= 82) return { icon: "🌧️", es: "chaparrones", en: "showers" };
+    if (code <= 86) return { icon: "🌨️", es: "nevadas", en: "snow showers" };
+    return { icon: "⛈️", es: "tormenta", en: "thunderstorm" };
+  }
+
+  async function pWeather() {
+    el(`<span class="tool">GET api.open-meteo.com — Bahía Blanca</span>`, "blk");
+    const status = el(`<span class="muted">${esc(ui.loadingWeather)}</span>`);
+    try {
+      const res = await fetch(
+        "https://api.open-meteo.com/v1/forecast?latitude=-38.72&longitude=-62.27" +
+          "&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m",
+      );
+      if (!res.ok) throw new Error(String(res.status));
+      const cur = (await res.json()).current;
+      const w = wmo(cur.weather_code);
+      const desc = DATA.locale === "es" ? w.es : w.en;
+      const hum = DATA.locale === "es" ? "humedad" : "humidity";
+      const wind = DATA.locale === "es" ? "viento" : "wind";
+      status.innerHTML =
+        `<span style="color:var(--fg-2)">Bahía Blanca: ${w.icon} ${esc(desc)} · ` +
+        `<span class="green">${Math.round(cur.temperature_2m)}°C</span> · ` +
+        `${hum} ${cur.relative_humidity_2m}% · ${wind} ${Math.round(cur.wind_speed_10m)} km/h</span>`;
+    } catch (e) {
+      status.innerHTML = `<span class="muted">${esc(ui.weatherError)}</span>`;
+    }
+  }
+
+  // ---------- cv ----------
+  function pCv() {
+    window.open(DATA.cvUrl, "_blank", "noopener");
+    el(
+      `<span style="color:var(--green)">+</span> ` +
+        `<a href="${DATA.cvUrl}" target="_blank" rel="noopener" style="color:var(--fg-2);border-bottom:1px dotted var(--border)">${esc(ui.cvLine)}</a>`,
+    );
+  }
+
   // ---------- help ----------
   function pHelp() {
     el(`<span class="muted">${esc(ui.termHelpTitle)}</span>`, "blk");
     const main = ["about", "experience", "projects", "skills", "github", "education", "languages", "contact"];
     el(main.map((cmd) => cmdLink(cmd, DATA.cmdLabels[cmd] || cmd)).join("&nbsp;&nbsp;"));
-    const extra = ["theme", "lang", "neofetch", "clear"];
+    const extra = ["cv", "weather", "theme", "lang", "neofetch", "banner", "clear"];
     el(`<span class="dim">extras:</span> ` + extra.map((cmd) => cmdLink(cmd)).join("&nbsp;&nbsp;"));
   }
 
@@ -381,17 +467,21 @@ const chips = [
     projects: "projects", ls: "projects", proyectos: "projects",
     skills: "skills", stack: "skills", habilidades: "skills",
     github: "github", gh: "github", activity: "github", actividad: "github",
-    education: "education", edu: "education", educacion: "education", "educación": "education",
+    education: "education", edu: "education", educacion: "education",
     languages: "languages", idiomas: "languages", locale: "languages",
     contact: "contact", connect: "contact", conectar: "contact", contacto: "contact",
     theme: "theme", lang: "lang", neofetch: "neofetch",
     clear: "clear", cls: "clear", date: "date", fecha: "date",
-    echo: "echo", coffee: "coffee", cafe: "coffee", "café": "coffee",
+    echo: "echo", coffee: "coffee", cafe: "coffee",
+    cv: "cv", resume: "cv", curriculum: "cv",
+    weather: "weather", clima: "weather", tiempo: "weather",
+    banner: "banner", figlet: "banner",
     sudo: "sudo", exit: "exit", quit: "exit",
   };
   const COMPLETIONS = [
     "help", "about", "experience", "projects", "skills", "github", "education",
-    "languages", "contact", "theme", "lang", "neofetch", "clear", "coffee", "sudo hire-me",
+    "languages", "contact", "cv", "weather", "theme", "lang", "neofetch",
+    "banner", "clear", "coffee", "sudo hire-me",
   ];
 
   function setTheme(mode: string) {
@@ -404,13 +494,15 @@ const chips = [
     el(`<span style="color:var(--green)">${esc(DATA.ps1)}</span> ${esc(cmd)}`, "repl-echo");
     if (!cmd) return;
     const parts = cmd.split(/\s+/);
-    const key = ALIASES[parts[0].toLowerCase()];
+    const key = ALIASES[stripAccents(parts[0].toLowerCase())];
     const args = parts.slice(1);
 
     if (!key) {
+      setStatus(false);
       el(`<span class="repl-err">${DATA.locale === "es" ? "comando no encontrado" : "command not found"}: ${esc(parts[0])}</span> — ${cmdLink("help")}`);
       return;
     }
+    setStatus(true);
     switch (key) {
       case "help": pHelp(); break;
       case "about": pAbout(); break;
@@ -422,6 +514,9 @@ const chips = [
       case "languages": pLanguages(); break;
       case "contact": pContact(); break;
       case "neofetch": pNeofetch(); break;
+      case "banner": pBanner(); break;
+      case "weather": pWeather(); break;
+      case "cv": pCv(); break;
       case "clear": log.innerHTML = ""; break;
       case "date": el(`<span class="muted">${esc(new Date().toString())}</span>`); break;
       case "echo": el(`<span style="color:var(--fg-2)">${esc(args.length ? args.join(" ") : "")}</span>`); break;
@@ -461,6 +556,25 @@ const chips = [
   }
 
   // ---------- boot ----------
+  const sleep = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms));
+
+  // fake dmesg / systemd boot log — sells the terminal vibe on first load
+  const BOOT_LINES = [
+    "[ 0.000000] maxiozonas kernel booting…",
+    "[ 0.182334] Mounted /home/max/portfolio",
+    "[ 0.337901] Loaded modules: react · next.js · laravel · docker",
+    "[ ok ] Started Interactive Terminal Service",
+    "[ ok ] Reached target Multi-User Portfolio",
+  ];
+  async function pBoot() {
+    for (const line of BOOT_LINES) {
+      if (line.startsWith("[ ok ]"))
+        el(`<span class="green">[ ok ]</span> <span class="muted">${esc(line.slice(6).trim())}</span>`);
+      else el(`<span class="muted">${esc(line)}</span>`);
+      if (!reduce) await sleep(90 + Math.random() * 70);
+    }
+  }
+
   function typeInto(p: HTMLElement, text: string) {
     return new Promise<void>((resolve) => {
       const chars = Array.from(text);
@@ -482,6 +596,10 @@ const chips = [
       firstVisit = !sessionStorage.getItem("booted");
       sessionStorage.setItem("booted", "1");
     } catch (e) {}
+    if (firstVisit) {
+      await pBoot();
+      pBanner();
+    }
     const greet = el(`<span class="accent">✱</span> <span style="color:var(--fg)"></span>`);
     const gspan = greet.querySelector("span:last-child") as HTMLElement;
     if (!reduce && firstVisit) await typeInto(gspan, ui.termGreeting);
@@ -494,7 +612,18 @@ const chips = [
   function exec(cmd: string) {
     run(cmd);
     input.scrollIntoView({ block: "nearest" });
+    syncCursor();
   }
+
+  // keep the block cursor glued to the caret, and dim it while unfocused
+  ["input", "keyup", "click", "select"].forEach((ev) =>
+    input.addEventListener(ev, syncCursor),
+  );
+  input.addEventListener("focus", () => {
+    field.classList.remove("idle");
+    syncCursor();
+  });
+  input.addEventListener("blur", () => field.classList.add("idle"));
 
   // any element with data-cmd (toolbar chips + inline cmd-links) runs that command
   document.addEventListener("click", (e) => {
@@ -540,5 +669,7 @@ const chips = [
     requestAnimationFrame(() => (e as HTMLElement).classList.add("in")),
   );
 
+  field.classList.add("idle");
+  syncCursor();
   boot();
 </script>
