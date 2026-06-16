@@ -486,9 +486,9 @@ const extraChips = [
   function pHelp() {
     el(`<span class="muted">${esc(ui.termHelpTitle)}</span>`, "blk");
     const main = ["about", "experience", "projects", "skills", "github", "education", "languages", "contact"];
-    el(main.map((cmd) => cmdLink(cmd, DATA.cmdLabels[cmd] || cmd)).join("&nbsp;&nbsp;"));
+    el(main.map((cmd) => cmdLink(cmd, DATA.cmdLabels[cmd] || cmd)).join("  "));
     const extra = ["cv", "weather", "theme", "lang", "neofetch", "banner", "clear"];
-    el(`<span class="dim">extras:</span> ` + extra.map((cmd) => cmdLink(cmd)).join("&nbsp;&nbsp;"));
+    el(`<span class="dim">extras:</span> ` + extra.map((cmd) => cmdLink(cmd)).join("  "));
   }
 
   // ---------- command router ----------
