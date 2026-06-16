@@ -294,6 +294,9 @@ a {
 }
 .repl-log::-webkit-scrollbar { width: 8px; }
 .repl-log::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
+/* flex children must keep their natural height — never shrink, or the banner
+   and the 7-row heatmap collapse vertically when the log overflows */
+.repl-log > * { flex-shrink: 0; }
 .repl-log p { margin: 0; white-space: pre-wrap; word-break: break-word; }
 .repl-log .blk { margin: 10px 0 4px; }
 .repl-out { color: var(--fg-2); }
@@ -328,13 +331,11 @@ a {
 }
 .hero-meta { color: var(--blue); }
 
-/* divider between primary and extra command chips */
-.chip-sep {
-  width: 1px;
-  align-self: stretch;
-  min-height: 20px;
-  margin: 0 4px;
-  background: var(--border);
+/* secondary chip row (extras + help/clear) sits right under the primary row */
+.repl-toolbar.repl-toolbar-sub {
+  margin-top: -4px;
+  padding-top: 0;
+  border-top: none;
 }
 
 /* clickable command words inside output */
@@ -483,8 +484,18 @@ a {
   /* the full-screen terminal already covers it — skip the wallpaper work */
   .bg-fx { display: none; }
 
-  /* figlet ASCII is illegible at phone width — use a clean type header instead */
-  .hero-banner { display: none; }
+  /* github heatmap: rotate to vertical so the full year fits a narrow screen
+     (weeks become rows, weekdays become the 7 columns) */
+  .heat-grid {
+    grid-auto-flow: row;
+    grid-template-rows: none;
+    grid-template-columns: repeat(7, 14px);
+    justify-content: start;
+  }
+  .heat-cell { width: 14px; height: 14px; }
+
+  /* on phones the boot skips the figlet (see boot()); if invoked via the
+     `banner` command it stays scrollable instead of breaking the layout */
   .hero-line {
     margin-top: 0;
     font-size: 1.18rem;

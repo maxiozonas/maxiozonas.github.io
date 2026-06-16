@@ -105,7 +105,9 @@ const extraChips = [
             </button>
           ))
         }
-        <span class="chip-sep" aria-hidden="true"></span>
+      </div>
+
+      <div class="repl-toolbar repl-toolbar-sub" role="group" aria-label="extra commands">
         {
           extraChips.map((ch) => (
             <button class="chip chip-ghost" type="button" data-cmd={ch.cmd}>
@@ -335,16 +337,17 @@ const extraChips = [
       if (!res.ok) throw new Error(String(res.status));
       const data = await res.json();
       const today = new Date().toISOString().slice(0, 10);
-      // keep the current year only, up to today (future days come back as 0 and
-      // would otherwise break the streak and leave half the heatmap empty)
-      const days = (data.contributions as { date: string; count: number; level: number }[])
-        .filter((d) => d.date <= today);
+      // show the whole year — future days come back as level 0 (empty cells)
+      const days = data.contributions as { date: string; count: number; level: number }[];
       const total = data.total[year];
       const best = days.reduce((a, b) => (b.count > a.count ? b : a), days[0]);
+      // current streak counts back from today; a still-empty today doesn't break it
+      let endIdx = days.findIndex((d) => d.date === today);
+      if (endIdx < 0) endIdx = days.length - 1;
       let streak = 0;
-      for (let i = days.length - 1; i >= 0; i--) {
+      for (let i = endIdx; i >= 0; i--) {
         if (days[i].count > 0) streak++;
-        else if (i !== days.length - 1) break;
+        else if (i !== endIdx) break;
       }
       const stat = (val: string, label: string) =>
         `<span><span class="green" style="font-weight:700">${val}</span> <span class="muted">${label}</span></span>`;
@@ -629,7 +632,8 @@ const extraChips = [
       sessionStorage.setItem("booted", "1");
     } catch (e) {}
     if (firstVisit) await pBoot();
-    pBanner();
+    // figlet is a desktop flourish — phones get the clean type header only
+    if (!window.matchMedia("(max-width: 640px)").matches) pBanner();
     pPresentation();
     const greet = el(`<span class="accent">✱</span> <span style="color:var(--fg)"></span>`);
     const gspan = greet.querySelector("span:last-child") as HTMLElement;
