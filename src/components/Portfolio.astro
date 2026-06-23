@@ -358,35 +358,42 @@ const extraChips = [
         stat(`${streak} ${ui.days}`, ui.currentStreak) +
         `</span>`;
 
-      const wrap = document.createElement("div");
-      wrap.className = "blk";
-      wrap.style.overflowX = "auto";
-      const grid = document.createElement("div");
-      grid.className = "heat-grid";
-      wrap.appendChild(grid);
-      log.appendChild(wrap);
-
-      // on phones, stop at today so the future doesn't leave a block of empty
-      // cells; desktop keeps the full-year grid
-      const isNarrow = window.matchMedia("(max-width: 640px)").matches;
-      const cellDays = isNarrow ? days.filter((d) => d.date <= today) : days;
-
-      const first = new Date(days[0].date + "T00:00:00").getDay();
-      for (let i = 0; i < first; i++) {
-        const pad = document.createElement("span");
-        pad.className = "heat-cell";
-        pad.style.visibility = "hidden";
-        grid.appendChild(pad);
+      // group the year into month blocks, each with its label and its own cells;
+      // only render up to the current month (no empty future months)
+      const container = document.createElement("div");
+      container.className = "heat-months blk";
+      const byMonth: Record<number, typeof days> = {};
+      for (const d of days) {
+        const m = Number(d.date.slice(5, 7)) - 1;
+        (byMonth[m] ||= []).push(d);
       }
+      const curMonth = new Date().getMonth();
       const cells: HTMLElement[] = [];
-      for (const day of cellDays) {
-        const cell = document.createElement("span");
-        cell.className = reduce ? "heat-cell" : "heat-cell q";
-        cell.setAttribute("data-level", String(day.level));
-        cell.title = `${day.count} · ${fmtDate(day.date)}`;
-        grid.appendChild(cell);
-        cells.push(cell);
+      for (let m = 0; m <= curMonth; m++) {
+        const monthDays = (byMonth[m] || []).filter((d) => d.date <= today);
+        if (!monthDays.length) continue;
+        const block = document.createElement("div");
+        block.className = "heat-month";
+        const label = document.createElement("div");
+        label.className = "heat-month-label";
+        label.textContent = new Date(year, m, 1)
+          .toLocaleDateString(DATA.locale === "es" ? "es-AR" : "en-US", { month: "long" })
+          .toLowerCase();
+        const grid = document.createElement("div");
+        grid.className = "heat-mgrid";
+        for (const day of monthDays) {
+          const cell = document.createElement("span");
+          cell.className = reduce ? "heat-cell" : "heat-cell q";
+          cell.setAttribute("data-level", String(day.level));
+          cell.title = `${day.count} · ${fmtDate(day.date)}`;
+          grid.appendChild(cell);
+          cells.push(cell);
+        }
+        block.appendChild(label);
+        block.appendChild(grid);
+        container.appendChild(block);
       }
+      log.appendChild(container);
       if (!reduce)
         cells.forEach((c, i) =>
           window.setTimeout(() => c.classList.replace("q", "lit"), Math.min(i * 3, 700)),
