@@ -17,3 +17,6 @@ npm-debug.log*
 .playwright-mcp/
 # agent tooling (skill registry cache)
 .atl/
+
+# Local CodeGraph index (machine-specific)
+.codegraph/

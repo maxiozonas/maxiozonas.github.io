@@ -1,722 +1,380 @@
 ---
 import type { Locale } from "../data/content";
-import {
-  content,
-  profile,
-  skills,
-  skillLabels,
-  GITHUB_USER,
-} from "../data/content";
-import bannerRaw from "../data/banner.txt?raw";
+import { content, profile } from "../data/content";
 import Controls from "./Controls.astro";
 
 interface Props {
   locale: Locale;
 }
+
 const { locale } = Astro.props;
 const c = content[locale];
-const ui = c.ui;
-const labels = skillLabels[locale];
-const role = locale === "es" ? profile.roleEs : profile.roleEn;
-
-const skillData = skills.map((g) => ({
-  label: labels[g.key],
-  items: g.items,
-  agents: g.key === "agents",
-}));
-
-const cmdLabels: Record<string, string> = {
-  about: ui.navAbout,
-  experience: ui.navExp,
-  projects: ui.navProjects,
-  skills: ui.navSkills,
-  github: ui.navGithub,
-  education: ui.navEducation,
-  languages: ui.navLanguages,
-  contact: ui.navContact,
-};
-
-const DATA = {
-  locale,
-  ps1: "maxiozonas@portfolio:~$",
-  user: GITHUB_USER,
-  banner: bannerRaw.replace(/\n+$/, ""),
-  cvUrl: "/cv-maximo-ozonas-en.pdf",
-  name: profile.name,
-  role,
-  tagline: ui.tagline,
-  ui,
-  about: c.about,
-  jobs: c.jobs,
-  projects: c.projects,
-  skills: skillData,
-  education: c.education,
-  languages: c.languages,
-  cmdLabels,
-  profile: {
-    email: profile.email,
-    phone: profile.phone,
-    linkedin: profile.linkedin,
-    linkedinUrl: profile.linkedinUrl,
-    github: profile.github,
-    githubUrl: profile.githubUrl,
-    location: profile.location,
-  },
-};
-
-const chips = [
-  { cmd: "about", label: ui.navAbout },
-  { cmd: "experience", label: ui.navExp },
-  { cmd: "projects", label: ui.navProjects },
-  { cmd: "skills", label: ui.navSkills },
-  { cmd: "github", label: ui.navGithub },
-  { cmd: "education", label: ui.navEducation },
-  { cmd: "contact", label: ui.navContact },
-];
-
-const extraChips = [
-  { cmd: "cv", label: "cv" },
-  { cmd: "weather", label: locale === "es" ? "clima" : "weather" },
-  { cmd: "theme", label: locale === "es" ? "tema" : "theme" },
-  { cmd: "neofetch", label: "neofetch" },
-  { cmd: "banner", label: "banner" },
-];
+const cvPath = `/cv-maximo-ozonas-${locale}.pdf`;
+const [firstName, lastName] = profile.name.split(" ");
+const initialProject = c.projects[0]!;
+const secondaryProject = c.projects[1]!;
+const carouselData = JSON.stringify(c.projects).replace(/</g, "\\u003c");
 ---
 
-<main class="app-main">
-  <article class="term" data-reveal>
-    <header class="term-bar">
-      <span class="dot dot-r"></span>
-      <span class="dot dot-y"></span>
-      <span class="dot dot-g"></span>
-      <span class="term-title">maxiozonas — portfolio</span>
+<a class="skip-link" href="#main-content">{locale === "es" ? "Saltar al contenido" : "Skip to content"}</a>
+
+<header class="site-header">
+  <a class="brand-capsule" href={`/${locale}/`} aria-label={profile.name}>
+    <span class="brand-monogram" aria-hidden="true">MO</span>
+    <span class="brand-name">{profile.name}</span>
+  </a>
+  <details class="nav-capsule" open>
+    <summary>{locale === "es" ? "Menú" : "Menu"}</summary>
+    <div class="nav-capsule-content">
+      <nav class="site-nav" aria-label={locale === "es" ? "Navegación principal" : "Main navigation"}>
+        <a href="#experience">{c.nav.experience}</a>
+        <a href="#projects">{c.nav.projects}</a>
+        <a href="#contact">{c.nav.contact}</a>
+      </nav>
       <Controls locale={locale} />
-    </header>
+    </div>
+  </details>
+</header>
+<script is:inline>
+  if (window.matchMedia("(max-width: 760px)").matches) {
+    document.querySelector(".nav-capsule")?.removeAttribute("open");
+  }
+</script>
 
-    <div class="term-body">
-      <div class="repl-log" id="repl-log" aria-live="polite"></div>
-
-      <div class="repl-toolbar" id="repl-toolbar" role="group" aria-label="commands">
-        {
-          chips.map((ch) => (
-            <button class="chip" type="button" data-cmd={ch.cmd}>
-              <span class="pfx">#</span>
-              {ch.label}
-            </button>
-          ))
-        }
-      </div>
-
-      <div class="repl-toolbar repl-toolbar-sub" role="group" aria-label="extra commands">
-        {
-          extraChips.map((ch) => (
-            <button class="chip chip-ghost" type="button" data-cmd={ch.cmd}>
-              {ch.label}
-            </button>
-          ))
-        }
-        <button class="chip chip-ghost" type="button" data-cmd="help">help</button>
-        <button class="chip chip-ghost" type="button" data-cmd="clear">clear</button>
-      </div>
-
-      <div class="repl-row" id="repl-row">
-        <span class="repl-ps1"
-          >maxiozonas@portfolio:~<span class="repl-sym" id="repl-sym">$</span></span
-        >
-        <span class="repl-field" id="repl-field">
-          <input
-            class="repl-input"
-            id="repl-input"
-            type="text"
-            placeholder={ui.termPlaceholder}
-            autocomplete="off"
-            autocapitalize="off"
-            autocorrect="off"
-            spellcheck="false"
-            aria-label="interactive terminal input"
-          />
-          <span class="repl-measure" id="repl-measure" aria-hidden="true"></span>
-          <span class="repl-cursor" id="repl-cursor" aria-hidden="true"></span>
-        </span>
+<main id="main-content">
+  <section class="hero page-shell" id="top" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <h1 id="hero-title" class="hero-name">
+        <span>{firstName}</span>
+        <span>{lastName}<span class="accent-dot" aria-hidden="true">.</span></span>
+      </h1>
+      <p class="hero-role">{c.heroRole}</p>
+      <p class="hero-intro">{c.intro}</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="#experience">{c.actions.experience}<span aria-hidden="true">→</span></a>
+        <a class="button button-secondary" href={cvPath} download>
+          {c.actions.download}<span class="action-mark" aria-hidden="true">↓</span>
+        </a>
       </div>
     </div>
-  </article>
 
-  <!-- SEO / no-JS fallback: full content, hidden once the terminal takes over -->
-  <section class="seo" aria-hidden="false">
-    <h1>{profile.name} — {role}</h1>
-    <p>{c.about}</p>
-
-    <h2>{locale === "es" ? "Experiencia" : "Experience"}</h2>
-    {
-      c.jobs.map((j) => (
-        <div>
-          <h3>{j.company} · {j.role} — {j.period}</h3>
-          <ul>{j.bullets.map((b) => <li>{b}</li>)}</ul>
+    <div class="project-carousel" data-project-carousel role="region" aria-roledescription="carousel" aria-label={c.carouselLabel} tabindex="0">
+      <div class="project-stage" aria-hidden="true">
+        <div class="project-sheet project-sheet-back">
+          <img
+            src={secondaryProject.image}
+            alt=""
+            width="1440"
+            height="1080"
+            data-project-back-image
+          />
         </div>
-      ))
-    }
-
-    <h2>{locale === "es" ? "Proyectos" : "Projects"}</h2>
-    {
-      c.projects.map((p) => (
-        <div>
-          <h3>{p.dir} · {p.kind} · {p.period}</h3>
-          <p>{p.stack.join(" · ")}</p>
-          <ul>{p.bullets.map((b) => <li>{b}</li>)}</ul>
+        <a class="project-frame project-frame-front" href={initialProject.url} target="_blank" rel="noreferrer" tabindex="-1" data-project-front-link>
+          <img
+            src={initialProject.image}
+            alt=""
+            width="1440"
+            height="1080"
+            fetchpriority="high"
+            data-project-front-image
+          />
+        </a>
+      </div>
+      <div class="carousel-footer">
+        <div class="carousel-caption" aria-live="polite" aria-atomic="true">
+          <a class="carousel-project-name" href={initialProject.url} target="_blank" rel="noreferrer" data-project-name>{initialProject.name}</a>
+          <p data-project-type>{initialProject.type}</p>
         </div>
-      ))
-    }
-
-    <h2>{locale === "es" ? "Stack" : "Skills"}</h2>
-    <ul>{skillData.map((g) => <li>{g.label}: {g.items.join(", ")}</li>)}</ul>
-
-    <h2>{locale === "es" ? "Educación" : "Education"}</h2>
-    <ul>{c.education.map((e) => <li>{e.period} · {e.title} — {e.place}</li>)}</ul>
-
-    <h2>{locale === "es" ? "Idiomas" : "Languages"}</h2>
-    <ul>{c.languages.map((l) => <li>{l.label}: {l.value}</li>)}</ul>
-
-    <h2>{locale === "es" ? "Contacto" : "Contact"}</h2>
-    <ul>
-      <li>email: <a href={`mailto:${profile.email}`}>{profile.email}</a></li>
-      <li>linkedin: <a href={profile.linkedinUrl}>{profile.linkedin}</a></li>
-      <li>github: <a href={profile.githubUrl}>{profile.github}</a></li>
-      <li>{profile.location}</li>
-    </ul>
+        <div class="carousel-controls">
+          <button type="button" class="carousel-button" data-project-prev aria-label={c.carouselPrevious}>←</button>
+          <span class="carousel-count"><span data-project-current>01</span><span aria-hidden="true"> / {String(c.projects.length).padStart(2, "0")}</span></span>
+          <button type="button" class="carousel-button" data-project-next aria-label={c.carouselNext}>→</button>
+        </div>
+      </div>
+    </div>
+    <script type="application/json" data-project-data set:html={carouselData} is:inline></script>
   </section>
 
-  <script type="application/json" id="portfolio-data" set:html={JSON.stringify(DATA)} is:inline></script>
+  <section class="featured-experience page-shell" aria-label={c.labels.featuredExperience}>
+    <div class="featured-heading">
+      <p class="section-kicker">{c.labels.featuredExperience}</p>
+      <span>{c.labels.ongoing}</span>
+    </div>
+    <div class="featured-grid">
+      {c.jobs.map((job, index) => (
+        <a class="featured-item" href={`#experience-${index === 0 ? "gili" : "food-partners"}`}>
+          <span class="featured-main">
+            <span class="featured-name">{job.company}</span>
+            <span class="featured-summary">{job.summary}</span>
+          </span>
+          <span class="featured-arrow" aria-hidden="true">↗</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="experience-section page-shell" id="experience" aria-labelledby="experience-title">
+    <div class="experience-intro">
+      <p class="section-kicker">{c.nav.experience}</p>
+      <h2 id="experience-title" class="experience-sticky">{c.experienceTitle}</h2>
+      <p class="section-lede">{c.experienceIntro}</p>
+      <a class="text-link" href="#projects">{c.experienceLink}<span aria-hidden="true">↘</span></a>
+    </div>
+
+    <div class="experience-list">
+      {c.jobs.map((job, index) => (
+        <article class="experience-card" id={`experience-${index === 0 ? "gili" : "food-partners"}`} data-experience-card>
+          <div class="experience-meta">
+            <p class="section-kicker">{job.role}</p>
+            <p class="experience-period">{job.period}</p>
+          </div>
+          <div class="company-heading">
+            <div>
+              <h3>{job.company}</h3>
+              <p class="experience-summary">{job.summary}</p>
+            </div>
+            <span class="status-label">{c.labels.ongoing}</span>
+          </div>
+          <p class="experience-description">{job.description}</p>
+
+          {job.flow && (
+            <ol class="process-flow" aria-label={locale === "es" ? "Etapas del proceso productivo" : "Production process stages"}>
+              {job.flow.map((step) => <li>{step}</li>)}
+            </ol>
+          )}
+
+          <ul class="outcome-list">
+            {job.outcomes.map((outcome) => <li>{outcome}</li>)}
+          </ul>
+
+          <div class="technology-row">
+            <span class="section-kicker">{c.labels.technologies}</span>
+            <ul class="technology-list">
+              {job.capabilities.map((skill) => <li>{skill}</li>)}
+            </ul>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="projects-section page-shell" id="projects" aria-labelledby="projects-title">
+    <div class="projects-heading">
+      <div>
+        <p class="section-kicker">{c.labels.selectedWork}</p>
+        <h2 id="projects-title">{c.projectsTitle}</h2>
+      </div>
+      <p class="section-lede">{c.projectsIntro}</p>
+    </div>
+    <div class="projects-grid">
+      {c.projects.map((project) => (
+        <article class="project-card">
+          <img
+            class="project-card-image"
+            src={project.image}
+            alt={project.imageAlt}
+            width="1440"
+            height="1080"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="project-card-content">
+            <h3>{project.name}</h3>
+            <p class="project-description">{project.description}</p>
+            <p class="project-stack-text"><span>{c.labels.technologies}</span>{project.stack.join(" · ")}</p>
+            <div class="project-card-actions">
+              <details class="project-details">
+                <summary>{c.actions.details}</summary>
+                <div class="project-detail-content">
+                  <p>{locale === "es" ? "Alcance del trabajo" : "Project scope"}</p>
+                  <ul>{project.details.map((detail) => <li>{detail}</li>)}</ul>
+                </div>
+              </details>
+              <a class="project-visit" href={project.url} target="_blank" rel="noreferrer">
+                {c.actions.visit}<span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="contact-section page-shell" id="contact" aria-labelledby="contact-title">
+    <div class="contact-primary">
+      <p class="section-kicker">{c.nav.contact}</p>
+      <h2 id="contact-title">
+        <span>{c.contactTitle[0]}</span>
+        <span class="accent-text">{c.contactTitle[1]}</span>
+      </h2>
+      <p class="contact-intro">{c.contactIntro}</p>
+      <a class="button button-primary contact-button" href={`mailto:${profile.email}`}>
+        {c.actions.email}<span class="action-mark" aria-hidden="true">↗</span>
+      </a>
+      <div class="social-links">
+        <a href={profile.github} target="_blank" rel="noreferrer">{c.actions.github}<span aria-hidden="true">↗</span></a>
+        <a href={profile.linkedin} target="_blank" rel="noreferrer">{c.actions.linkedin}<span aria-hidden="true">↗</span></a>
+      </div>
+      <p class="location-note">{c.labels.location}</p>
+    </div>
+
+    <div class="contact-details">
+      <div class="detail-group">
+        <h3>{c.labels.skills}</h3>
+        <div class="skills-grid">
+          {c.skills.map((group) => (
+            <div class="skill-group">
+              <h4>{group.title}</h4>
+              <p>{group.items.join(" · ")}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div class="credentials-grid">
+        <div class="detail-group">
+          <h3>{c.labels.education}</h3>
+          <p class="credential-copy">{c.degree}</p>
+        </div>
+        <div class="detail-group">
+          <h3>{c.labels.languages}</h3>
+          <ul class="language-list">
+            {c.languages.map((language) => <li><span>{language.name}</span><span>{language.level}</span></li>)}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
+<footer class="site-footer page-shell">
+  <div>
+    <a class="footer-name" href="#top">{profile.name}</a>
+    <p>{c.eyebrow}</p>
+  </div>
+  <div class="footer-downloads">
+    <span>{c.actions.downloadLabel}</span>
+    <a href="/cv-maximo-ozonas-es.pdf" download>Español <span aria-hidden="true">↓</span></a>
+    <a href="/cv-maximo-ozonas-en.pdf" download>English <span aria-hidden="true">↓</span></a>
+  </div>
+</footer>
+
 <script>
-  const DATA = JSON.parse(document.getElementById("portfolio-data")!.textContent!);
-  const ui = DATA.ui;
-  const log = document.getElementById("repl-log")!;
-  const input = document.getElementById("repl-input") as HTMLInputElement;
-  const sym = document.getElementById("repl-sym")!;
-  const field = document.getElementById("repl-field")!;
-  const measure = document.getElementById("repl-measure")!;
-  const cursor = document.getElementById("repl-cursor") as HTMLElement;
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-  // place the block cursor at the input's caret position
-  function syncCursor() {
-    const pos = input.selectionStart ?? input.value.length;
-    measure.textContent = input.value.slice(0, pos);
-    cursor.style.left = measure.offsetWidth + "px";
-  }
-  // the prompt symbol turns red when the last command was not found
-  function setStatus(ok: boolean) {
-    sym.classList.toggle("err", !ok);
+  interface CarouselProject {
+    name: string;
+    url: string;
+    image: string;
+    imageAlt: string;
+    type: string;
   }
 
-  const esc = (s: string) =>
-    String(s).replace(/[&<>"']/g, (m) =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[m]!,
-    );
+  gsap.registerPlugin(ScrollTrigger);
 
-  // normalize input so accented and unaccented commands match (café → cafe)
-  const stripAccents = (s: string) =>
-    s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const navCapsule = document.querySelector<HTMLDetailsElement>(".nav-capsule");
+  navCapsule?.addEventListener("click", (event) => {
+    if (!window.matchMedia("(max-width: 760px)").matches || !(event.target instanceof Element)) return;
+    const link = event.target.closest<HTMLAnchorElement>('.site-nav a[href^="#"]');
+    if (!link) return;
+    const destination = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+    if (!destination) return;
 
-  function el(html: string, cls = "repl-out"): HTMLParagraphElement {
-    const p = document.createElement("p");
-    p.className = cls;
-    p.innerHTML = html;
-    log.appendChild(p);
-    log.scrollTop = log.scrollHeight;
-    return p;
-  }
-
-  const cmdLink = (cmd: string, label?: string) =>
-    `<span class="cmd-link" data-cmd="${cmd}">${esc(label || cmd)}</span>`;
-
-  // ---------- printers ----------
-  function pAbout() {
-    el(`<span class="tool">${esc(ui.readWhoami)}</span>`, "blk");
-    el(`<span style="color:var(--fg-2);max-width:74ch;display:inline-block">${esc(DATA.about)}</span>`);
-  }
-
-  function pExperience() {
-    el(`<span class="tool">${esc(ui.experienceTool)}</span>`, "blk");
-    for (const j of DATA.jobs) {
-      el(
-        `<span class="amber" style="font-weight:700">${esc(j.hash)}</span>` +
-          `<span style="color:var(--fg-2)"> ${esc(j.company)} · ${esc(j.role)} — ${esc(j.period)}</span>` +
-          (j.head ? ` <span class="dim">(${esc(ui.head)})</span>` : ""),
-        "blk",
-      );
-      if (j.industry)
-        el(`<span style="color:var(--amber-2)">!</span> <span class="amber">${esc(j.industry)}</span>`);
-      for (const b of j.bullets)
-        el(`<span style="color:var(--green)">+</span> <span style="color:var(--fg-3)">${esc(b)}</span>`);
-    }
-  }
-
-  function pProjects() {
-    el(`<span class="tool">ls ~/projects/freelance</span>`, "blk");
-    for (const p of DATA.projects) {
-      el(
-        `<span style="color:var(--fg)">${esc(p.dir)}</span>` +
-          `<span class="muted"> · ${esc(p.kind)} · ${esc(p.period)}</span>`,
-        "blk",
-      );
-      el(`<span class="blue">${esc(p.stack.join(" · "))}</span>`);
-      for (const b of p.bullets)
-        el(`<span style="color:var(--green)">+</span> <span style="color:var(--fg-3)">${esc(b)}</span>`);
-    }
-  }
-
-  function pSkills() {
-    el(`<span class="tool">${esc(ui.skillsTool)}</span>`, "blk");
-    for (const g of DATA.skills) {
-      el(
-        `<span class="blue" style="display:inline-block;min-width:84px">${esc(g.label)}</span>` +
-          `<span style="color:var(--fg-2)">${esc(g.items.join(" · "))}</span>` +
-          (g.agents ? ` <span class="green">· daily</span>` : ""),
-      );
-    }
-  }
-
-  function pEducation() {
-    el(`<span class="tool">${esc(ui.education)}</span>`, "blk");
-    for (const e of DATA.education) {
-      el(
-        `<span class="amber">${esc(e.period)}</span><span style="color:var(--fg)"> · ${esc(e.title)}</span>`,
-        "blk",
-      );
-      el(`<span class="muted">${esc(e.place)}</span>`);
-    }
-  }
-
-  function pLanguages() {
-    el(`<span class="tool">locale</span>`, "blk");
-    for (const l of DATA.languages)
-      el(
-        `<span class="blue" style="display:inline-block;min-width:84px">${esc(l.label)}</span>` +
-          `<span style="color:var(--fg-2)">${esc(l.value)}</span>`,
-      );
-  }
-
-  function pContact() {
-    const p = DATA.profile;
-    el(`<span class="muted">/connect</span>`, "blk");
-    const row = (k: string, v: string, href?: string, blank = false) =>
-      el(
-        `<span class="blue" style="display:inline-block;min-width:92px">${k}</span>` +
-          (href
-            ? `<a href="${href}" ${blank ? 'target="_blank" rel="noopener"' : ""} style="color:var(--fg-2);border-bottom:1px dotted var(--border)">${esc(v)}</a>`
-            : `<span style="color:var(--fg-2)">${esc(v)}</span>`),
-      );
-    row("email", p.email, "mailto:" + p.email);
-    row("phone", p.phone, "tel:" + p.phone.replace(/[^+\d]/g, ""));
-    row("linkedin", p.linkedin, p.linkedinUrl, true);
-    row("github", p.github, p.githubUrl, true);
-    row("location", p.location);
-  }
-
-  // ---------- github activity ----------
-  function fmtDate(iso: string) {
-    const dt = new Date(iso + "T00:00:00");
-    return dt.toLocaleDateString(DATA.locale === "es" ? "es-AR" : "en-US", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
+    requestAnimationFrame(() => {
+      navCapsule.open = false;
+      if (!destination.hasAttribute("tabindex")) destination.setAttribute("tabindex", "-1");
+      destination.focus({ preventScroll: true });
     });
+  });
+
+  const carousel = document.querySelector<HTMLElement>("[data-project-carousel]");
+  const projectData = document.querySelector<HTMLScriptElement>("[data-project-data]");
+  const projects: CarouselProject[] = projectData?.textContent ? JSON.parse(projectData.textContent) : [];
+  const previousButton = carousel?.querySelector<HTMLButtonElement>("[data-project-prev]");
+  const nextButton = carousel?.querySelector<HTMLButtonElement>("[data-project-next]");
+  const currentCount = carousel?.querySelector<HTMLElement>("[data-project-current]");
+  const frontImage = carousel?.querySelector<HTMLImageElement>("[data-project-front-image]");
+  const backImage = carousel?.querySelector<HTMLImageElement>("[data-project-back-image]");
+  const frontLink = carousel?.querySelector<HTMLAnchorElement>("[data-project-front-link]");
+  const captionLink = carousel?.querySelector<HTMLAnchorElement>("[data-project-name]");
+  const captionType = carousel?.querySelector<HTMLElement>("[data-project-type]");
+  let activeProject = 0;
+
+  function renderProject(index: number) {
+    if (!projects.length || !frontImage || !backImage || !frontLink || !captionLink || !captionType || !currentCount) return;
+    activeProject = (index + projects.length) % projects.length;
+    const active = projects[activeProject]!;
+    const secondary = projects[(activeProject + 1) % projects.length]!;
+    frontImage.src = active.image;
+    frontImage.alt = active.imageAlt;
+    frontLink.href = active.url;
+    captionLink.href = active.url;
+    captionLink.textContent = active.name;
+    captionType.textContent = active.type;
+    backImage.src = secondary.image;
+    backImage.alt = "";
+    currentCount.textContent = String(activeProject + 1).padStart(2, "0");
   }
 
-  async function pGithub() {
-    el(`<span class="tool">GET /users/${DATA.user}/contributions</span>`, "blk");
-    const status = el(`<span class="muted">${esc(ui.loadingGithub)}</span>`);
-    try {
-      const year = new Date().getFullYear();
-      const res = await fetch(
-        `https://github-contributions-api.jogruber.de/v4/${DATA.user}?y=${year}`,
-      );
-      if (!res.ok) throw new Error(String(res.status));
-      const data = await res.json();
-      const today = new Date().toISOString().slice(0, 10);
-      // show the whole year — future days come back as level 0 (empty cells)
-      const days = data.contributions as { date: string; count: number; level: number }[];
-      const total = data.total[year];
-      const best = days.reduce((a, b) => (b.count > a.count ? b : a), days[0]);
-      // current streak counts back from today; a still-empty today doesn't break it
-      let endIdx = days.findIndex((d) => d.date === today);
-      if (endIdx < 0) endIdx = days.length - 1;
-      let streak = 0;
-      for (let i = endIdx; i >= 0; i--) {
-        if (days[i].count > 0) streak++;
-        else if (i !== endIdx) break;
-      }
-      const stat = (val: string, label: string) =>
-        `<span><span class="green" style="font-weight:700">${val}</span> <span class="muted">${label}</span></span>`;
-      status.innerHTML =
-        `<span style="display:inline-flex;flex-wrap:wrap;gap:6px 18px">` +
-        stat(String(total), `${ui.contribLast} ${year}`) +
-        stat(String(best.count), ui.bestDay) +
-        stat(`${streak} ${ui.days}`, ui.currentStreak) +
-        `</span>`;
-
-      // group the year into month blocks, each with its label and its own cells;
-      // only render up to the current month (no empty future months)
-      const container = document.createElement("div");
-      container.className = "heat-months blk";
-      const byMonth: Record<number, typeof days> = {};
-      for (const d of days) {
-        const m = Number(d.date.slice(5, 7)) - 1;
-        (byMonth[m] ||= []).push(d);
-      }
-      const curMonth = new Date().getMonth();
-      const cells: HTMLElement[] = [];
-      for (let m = 0; m <= curMonth; m++) {
-        const monthDays = (byMonth[m] || []).filter((d) => d.date <= today);
-        if (!monthDays.length) continue;
-        const block = document.createElement("div");
-        block.className = "heat-month";
-        const label = document.createElement("div");
-        label.className = "heat-month-label";
-        label.textContent = new Date(year, m, 1)
-          .toLocaleDateString(DATA.locale === "es" ? "es-AR" : "en-US", { month: "long" })
-          .toLowerCase();
-        const grid = document.createElement("div");
-        grid.className = "heat-mgrid";
-        for (const day of monthDays) {
-          const cell = document.createElement("span");
-          cell.className = reduce ? "heat-cell" : "heat-cell q";
-          cell.setAttribute("data-level", String(day.level));
-          cell.title = `${day.count} · ${fmtDate(day.date)}`;
-          grid.appendChild(cell);
-          cells.push(cell);
-        }
-        block.appendChild(label);
-        block.appendChild(grid);
-        container.appendChild(block);
-      }
-      log.appendChild(container);
-      if (!reduce)
-        cells.forEach((c, i) =>
-          window.setTimeout(() => c.classList.replace("q", "lit"), Math.min(i * 3, 700)),
-        );
-
-      const legend = document.createElement("p");
-      legend.className = "muted";
-      legend.style.cssText = "display:flex;align-items:center;gap:5px;font-size:.78rem;margin-top:6px";
-      legend.innerHTML =
-        `<span>${esc(ui.less)}</span>` +
-        [0, 1, 2, 3, 4].map((l) => `<span class="heat-cell" data-level="${l}"></span>`).join("") +
-        `<span>${esc(ui.more)}</span>`;
-      log.appendChild(legend);
-      log.scrollTop = log.scrollHeight;
-    } catch (e) {
-      status.innerHTML = `<a href="https://github.com/${DATA.user}" target="_blank" rel="noopener" class="muted" style="text-decoration:underline">${esc(ui.githubError)}</a>`;
-    }
-  }
-
-  // ---------- neofetch ----------
-  function pNeofetch() {
-    const ascii = ["   ✱✱✱✱✱  ", "  ✱     ✱ ", "  ✱✱✱✱✱✱✱ ", "  ✱     ✱ ", "  ✱     ✱ "];
-    const info = [
-      "maxiozonas@portfolio",
-      "--------------------",
-      "role: Full Stack Developer",
-      DATA.locale === "es" ? "lugar: Bahía Blanca, AR" : "location: Bahía Blanca, AR",
-      "stack: Laravel · React · Next.js · TS",
-      DATA.locale === "es" ? "uptime: 3+ años" : "uptime: 3+ years",
-      "agents: claude-code · opencode · codex",
-    ];
-    const rows = Math.max(ascii.length, info.length);
-    let out = "";
-    for (let i = 0; i < rows; i++) out += (ascii[i] || "         ") + "  " + (info[i] || "") + "\n";
-    el(out.replace(/✱/g, '<span style="color:var(--accent)">✱</span>'), "repl-ascii blk");
-  }
-
-  // ---------- banner + presentation ----------
-  function pBanner() {
-    el(esc(DATA.banner), "hero-banner blk");
-  }
-
-  function pPresentation() {
-    el(
-      `<span class="hero-name">${esc(DATA.name)}</span>` +
-        `<span class="hero-role"> — ${esc(DATA.role)}</span>`,
-      "hero-line",
-    );
-    el(
-      `<span class="hero-meta">${esc(DATA.profile.location)}</span>` +
-        `<span class="muted"> · ${esc(DATA.tagline)}</span>`,
-      "hero-sub",
-    );
-  }
-
-  // ---------- weather (open-meteo) ----------
-  // wttr.in only serves plain text to terminal user-agents; from a browser it
-  // returns HTML and fetch can't spoof the UA. open-meteo gives clean JSON + CORS.
-  function wmo(code: number): { icon: string; es: string; en: string } {
-    if (code === 0) return { icon: "☀️", es: "despejado", en: "clear" };
-    if (code <= 2) return { icon: "🌤️", es: "parcialmente nublado", en: "partly cloudy" };
-    if (code === 3) return { icon: "☁️", es: "nublado", en: "overcast" };
-    if (code <= 48) return { icon: "🌫️", es: "niebla", en: "fog" };
-    if (code <= 57) return { icon: "🌦️", es: "llovizna", en: "drizzle" };
-    if (code <= 67) return { icon: "🌧️", es: "lluvia", en: "rain" };
-    if (code <= 77) return { icon: "🌨️", es: "nieve", en: "snow" };
-    if (code <= 82) return { icon: "🌧️", es: "chaparrones", en: "showers" };
-    if (code <= 86) return { icon: "🌨️", es: "nevadas", en: "snow showers" };
-    return { icon: "⛈️", es: "tormenta", en: "thunderstorm" };
-  }
-
-  async function pWeather() {
-    el(`<span class="tool">GET api.open-meteo.com — Bahía Blanca</span>`, "blk");
-    const status = el(`<span class="muted">${esc(ui.loadingWeather)}</span>`);
-    try {
-      const res = await fetch(
-        "https://api.open-meteo.com/v1/forecast?latitude=-38.72&longitude=-62.27" +
-          "&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m",
-      );
-      if (!res.ok) throw new Error(String(res.status));
-      const cur = (await res.json()).current;
-      const w = wmo(cur.weather_code);
-      const desc = DATA.locale === "es" ? w.es : w.en;
-      const hum = DATA.locale === "es" ? "humedad" : "humidity";
-      const wind = DATA.locale === "es" ? "viento" : "wind";
-      status.innerHTML =
-        `<span style="color:var(--fg-2)">Bahía Blanca: ${w.icon} ${esc(desc)} · ` +
-        `<span class="green">${Math.round(cur.temperature_2m)}°C</span> · ` +
-        `${hum} ${cur.relative_humidity_2m}% · ${wind} ${Math.round(cur.wind_speed_10m)} km/h</span>`;
-    } catch (e) {
-      status.innerHTML = `<span class="muted">${esc(ui.weatherError)}</span>`;
-    }
-  }
-
-  // ---------- cv ----------
-  function pCv() {
-    window.open(DATA.cvUrl, "_blank", "noopener");
-    el(
-      `<span style="color:var(--green)">+</span> ` +
-        `<a href="${DATA.cvUrl}" target="_blank" rel="noopener" style="color:var(--fg-2);border-bottom:1px dotted var(--border)">${esc(ui.cvLine)}</a>`,
-    );
-  }
-
-  // ---------- help ----------
-  function pHelp() {
-    el(`<span class="muted">${esc(ui.termHelpTitle)}</span>`, "blk");
-    const main = ["about", "experience", "projects", "skills", "github", "education", "languages", "contact"];
-    el(main.map((cmd) => cmdLink(cmd, DATA.cmdLabels[cmd] || cmd)).join("  "));
-    const extra = ["cv", "weather", "theme", "lang", "neofetch", "banner", "clear"];
-    el(`<span class="dim">extras:</span> ` + extra.map((cmd) => cmdLink(cmd)).join("  "));
-  }
-
-  // ---------- command router ----------
-  const ALIASES: Record<string, string> = {
-    help: "help", "?": "help", man: "help",
-    whoami: "about", about: "about", "sobre-mi": "about", bio: "about",
-    experience: "experience", exp: "experience", work: "experience", experiencia: "experience",
-    projects: "projects", ls: "projects", proyectos: "projects",
-    skills: "skills", stack: "skills", habilidades: "skills",
-    github: "github", gh: "github", activity: "github", actividad: "github",
-    education: "education", edu: "education", educacion: "education",
-    languages: "languages", idiomas: "languages", locale: "languages",
-    contact: "contact", connect: "contact", conectar: "contact", contacto: "contact",
-    theme: "theme", tema: "theme", lang: "lang", idioma: "lang", neofetch: "neofetch",
-    clear: "clear", cls: "clear", date: "date", fecha: "date",
-    echo: "echo", coffee: "coffee", cafe: "coffee",
-    cv: "cv", resume: "cv", curriculum: "cv",
-    weather: "weather", clima: "weather", tiempo: "weather",
-    banner: "banner", figlet: "banner",
-    sudo: "sudo", exit: "exit", quit: "exit",
-  };
-  const COMPLETIONS = [
-    "help", "about", "experience", "projects", "skills", "github", "education",
-    "languages", "contact", "cv", "weather", "theme", "lang", "neofetch",
-    "banner", "clear", "coffee", "sudo hire-me",
-  ];
-
-  function setTheme(mode: string) {
-    document.documentElement.setAttribute("data-theme", mode);
-    try { localStorage.setItem("theme", mode); } catch (e) {}
-  }
-
-  function run(raw: string) {
-    const cmd = (raw || "").trim();
-    el(`<span style="color:var(--green)">${esc(DATA.ps1)}</span> ${esc(cmd)}`, "repl-echo");
-    if (!cmd) return;
-    const parts = cmd.split(/\s+/);
-    const key = ALIASES[stripAccents(parts[0].toLowerCase())];
-    const args = parts.slice(1);
-
-    if (!key) {
-      setStatus(false);
-      el(`<span class="repl-err">${DATA.locale === "es" ? "comando no encontrado" : "command not found"}: ${esc(parts[0])}</span> — ${cmdLink("help")}`);
+  function changeProject(direction: number) {
+    if (!projects.length) return;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const frame = carousel?.querySelector<HTMLElement>(".project-frame-front");
+    if (reduceMotion || !frame) {
+      renderProject(activeProject + direction);
       return;
     }
-    setStatus(true);
-    switch (key) {
-      case "help": pHelp(); break;
-      case "about": pAbout(); break;
-      case "experience": pExperience(); break;
-      case "projects": pProjects(); break;
-      case "skills": pSkills(); break;
-      case "github": pGithub(); break;
-      case "education": pEducation(); break;
-      case "languages": pLanguages(); break;
-      case "contact": pContact(); break;
-      case "neofetch": pNeofetch(); break;
-      case "banner": pBanner(); break;
-      case "weather": pWeather(); break;
-      case "cv": pCv(); break;
-      case "clear": log.innerHTML = ""; break;
-      case "date": el(`<span class="muted">${esc(new Date().toString())}</span>`); break;
-      case "echo": el(`<span style="color:var(--fg-2)">${esc(args.length ? args.join(" ") : "")}</span>`); break;
-      case "coffee":
-        el(`<span style="color:var(--fg-2)">☕ ${DATA.locale === "es" ? "sirviendo café... commit && push && repeat" : "brewing coffee... commit && push && repeat"}</span>`);
-        break;
-      case "exit":
-        el(`<span class="muted">${DATA.locale === "es" ? "no se puede salir de un buen portfolio 😉 (probá clear)" : "you can't exit a good portfolio 😉 (try clear)"}</span>`);
-        break;
-      case "theme": {
-        const a = (args[0] || "").toLowerCase();
-        const cur = document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
-        const next = a === "light" || a === "dark" ? a : cur === "light" ? "dark" : "light";
-        setTheme(next);
-        el(`<span class="muted">theme → ${next}</span>`);
-        break;
-      }
-      case "lang": {
-        const a = (args[0] || "").toLowerCase();
-        if (a === "es" || a === "en") {
-          try { localStorage.setItem("lang", a); } catch (e) {}
-          window.location.href = "/" + a + "/";
-        } else {
-          el(`<span class="muted">${DATA.locale === "es" ? "idioma: español · usá 'lang en' o el toggle ↗" : "language: english · use 'lang es' or the toggle ↗"}</span>`);
-        }
-        break;
-      }
-      case "sudo": {
-        const sub = args.join(" ").toLowerCase();
-        if (sub.includes("hire") || sub.includes("contrat"))
-          el(`<span class="green">${DATA.locale === "es" ? "acceso concedido ✓ — escribime a " + DATA.profile.email + " y lo hablamos 🤝" : "access granted ✓ — email me at " + DATA.profile.email + " and let's talk 🤝"}</span>`);
-        else
-          el(`<span class="muted">${DATA.locale === "es" ? "permiso concedido — ya sos root acá 😎" : "permission granted — you're root here 😎"}</span>`);
-        break;
-      }
-    }
-  }
-
-  // ---------- boot ----------
-  const sleep = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms));
-
-  // fake dmesg / systemd boot log — sells the terminal vibe on first load
-  const BOOT_LINES = [
-    "[ 0.000000] maxiozonas kernel booting…",
-    "[ 0.182334] Mounted /home/max/portfolio",
-    "[ 0.337901] Loaded modules: react · next.js · laravel · docker",
-    "[ ok ] Started Interactive Terminal Service",
-    "[ ok ] Reached target Multi-User Portfolio",
-  ];
-  async function pBoot() {
-    for (const line of BOOT_LINES) {
-      if (line.startsWith("[ ok ]"))
-        el(`<span class="green">[ ok ]</span> <span class="muted">${esc(line.slice(6).trim())}</span>`);
-      else el(`<span class="muted">${esc(line)}</span>`);
-      if (!reduce) await sleep(90 + Math.random() * 70);
-    }
-  }
-
-  function typeInto(p: HTMLElement, text: string) {
-    return new Promise<void>((resolve) => {
-      const chars = Array.from(text);
-      let i = 0;
-      const tick = () => {
-        p.textContent = chars.slice(0, i).join("");
-        i++;
-        log.scrollTop = log.scrollHeight;
-        if (i <= chars.length) window.setTimeout(tick, 14 + Math.random() * 20);
-        else resolve();
-      };
-      tick();
+    gsap.to(frame, {
+      rotateY: direction > 0 ? -10 : 10,
+      duration: 0.14,
+      ease: "power1.in",
+      onComplete: () => {
+        renderProject(activeProject + direction);
+        gsap.fromTo(frame, { rotateY: direction > 0 ? 8 : -8 }, { rotateY: 0, duration: 0.32, ease: "power2.out" });
+      },
     });
   }
 
-  async function boot() {
-    let firstVisit = true;
-    try {
-      firstVisit = !sessionStorage.getItem("booted");
-      sessionStorage.setItem("booted", "1");
-    } catch (e) {}
-    if (firstVisit) await pBoot();
-    // figlet is a desktop flourish — phones get the clean type header only
-    if (!window.matchMedia("(max-width: 640px)").matches) pBanner();
-    pPresentation();
-    const greet = el(`<span class="accent">✱</span> <span style="color:var(--fg)"></span>`);
-    const gspan = greet.querySelector("span:last-child") as HTMLElement;
-    if (!reduce && firstVisit) await typeInto(gspan, ui.termGreeting);
-    else gspan.textContent = ui.termGreeting;
-    el(`<span class="muted">${esc(ui.termIntro)}</span>`);
-    pHelp();
-  }
-
-  // ---------- wiring ----------
-  function exec(cmd: string) {
-    run(cmd);
-    input.scrollIntoView({ block: "nearest" });
-    syncCursor();
-  }
-
-  // keep the block cursor glued to the caret, and dim it while unfocused
-  ["input", "keyup", "click", "select"].forEach((ev) =>
-    input.addEventListener(ev, syncCursor),
-  );
-  input.addEventListener("focus", () => {
-    field.classList.remove("idle");
-    syncCursor();
-  });
-  input.addEventListener("blur", () => field.classList.add("idle"));
-
-  // any element with data-cmd (toolbar chips + inline cmd-links) runs that command
-  document.addEventListener("click", (e) => {
-    const t = (e.target as HTMLElement).closest("[data-cmd]") as HTMLElement | null;
-    if (!t) return;
-    e.preventDefault();
-    exec(t.dataset.cmd || "");
-    input.focus();
-  });
-
-  const history: string[] = [];
-  let hIdx = -1;
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      const v = input.value;
-      if (v.trim()) { history.push(v); hIdx = history.length; }
-      input.value = "";
-      exec(v);
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      if (history.length && hIdx > 0) { hIdx--; input.value = history[hIdx]; }
-    } else if (e.key === "ArrowDown") {
-      e.preventDefault();
-      if (hIdx < history.length - 1) { hIdx++; input.value = history[hIdx]; }
-      else { hIdx = history.length; input.value = ""; }
-    } else if (e.key === "Tab") {
-      e.preventDefault();
-      const v = input.value.trim().toLowerCase();
-      if (v) {
-        const m = COMPLETIONS.find((c) => c.startsWith(v));
-        if (m) input.value = m;
-      }
-    } else if (e.key === "l" && e.ctrlKey) {
-      e.preventDefault();
-      log.innerHTML = "";
+  previousButton?.addEventListener("click", () => changeProject(-1));
+  nextButton?.addEventListener("click", () => changeProject(1));
+  carousel?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      changeProject(-1);
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      changeProject(1);
     }
   });
 
-  document.getElementById("repl-row")?.addEventListener("click", () => input.focus());
+  const scrollMotion = gsap.matchMedia();
+  scrollMotion.add("(min-width: 960px) and (min-height: 720px) and (prefers-reduced-motion: no-preference)", () => {
+    const pinnedHeading = document.querySelector<HTMLElement>(".experience-sticky");
+    const experience = document.querySelector<HTMLElement>("#experience");
+    if (pinnedHeading && experience) {
+      ScrollTrigger.create({
+        trigger: experience,
+        start: "top top+=104",
+        end: "bottom bottom",
+        pin: pinnedHeading,
+        pinSpacing: false,
+        invalidateOnRefresh: true,
+      });
+    }
 
-  // fade the terminal in on load
-  document.querySelectorAll("[data-reveal]").forEach((e) =>
-    requestAnimationFrame(() => (e as HTMLElement).classList.add("in")),
-  );
-
-  field.classList.add("idle");
-  syncCursor();
-  boot();
+    const cards = gsap.utils.toArray<HTMLElement>("[data-experience-card]");
+    cards.slice(0, -1).forEach((card) => {
+      gsap.to(card, {
+        scale: 0.985,
+        transformOrigin: "top center",
+        ease: "none",
+        scrollTrigger: {
+          trigger: card,
+          start: "top top+=120",
+          end: "bottom top+=120",
+          scrub: true,
+        },
+      });
+    });
+  });
 </script>
