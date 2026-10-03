@@ -24,14 +24,14 @@ Delivery strategy: single-pr, because this is one coherent replacement of the sh
 RDD: disabled globally, observed before implementation. Do not enable or start native review. Ordinary verification remains required.
 
 ## Tasks
-- [ ] T1 Implement the bilingual redesign, verified experience/client data, self-hosted typography, GSAP enhancement, authentic screenshots and both CV downloads.
+- [x] T1 Implement the bilingual redesign, verified experience/client data, self-hosted typography, GSAP enhancement, authentic screenshots and both CV downloads.
   - Route: delegated direct. Trigger: reading prepares writing and multiple non-trivial source files.
   - Checks: meaningful deterministic Node regressions RED before implementation where runnable; npm run test; npm run check; npm run build; inspect generated ES/EN HTML and public assets.
-  - Commit: pending.
-- [ ] T2 Independently verify and refine the final local candidate, then record actual checks and commit boundaries.
+  - Commit: 764ef94b9ab3724f0541c53b73c993be23dfbf97.
+- [x] T2 Independently verify and refine the final local candidate, then record actual checks and commit boundaries.
   - Route: delegated direct. Trigger: independent browser/runtime verification after small-model writer and unknown/high risk fallback.
   - Checks: desktop and mobile, ES/EN, both themes, keyboard, no-JS fallback, reduced motion, no horizontal overflow, real links/CV assets, console errors. Lighthouse when tooling is available; report unavailable checks honestly.
-  - Commit: pending.
+  - Verified work-unit commit: 764ef94b9ab3724f0541c53b73c993be23dfbf97. This proof update records the independent verification and bounded correction for that candidate.
 
 ## Acceptance criteria
 Both locales show all primary experience without typing commands. The first viewport identifies Maximo Ozonas as a developer, not an agency. Gili and Food Partners are prominent. All four clients have real screenshots and correct public links in an orderly two-column desktop / one-column mobile gallery. The supplied detached rounded navbar composition is implemented. Project exploration has useful keyboard-accessible interaction. Professional copy matches verified CV evidence. Both CV downloads work. Controls are keyboard-accessible and visible. No-JS content remains readable. Animations respect reduced motion and never obstruct access. No horizontal clipping at 390px or desktop heading over two lines. No external publication occurs.
@@ -49,8 +49,16 @@ Both locales show all primary experience without typing commands. The first view
 - Screenshots verified under C:/Users/GILI-IT/Projects/portfolio-assets, outside repository; do not copy browser profiles.
 - Engram mirror pending: authoritative runtime session identity is unavailable. Agent-attributed memory writes stopped by runtime instruction; local document is recovery source.
 - Correction checks: npm run test 8/8; npm run check 0 errors/warnings/hints; npm run build passed; git diff --check passed with line-ending warnings only. Broader Lighthouse and axe remain unavailable per verifier report.
-- T1 source implementation and correction self-checks are ready for parent readback. T1/T2 remain unchecked and uncommitted pending parent authorization; no commit or publication was made.
-- Next step: parent structurally inspect and authorize the bounded local work-unit commit. Preview remains local at http://127.0.0.1:4321/es/.
+- Parent readback and ordinary high-risk verification completed. Native risk assessment was high/unassessable because untracked assets required inventory declaration. RDD remained globally disabled: no native review, approval receipt, or publication is claimed.
+- Final writer checks: npm run test 8/8, npm run check zero errors/warnings/hints, npm run build three static routes, git diff --check clean. Parent independently reran npm run check with zero diagnostics and confirmed both locales and the Vite client returned HTTP 200.
+- Independent verification covered ES/EN at actual 1366, 768, 390, and 320px, both persisted themes, no-JS essential content, reduced motion without GSAP pin spacers, the four authentic project links/details, carousel mouse/keyboard controls, and exact source/PDF hash parity. Initial mobile-menu defect was corrected within T1.
+- Targeted independent correction recheck passed: mouse and Enter-key anchor activation close the mobile menu, preserve the hash, and focus the visible destination at 390/320px in both locales. Desktop navigation stays open. Zero browser network errors or uncaught exceptions were recorded. The inline favicon is used; no physical /favicon.ico file is required by this page.
+- Independent evidence: C:/Users/GILI-IT/Projects/portfolio-assets/verification/report.md and correction/results.json. These are local diagnostic artifacts, not public production assets.
+- Local source work-unit commit: 764ef94b9ab3724f0541c53b73c993be23dfbf97 on feat/portfolio-xenova-redesign. Actual authored change count at that boundary: 2,913 lines including documentation/tests; generated package-lock changes and binary assets excluded. Single-pr strategy remains one coherent replacement. No PR, push, merge, or deployment occurred.
+- Checks unavailable: Lighthouse and axe are not installed. No automated accessibility/performance score is claimed; targeted browser proof does not replace those audits.
+- Release follow-up: address the 15 pre-existing dependency advisories in a separately tested upgrade before public deployment. No force audit fix was applied. Publication is outside the current local scope.
+- Rollback boundary: the source work-unit owns the shared portfolio presentation/content, dependencies, tests, and public assets. Unrelated projects, external client systems, and the original Downloads CV are untouched.
+- Next step: user reviews the live local design; apply only accepted refinements. Preview remains at http://127.0.0.1:4321/es/ and /en/, PID 25856, session 12204. Preserve it for review. Engram mirror remains pending until the host restores the registered runtime identity.
 
 ## Relevant files
 src/components/Portfolio.astro, src/components/Controls.astro, src/layouts/Base.astro, src/data/content.ts, src/styles/global.css, public/projects/, public/fonts/, public/cv-maximo-ozonas-{es,en}.pdf, package.json, package-lock.json, tests/portfolio.test.mjs.
