@@ -17,9 +17,8 @@ export interface Job {
   period: string;
   summary: string;
   description: string;
-  outcomes: string[];
+  scope: { title: string; description: string }[];
   capabilities: string[];
-  flow?: string[];
 }
 
 export interface Project {
@@ -67,7 +66,6 @@ export interface PortfolioContent {
     downloadLabel: string;
   };
   labels: {
-    ongoing: string;
     featuredExperience: string;
     selectedWork: string;
     technologies: string;
@@ -113,11 +111,11 @@ const projectsEn: Project[] = [
     imageAlt: "Quinta Pata public landing page for pet healthcare affiliations",
     type: "Pet healthcare affiliations",
     description:
-      "Affiliation tools for tutors and pets, including an idempotent spreadsheet import and verified membership credentials with PDF and QR codes. The public landing page currently says Próximamente.",
+      "Affiliation tools for tutors and pets, including an idempotent spreadsheet import and verified membership credentials with PDF and QR codes. The public screenshot shows the landing page.",
     details: [
       "Built affiliation records for tutors and pets, with an idempotent Excel import.",
       "Generated PDF membership credentials with QR-based verification.",
-      "The modular .NET/EF Core/PostgreSQL backend and React/Vite/TypeScript admin are separate from the Next.js public landing page, which currently says Próximamente.",
+      "The modular .NET/EF Core/PostgreSQL backend and React/Vite/TypeScript admin are separate from the Next.js public landing page, shown in the public screenshot.",
     ],
     stack: [".NET", "Entity Framework Core", "PostgreSQL", "Next.js", "React"],
   },
@@ -140,20 +138,20 @@ const projectsEn: Project[] = [
   },
   {
     slug: "madryn-buceo",
-    summary: "A diving website connected to reservation management.",
+    summary: "Diving experiences, PADI courses and an interactive dive site map.",
     name: "Madryn Buceo",
     url: "https://madrynbuceo.xenova.com.ar/",
     image: "/projects/madryn-buceo.png",
     imageAlt: "Madryn Buceo website presenting underwater experiences in Patagonia",
     type: "Diving and tourism",
     description:
-      "A corporate website for a diving operator, paired with a reservation and management system backed by Spring Boot and delivered through a Scrum workflow.",
+      "A bilingual website for a diving operator, with excursions, PADI courses, an interactive dive site map and contact enquiries.",
     details: [
       "Built the public corporate website with Next.js, React and Tailwind CSS.",
-      "Developed a reservation and management system backed by Spring Boot.",
-      "Worked through planning, implementation and handoff in a Scrum workflow.",
+      "Connected a Leaflet dive site map with filters, selected locations and detailed activity information.",
+      "Built bilingual content with React Intl and a validated enquiry flow using server actions.",
     ],
-    stack: ["Next.js", "React", "Tailwind CSS", "Spring Boot"],
+    stack: ["Next.js", "React", "TypeScript", "Leaflet"],
   },
 ];
 
@@ -184,11 +182,11 @@ const projectsEs: Project[] = [
     imageAlt: "Página pública de Quinta Pata para afiliaciones de salud animal",
     type: "Afiliaciones de salud animal",
     description:
-      "Herramientas de afiliación para tutores y mascotas, con importación idempotente desde planillas y credenciales verificables en PDF y QR. La página pública actualmente indica Próximamente.",
+      "Herramientas de afiliación para tutores y mascotas, con importación idempotente desde planillas y credenciales verificables en PDF y QR. La captura pública corresponde a la landing.",
     details: [
       "Desarrollé legajos de afiliación para tutores y mascotas, con importación idempotente desde Excel.",
       "Generé credenciales de afiliación en PDF con verificación mediante QR.",
-      "El backend modular en .NET/EF Core/PostgreSQL y el administrador en React/Vite/TypeScript son independientes de la landing Next.js, que actualmente indica Próximamente.",
+      "El backend modular en .NET/EF Core/PostgreSQL y el administrador en React/Vite/TypeScript son independientes de la landing Next.js, que aparece en la captura pública.",
     ],
     stack: [".NET", "Entity Framework Core", "PostgreSQL", "Next.js", "React"],
   },
@@ -211,20 +209,20 @@ const projectsEs: Project[] = [
   },
   {
     slug: "madryn-buceo",
-    summary: "Un sitio de buceo conectado con la gestión de reservas.",
+    summary: "Experiencias de buceo, cursos PADI y un mapa interactivo de inmersiones.",
     name: "Madryn Buceo",
     url: "https://madrynbuceo.xenova.com.ar/",
     image: "/projects/madryn-buceo.png",
     imageAlt: "Sitio de Madryn Buceo que presenta experiencias submarinas en la Patagonia",
     type: "Buceo y turismo",
     description:
-      "Sitio corporativo para un operador de buceo, junto con un sistema de reservas y gestión respaldado por Spring Boot y desarrollado con un flujo de trabajo Scrum.",
+      "Sitio bilingüe para un operador de buceo, con excursiones, cursos PADI, mapa interactivo de puntos de inmersión y consultas de contacto.",
     details: [
       "Desarrollé el sitio corporativo con Next.js, React y Tailwind CSS.",
-      "Implementé un sistema de reservas y gestión respaldado por Spring Boot.",
+      "Conecté un mapa Leaflet con filtros, puntos de inmersión y fichas de actividades.",
       "Participé del flujo de planificación, desarrollo y entrega con Scrum.",
     ],
-    stack: ["Next.js", "React", "Tailwind CSS", "Spring Boot"],
+    stack: ["Next.js", "React", "TypeScript", "Leaflet"],
   },
 ];
 
@@ -262,7 +260,6 @@ export const content: Record<Locale, PortfolioContent> = {
       downloadLabel: "Download CV in",
     },
     labels: {
-      ongoing: "Ongoing",
       featuredExperience: "Featured experience",
       selectedWork: "Selected work",
       technologies: "Technologies",
@@ -276,42 +273,55 @@ export const content: Record<Locale, PortfolioContent> = {
     },
     jobs: [
       {
-        company: "Gili",
-        role: "Development Lead",
-        period: "Oct 2025 - Present",
-        summary: "Internal software, integrations and project delivery.",
-        description:
-          "Lead software and project work across internal operations. I align requirements and priorities with business users, shape the roadmap and architecture, and coordinate external vendors through development, testing, deployment and ongoing server operations.",
-        outcomes: [
-          "Order picking, logistics and freight settlement tools.",
-          "A showroom queue with tickets, kiosk, tablet, QR codes and signage; it supports walk-in order without scheduled appointments.",
-          "A B2B portal, ticketing workflows and catalogue automation.",
-          "Integrations with Flexxus and Magento, plus production maintenance and support.",
+        "company": "Gili",
+        "role": "Development Lead",
+        "period": "Oct 2025 - Present",
+        "summary": "A digital ecosystem for a complete commercial operation.",
+        "description": "Led the development of an ecosystem of web and mobile applications for Gili’s operations. The work combined product development, integration with existing systems and technical coordination across deliveries.",
+        "capabilities": [
+          "Laravel",
+          "React",
+          "Next.js",
+          "Expo",
+          "Python",
+          "FastAPI"
         ],
-        capabilities: ["Laravel", "React", "Expo", "Python", "FastAPI"],
+        "scope": [
+          {
+            "title": "From showroom to warehouse",
+            "description": "Built solutions for commercial operations, logistics, ecommerce and internal support. Integrated Flexxus and Magento to connect business information with the tools used by each team."
+          },
+          {
+            "title": "Development and delivery",
+            "description": "Worked from discovery and architecture through testing, deployments and server operations. Coordinated priorities and external vendors with business teams."
+          }
+        ]
       },
       {
-        company: "Food Partners Patagonia S.A.",
-        role: "Full Stack Developer · Xenova",
-        period: "Sep 2025 - Present",
-        summary: "Production, traceability and people operations in one ERP.",
-        description:
-          "Ongoing development of an integral ERP for an Argentine red shrimp processor. The work connects operational areas from vessel discharge and port intake through production, cold storage and export preparation, alongside quality reporting and people operations.",
-        flow: [
-          "Vessel discharge and port intake",
-          "Raw shrimp weighing and washing",
-          "Freezing lines and production records",
-          "Palletization, labels and cold-room lots",
-          "Stock transfers, orders and container exports",
+        "company": "Food Partners Patagonia S.A.",
+        "role": "Full Stack Developer · Xenova",
+        "period": "Sep 2025 - Present",
+        "summary": "An integrated platform for an industrial operation.",
+        "description": "Built an ERP ecosystem for a major company in my country’s fishing industry, with a modular API and specialised applications for each area, delivering a solution to every part of the company. The work covered industrial operations, staff management and hardware management.",
+        "capabilities": [
+          "Laravel",
+          "React",
+          "TypeScript",
+          "MySQL",
+          "API REST",
+          "PWA"
         ],
-        outcomes: [
-          "Production and quality controls, a cold-storage map, inventory, lot and pallet traceability, inter-plant transfers and foreign-trade documentation.",
-          "Laravel REST API and independent React/TypeScript applications by business area, with authentication, granular permissions, per-plant database selection and real-time error monitoring.",
-          "People operations cover employee records, attendance and hours, leave requests, supervisor-to-HR approvals, PDF payslips, internal communication and disciplinary workflows.",
-          "Employee self-service is an installable PWA. Module rollout is ongoing, so not every area is described as live.",
-        ],
-        capabilities: ["Laravel", "React", "TypeScript", "API REST", "PWA"],
-      },
+        "scope": [
+          {
+            "title": "A connected production chain",
+            "description": "Connected production, quality, cold storage and exports, from raw-material intake to finished-product dispatch. A shared foundation organises information and traceability across plants."
+          },
+          {
+            "title": "Tools for the teams",
+            "description": "Built HR platforms, Mi Legajo for employees and Centinela for system monitoring. Distinct applications share an architecture while adapting to the work of each area."
+          }
+        ]
+      }
     ],
     projects: projectsEn,
     skills: [
@@ -361,7 +371,6 @@ export const content: Record<Locale, PortfolioContent> = {
       downloadLabel: "Descargar CV en",
     },
     labels: {
-      ongoing: "En desarrollo",
       featuredExperience: "Experiencia destacada",
       selectedWork: "Trabajo seleccionado",
       technologies: "Tecnologías",
@@ -375,42 +384,55 @@ export const content: Record<Locale, PortfolioContent> = {
     },
     jobs: [
       {
-        company: "Gili",
-        role: "Líder de Desarrollo",
-        period: "Oct 2025 - Actualidad",
-        summary: "Software interno, integraciones y gestión de proyectos.",
-        description:
-          "Lidero el trabajo de software y proyectos para las operaciones internas. Alineo requerimientos y prioridades con las áreas de negocio, defino el roadmap y la arquitectura, y coordino proveedores externos durante el desarrollo, las pruebas, el despliegue y la operación de servidores.",
-        outcomes: [
-          "Flujos internos de picking y logística, incluida la liquidación de fletes.",
-          "Una fila virtual para el showroom con tickets, tótem, tablet, QR y cartelería; admite atención espontánea, sin turnos programados.",
-          "Portal B2B, flujos de tickets y automatización del catálogo.",
-          "Integraciones con Flexxus y Magento, además de mantenimiento y soporte en producción.",
+        "company": "Gili",
+        "role": "Líder de Desarrollo",
+        "period": "Oct 2025 - Actualidad",
+        "summary": "Un ecosistema digital para una operación comercial completa.",
+        "description": "Lideré el desarrollo de un ecosistema de aplicaciones web y móviles para la operación de Gili. El trabajo combinó producto, integraciones con sistemas existentes y la coordinación técnica de cada entrega.",
+        "capabilities": [
+          "Laravel",
+          "React",
+          "Next.js",
+          "Expo",
+          "Python",
+          "FastAPI"
         ],
-        capabilities: ["Laravel", "React", "Expo", "Python", "FastAPI"],
+        "scope": [
+          {
+            "title": "Del showroom al depósito",
+            "description": "Construí soluciones para atención comercial, logística, ecommerce y soporte interno. Integré Flexxus y Magento para conectar la información del negocio con las herramientas de cada equipo."
+          },
+          {
+            "title": "Desarrollo y gestión",
+            "description": "Trabajé desde el relevamiento y la arquitectura hasta las pruebas, los despliegues y la operación de servidores. Coordiné prioridades y proveedores externos con las áreas de negocio."
+          }
+        ]
       },
       {
-        company: "Food Partners Patagonia S.A.",
-        role: "Full Stack Developer · Xenova",
-        period: "Sep 2025 - Actualidad",
-        summary: "Producción, trazabilidad y gestión de personas en un ERP.",
-        description:
-          "Desarrollo en curso de un ERP integral para una procesadora argentina de langostino. El sistema conecta áreas operativas desde la descarga de buques y la recepción en puerto hasta la producción, la cámara de frío y la preparación de exportaciones, junto con reportes de calidad y gestión de personas.",
-        flow: [
-          "Descarga de buques y recepción en puerto",
-          "Pesaje y lavado de langostino crudo",
-          "Líneas de congelado y registros de producción",
-          "Paletizado, etiquetado y lotes en cámara",
-          "Transferencias, pedidos y exportaciones en contenedores",
+        "company": "Food Partners Patagonia S.A.",
+        "role": "Full Stack Developer · Xenova",
+        "period": "Sep 2025 - Actualidad",
+        "summary": "Una plataforma integral para una operación industrial.",
+        "description": "Desarrollé un ecosistema ERP para una importante empresa del sector pesquero de mi país, con una API modular y aplicaciones especializadas por área, llevando una solución a cada parte de la empresa. El trabajo abarcó desde la operación industrial hasta la gestión del personal y del hardware.",
+        "capabilities": [
+          "Laravel",
+          "React",
+          "TypeScript",
+          "MySQL",
+          "API REST",
+          "PWA"
         ],
-        outcomes: [
-          "Controles de producción y calidad, mapa de cámaras frigoríficas, stock, trazabilidad de lotes y pallets, transferencias entre plantas y documentación de comercio exterior.",
-          "API REST en Laravel y aplicaciones React/TypeScript por sector, con autenticación, permisos granulares, selección de base por planta y monitoreo de errores en tiempo real.",
-          "Gestión de personas: legajos, fichadas, horas, licencias, vacaciones, aprobaciones de supervisores y RR. HH., recibos PDF, comunicaciones y flujos disciplinarios.",
-          "El autoservicio del personal es una PWA instalable. El despliegue de módulos sigue en curso y no se presenta cada área como ya operativa.",
-        ],
-        capabilities: ["Laravel", "React", "TypeScript", "API REST", "PWA"],
-      },
+        "scope": [
+          {
+            "title": "Una cadena productiva conectada",
+            "description": "Conecté producción, calidad, cámaras y exportación, desde la recepción de materia prima hasta la salida del producto. Una base compartida organiza la información y la trazabilidad entre plantas."
+          },
+          {
+            "title": "Herramientas para los equipos",
+            "description": "Desarrollé plataformas de RR. HH., Mi Legajo para el personal y Centinela para el monitoreo de los sistemas. Aplicaciones distintas sobre una misma arquitectura, adaptadas al trabajo de cada área."
+          }
+        ]
+      }
     ],
     projects: projectsEs,
     skills: [

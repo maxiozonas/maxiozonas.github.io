@@ -6,46 +6,68 @@ import Footer from './Footer.astro';
 import Motion from './Motion.astro';
 import HeroTitle from './HeroTitle';
 import HeroActions from './HeroActions';
+import ProfileCredentials from './ProfileCredentials.astro';
+import TechIcon from './TechIcon.astro';
+import SkillsNetwork from './SkillsNetwork';
+import WorkMap from './WorkMap';
+import { getTechnologyUsage } from '../data/technology-usage';
 import MagicBento from './reactbits/MagicBento';
-import ScrollReveal from './reactbits/ScrollReveal';
 import ScrollStack from './reactbits/ScrollStack';
+import SpotlightCard from './reactbits/SpotlightCard';
 import { buttonVariants } from './ui/button';
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
 const c = content[locale];
 const es = locale === 'es';
-const technologies = ['TypeScript', 'React', 'Next.js', 'Laravel', '.NET', 'Docker', 'React Native', 'PostgreSQL'];
 ---
 <Header locale={locale}/>
 <main id="main-content" class="w-full max-w-full overflow-x-clip">
-  <section class="hero page-shell relative flex flex-col items-center justify-center text-center" id="top" aria-labelledby="hero-title">
-    <p class="hero-role mb-7 text-sm text-muted-foreground md:text-base" data-hero-enter>{profile.name}<span class="mx-3 text-brand" aria-hidden="true">/</span>{c.heroRole}</p>
-    <HeroTitle client:load locale={locale}/>
-    <p class="hero-intro mx-auto mt-7 max-w-lg text-base leading-relaxed text-muted-foreground md:mt-9 md:text-lg" data-hero-enter>{es ? 'Desarrollo productos digitales, conecto sistemas y acompaño equipos. De la primera idea a producción.' : 'I build digital products, connect systems and support teams. From the first idea to production.'}</p>
-    <div class="mt-8 md:mt-10" data-hero-enter><HeroActions client:load locale={locale}/></div>
+  <section class="hero page-shell" id="top" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <p class="hero-role" data-hero-enter>{es ? 'Desarrollo de software' : 'Software development'}</p>
+      <HeroTitle client:load/>
+      <p class="hero-profession" data-hero-enter>Full Stack Developer</p>
+      <p class="hero-intro" data-hero-enter>{es ? 'Aplicaciones web y móviles. Integraciones entre sistemas. De la idea a producción.' : 'Web and mobile apps. System integrations. From idea to production.'}</p>
+      <div class="hero-actions-wrap" data-hero-enter><HeroActions client:load locale={locale}/></div>
+      <div class="hero-location" data-hero-enter><span>Bahía Blanca, Argentina</span><span>{es ? 'Trabajo remoto' : 'Remote work'}</span></div>
+    </div>
   </section>
-  <section class="experience-section page-shell grid gap-12 py-24 lg:grid-cols-[.85fr_1.15fr] lg:gap-24 lg:py-40" id="experience" aria-labelledby="experience-title">
-    <div class="experience-intro self-start"><p class="mb-6 text-sm text-muted-foreground">{es ? 'Experiencia en equipos y operaciones reales' : 'Experience with real teams and operations'}</p><h2 id="experience-title" class="section-title">{es ? 'Más allá' : 'Beyond'}<br/><span class="text-muted-foreground">{es ? 'del código.' : 'the code.'}</span></h2><p class="mt-7 max-w-sm text-base leading-relaxed text-muted-foreground">{c.experienceIntro}</p><a class="text-link mt-8 inline-flex min-h-11 items-center gap-5 font-bold" href={`/cv-maximo-ozonas-${locale}.pdf`} download>{c.actions.download}<span aria-hidden="true">↓</span></a></div>
-    <ScrollStack client:visible>{c.jobs.map((job, index) => <article class="experience-card scroll-stack-card rounded-3xl bg-card p-7 md:p-10" id={`experience-${index === 0 ? 'gili' : 'food-partners'}`} data-reveal>
-      <div class="experience-meta mb-6 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground"><p>{job.role}</p><p>{job.period}</p></div><h3 class="text-3xl font-bold tracking-tight md:text-4xl">{job.company}</h3><p class="mt-6 text-xl leading-snug">{job.summary}</p><p class="mt-5 text-base leading-relaxed text-muted-foreground">{job.description}</p>
-      <details class="experience-details mt-6 rounded-2xl bg-secondary px-5"><summary class="flex min-h-14 cursor-pointer items-center justify-between gap-4 text-sm font-bold">{es ? 'Responsabilidades y alcance' : 'Responsibilities and scope'}<span aria-hidden="true">+</span></summary><div class="pb-6 text-sm leading-relaxed text-muted-foreground"><ul class="flex list-disc flex-col gap-3 pl-4">{job.outcomes.map(outcome => <li>{outcome}</li>)}</ul>{job.flow && <div class="mt-6"><h4 class="mb-3 font-bold">{es ? 'Trazabilidad del proceso' : 'Process traceability'}</h4><ol class="flex list-decimal flex-col gap-2 pl-4">{job.flow.map(step => <li>{step}</li>)}</ol></div>}</div></details>
-      <ul class="technology-list mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground" aria-label={c.labels.technologies}>{job.capabilities.map(skill => <li>{skill}</li>)}</ul><p class="mt-5 text-xs text-muted-foreground">{c.labels.ongoing}</p>
+  <section class="experience-section page-shell grid gap-12 py-24 lg:grid-cols-[.75fr_1.25fr] lg:gap-20 lg:py-32" id="experience" aria-labelledby="experience-title">
+    <div class="experience-intro self-start"><p class="section-eyebrow">{es ? 'Experiencia' : 'Experience'}</p><h2 id="experience-title" class="section-title">{es ? 'Dentro de' : 'Inside'}<br/><span class="text-muted-foreground">{es ? 'la operación.' : 'the operation.'}</span></h2><p class="mt-7 max-w-sm text-base leading-relaxed text-muted-foreground">{c.experienceIntro}</p><a class="text-link mt-8 inline-flex min-h-11 items-center font-bold" href={`/cv-maximo-ozonas-${locale}.pdf`} download>{c.actions.download}</a><div class="experience-key"><span class="status-dot"></span>{es ? 'Dos equipos. Problemas reales.' : 'Two teams. Real problems.'}</div></div>
+    <ScrollStack client:visible>{c.jobs.map((job, index) => <article class="experience-card scroll-stack-card" id={`experience-${index === 0 ? 'gili' : 'food-partners'}`}>
+      <SpotlightCard client:visible className="experience-spotlight" spotlightColor="#dcff71" intensity={.12} borderGlow={.25} proximity={30} flare={false}>
+        <div class="experience-meta"><span>{job.period}</span><span class="job-current"><span class="status-dot"></span>{es ? 'Actualidad' : 'Current'}</span></div>
+        <div class="job-heading"><span class:list={['company-logo', { 'company-logo-gili': index === 0 }]}><img src={`/companies/${index === 0 ? 'gili' : 'food-partners'}.png`} alt={job.company} width={index === 0 ? 160 : 334} height={index === 0 ? 79 : 72}/></span><h3>{job.role}</h3></div>
+        <p class="job-summary">{job.summary}</p><p class="job-description">{job.description}</p>
+        <dl class="job-scope">{job.scope.map(area => <div><dt>{area.title}</dt><dd>{area.description}</dd></div>)}</dl>
+        <ul class="job-stack" aria-label={c.labels.technologies}>{job.capabilities.map(skill => <li><TechIcon name={skill}/></li>)}</ul>
+      </SpotlightCard>
     </article>)}</ScrollStack>
   </section>
   <section id="projects" class="projects-section page-shell pb-20 pt-10 md:pb-32 md:pt-16" aria-labelledby="projects-title">
-    <div class="mb-10 flex flex-col justify-between gap-5 md:mb-14 md:flex-row md:items-end"><h2 id="projects-title" class="section-title" data-reveal>{es ? 'Ideas que ya' : 'Ideas already'}<br/><span class="text-muted-foreground">{es ? 'están afuera.' : 'out in the world.'}</span></h2><p class="max-w-xs text-base leading-relaxed text-muted-foreground">{es ? 'Proyectos de clientes desarrollados con Xenova. Cada uno, un problema distinto.' : 'Client projects built with Xenova. Each one, a different problem.'}</p></div>
+    <p class="section-eyebrow">{es ? 'Trabajo seleccionado' : 'Selected work'}</p>
+    <div class="mb-10 flex flex-col justify-between gap-5 md:mb-14 md:flex-row md:items-end"><h2 id="projects-title" class="section-title" data-reveal>{es ? 'Ideas que ya' : 'Ideas already'}<br/><span class="text-muted-foreground">{es ? 'están afuera.' : 'out in the world.'}</span></h2><p class="max-w-xs text-base leading-relaxed text-muted-foreground">{es ? 'Turismo, ingeniería y salud animal. Cada proyecto, un problema distinto.' : 'Travel, engineering and pet healthcare. Each project, a different problem.'}</p></div>
     <MagicBento client:visible projects={c.projects} locale={locale}/>
   </section>
-  <section class="profile-section page-shell py-24 md:py-40" aria-labelledby="profile-title">
-    <h2 id="profile-title" class="mb-10 text-sm text-muted-foreground">{es ? 'El contexto también se construye.' : 'Context is part of the craft.'}</h2>
-    <div class="grid items-center gap-10 lg:grid-cols-[1fr_200px] lg:gap-16"><ScrollReveal client:visible text={es ? 'Entender cómo trabaja un equipo es parte de construir buen software. Conecto desarrollo, arquitectura y gestión para resolver necesidades reales.' : 'Understanding how a team works is part of building good software. I connect development, architecture and project management to solve real needs.'}/><img class="profile-object hidden aspect-square rounded-full object-cover lg:block" src="/images/systems-study.webp" alt="" width="200" height="200" loading="lazy"/></div>
-    <div class="mt-16 grid gap-8 md:grid-cols-3 md:gap-12">{[{ title: es ? 'Web y sistemas' : 'Web and systems', items: [...c.skills[0]!.items, ...c.skills[1]!.items] }, { title: es ? 'Móvil y datos' : 'Mobile and data', items: [...c.skills[2]!.items, ...c.skills[3]!.items] }, { title: es ? 'Infraestructura y entrega' : 'Infrastructure and delivery', items: [...c.skills[4]!.items, ...c.skills[5]!.items] }].map(group => <div><h3 class="mb-4 text-lg font-bold">{group.title}</h3><p class="text-base leading-relaxed text-muted-foreground">{group.items.join(', ')}</p></div>)}</div>
-    <div class="mt-12 grid gap-8 md:grid-cols-2"><div><h3 class="mb-3 text-sm font-bold">{c.labels.education}</h3><p class="text-sm text-muted-foreground">{c.degree}</p></div><div><h3 class="mb-3 text-sm font-bold">{c.labels.languages}</h3><p class="text-sm text-muted-foreground">{c.languages.map(language => `${language.name}: ${language.level}`).join(' / ')}</p></div></div>
+  <section class="profile-section page-shell py-24 md:py-32" id="skills" aria-labelledby="profile-title">
+    <p class="section-eyebrow">{es ? 'Cómo trabajo' : 'How I work'}</p>
+    <div class="profile-composition">
+      <div class="profile-copy">
+        <h2 id="profile-title" class="profile-heading">{es ? 'Buen software empieza por entender.' : 'Good software starts with understanding.'}</h2>
+        <p class="profile-support">{es ? 'Conecto desarrollo, arquitectura y gestión. Entender cómo trabaja un equipo es parte de construir una solución que le sirva.' : 'I connect development, architecture and delivery. Understanding how a team works is part of building a useful solution.'}</p>
+        <p class="profile-map-hint">{es ? 'Explorá cada parte del mapa. El proceso vuelve al equipo, porque el trabajo no termina con el despliegue.' : 'Explore each part of the map. The process comes back to the team, because the work continues beyond deployment.'}</p>
+      </div>
+      <WorkMap client:visible locale={locale}/>
+    </div>
+    <div class="network-section" aria-labelledby="network-title">
+      <div class="network-heading"><div><p class="section-eyebrow">{c.labels.technologies}</p><h2 id="network-title">{es ? 'Un stack conectado.' : 'A connected stack.'}</h2></div><p>{es ? 'Lenguajes, interfaces, datos e infraestructura. Cada pieza tiene su lugar.' : 'Languages, interfaces, data and infrastructure. Each piece has its place.'}</p></div>
+      <SkillsNetwork client:visible locale={locale} groups={c.skills} usage={getTechnologyUsage(locale)}/>
+    </div>
+    <ProfileCredentials locale={locale}/>
   </section>
-  <div class="technology-band relative overflow-hidden py-10" data-technology-band><div class="technology-track flex w-max" aria-hidden="true">{[0, 1].map(() => <div class="technology-set flex items-center gap-12 pr-12">{technologies.map(technology => <span class="whitespace-nowrap text-4xl font-bold tracking-tight text-muted-foreground md:text-6xl">{technology}</span>)}</div>)}</div><p class="sr-only">{c.labels.technologies}: {technologies.join(', ')}</p><button class="band-pause absolute right-6 bottom-0 min-h-8 rounded-full bg-secondary px-3 text-xs" type="button" aria-pressed="false" aria-label={es ? 'Pausar animación de tecnologías' : 'Pause technology animation'} data-band-pause><span data-pause-label>{es ? 'Pausar' : 'Pause'}</span></button></div>
-  <section class="contact-section page-shell py-24 md:py-40" id="contact" aria-labelledby="contact-title">
-    <div class="contact-panel rounded-3xl bg-primary p-7 text-primary-foreground md:p-16"><p class="mb-8 text-sm">{es ? '¿Tenés una idea en mente?' : 'Have something in mind?'}</p><h2 id="contact-title" class="contact-title font-bold tracking-tighter" data-reveal>{es ? 'Hagamos que' : 'Let’s make'}<br/>{es ? 'funcione.' : 'it work.'}</h2><div class="mt-10 flex flex-col justify-between gap-8 md:flex-row md:items-end"><a class="contact-email text-lg font-bold underline underline-offset-8 md:text-2xl" href={`mailto:${profile.email}`}>{profile.email}</a><a class={buttonVariants({ variant: 'inverse', size: 'lg' })} href={`mailto:${profile.email}`}>{c.actions.email}<span aria-hidden="true">↗</span></a></div></div>
-    <div class="mt-8 flex flex-wrap justify-between gap-6 text-sm"><p class="text-muted-foreground">{es ? 'Bahía Blanca, Argentina. Abierto a trabajar en remoto.' : 'Bahía Blanca, Argentina. Open to remote work.'}</p><div class="flex gap-7"><a class="min-h-11" href={profile.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a><a class="min-h-11" href={profile.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div></div>
+  <section class="contact-section page-shell py-24 md:py-32" id="contact" aria-labelledby="contact-title">
+    <div class="contact-panel rounded-3xl bg-primary p-7 text-primary-foreground md:p-16"><p class="mb-8 text-sm">{es ? '¿Tenés una idea en mente?' : 'Have something in mind?'}</p><h2 id="contact-title" class="contact-title font-bold tracking-tighter" data-reveal>{es ? 'Hagamos que' : 'Let’s make'}<br/>{es ? 'funcione.' : 'it work.'}</h2><div class="mt-10 flex flex-col justify-between gap-8 md:flex-row md:items-end"><a class="contact-email text-lg font-bold md:text-2xl" href={`mailto:${profile.email}`}>{profile.email}</a><a class={buttonVariants({ variant: 'inverse', size: 'lg' })} href={`mailto:${profile.email}`}>{c.actions.email}</a></div></div>
+    <div class="mt-8 flex flex-wrap justify-between gap-6 text-sm"><p class="text-muted-foreground">{es ? 'Bahía Blanca, Argentina. Abierto a trabajar en remoto.' : 'Bahía Blanca, Argentina. Open to remote work.'}</p><div class="flex gap-3"><a class="social-button" href={profile.github} target="_blank" rel="noopener noreferrer">GitHub</a><a class="social-button" href={profile.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a></div></div>
   </section>
 </main>
 <Footer locale={locale}/>

@@ -14,9 +14,20 @@ export default function ScrollStack({ children }: { children: ReactNode }) {
       cards.slice(0, -1).forEach((card, index) => {
         gsap.to(card, { scale: .95, transformOrigin: 'top center', ease: 'none', scrollTrigger: { trigger: cards[index + 1], start: 'top 90%', end: 'top 180px', scrub: true } });
       });
-      const observer = new ResizeObserver(() => ScrollTrigger.refresh());
+      const refresh = () => {
+        // Taller cards must scroll their whole content into view before sticking.
+        cards.forEach(card => card.style.setProperty('--stack-top', `${Math.min(140, window.innerHeight - card.offsetHeight - 40)}px`));
+        ScrollTrigger.refresh();
+      };
+      const observer = new ResizeObserver(refresh);
       cards.forEach(card => observer.observe(card));
-      return () => observer.disconnect();
+      window.addEventListener('resize', refresh);
+      refresh();
+      return () => {
+        observer.disconnect();
+        window.removeEventListener('resize', refresh);
+        cards.forEach(card => card.style.removeProperty('--stack-top'));
+      };
     });
     return () => media.revert();
   }, []);

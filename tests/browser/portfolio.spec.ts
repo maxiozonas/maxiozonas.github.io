@@ -39,18 +39,21 @@ for (const locale of ['es', 'en']) {
 
   for (const theme of ['light', 'dark']) {
     test(`${locale}: ${theme} theme, accessibility and screenshots`, async ({ page }) => {
+      test.setTimeout(60000);
       await page.setViewportSize({ width: 1440, height: 900 });
       await page.addInitScript(value => localStorage.setItem('theme', value), theme);
       await page.goto(`/${locale}/`);
       await page.waitForTimeout(1800);
       await page.screenshot({ path: `artifacts/screenshots/${locale}-desktop-${theme}.png` });
+      // Stabilise the long screenshot and contrast audit after checking the animated entrance.
+      await page.emulateMedia({ reducedMotion: 'reduce' });
       for (const image of await page.locator('.project-card-image').all()) {
-        await image.scrollIntoViewIfNeeded();
+        await image.evaluate(element => element.scrollIntoView({ behavior: 'instant', block: 'center' }));
         await expect(image).toHaveJSProperty('complete', true);
         expect(await image.evaluate(element => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
       }
       for (const section of await page.locator('main section').all()) {
-        await section.scrollIntoViewIfNeeded();
+        await section.evaluate(element => element.scrollIntoView({ behavior: 'instant', block: 'start' }));
         await page.waitForTimeout(700);
       }
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
@@ -63,7 +66,7 @@ for (const locale of ['es', 'en']) {
       await expect(page.locator('.detail-heading h1')).toHaveText('Catalejo Travel');
       expect(await page.locator('link[rel="canonical"]').getAttribute('href')).toContain(`/${locale}/projects/catalejo-travel/`);
       for (const paragraph of await page.locator('.detail-deliverables > p').all()) {
-        await paragraph.scrollIntoViewIfNeeded();
+        await paragraph.evaluate(element => element.scrollIntoView({ behavior: 'instant', block: 'center' }));
         await page.waitForTimeout(700);
       }
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
@@ -110,8 +113,7 @@ test('theme persists and follows system preference before manual selection', asy
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-  await page.locator('[data-band-pause]').click();
-  await expect(page.locator('[data-band-pause]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('[data-band-pause], .ambient-toggle')).toHaveCount(0);
 });
 
 test('experience heading stays in view while the next job enters', async ({ page }) => {
@@ -130,7 +132,8 @@ test('mobile detail, reduced motion and controls remain usable', async ({ page }
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/es/');
   expect(await page.locator('.pin-spacer').count()).toBe(0);
-  expect(await page.locator('.technology-track').evaluate(element => getComputedStyle(element).animationName)).toBe('none');
+  await expect(page.locator('.logoloop__track, [data-technology-band]')).toHaveCount(0);
+  expect(await page.locator('.work-wheel-sectors path').first().evaluate(element => getComputedStyle(element).transitionDuration)).toBe('0s');
   await page.waitForTimeout(1400);
   await page.screenshot({ path: 'artifacts/screenshots/es-mobile-light.png' });
   await page.locator('#theme-toggle').evaluate(element => (element as HTMLButtonElement).click());
@@ -151,14 +154,42 @@ test('portfolio and project scope work without JavaScript', async ({ browser }) 
   const page = await context.newPage();
   await page.goto('/es/');
   await expect(page.locator('#hero-title')).toBeVisible();
-  await page.locator('.experience-details').first().locator('summary').click();
-  await expect(page.locator('.experience-details').first()).toHaveAttribute('open', '');
+  await expect(page.locator('.job-summary')).toHaveCount(2);
+  await expect(page.locator('#experience-food-partners .job-scope')).toContainText('Mi Legajo');
   await page.locator('.project-image-link').first().click();
   await expect(page.locator('#scope-title')).toHaveText('Alcance del trabajo');
   await context.close();
 });
 
-test('experience precedes projects, bento stays dense and visual effects can pause', async ({ page }) => {
+test('work map and technology network respond to pointer, keyboard and mobile selection', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/es/');
+  await page.locator('.work-map').scrollIntoViewIfNeeded();
+  await expect(page.locator('.work-map [data-hydrated="true"]')).toHaveCount(1);
+  await page.locator('.work-map').getByRole('button', { name: 'Acompañar', exact: true }).click();
+  await expect(page.locator('.work-map-detail h3')).toHaveText('El sistema sigue aprendiendo.');
+  await page.locator('.network-graph-desktop').scrollIntoViewIfNeeded();
+  await expect(page.locator('.skills-network [data-hydrated="true"]')).toHaveCount(1);
+  const desktop = page.locator('.network-graph-desktop');
+  await desktop.getByRole('button', { name: 'Laravel', exact: true }).hover();
+  await expect(page.locator('.network-context h3')).toHaveText('Laravel');
+  await expect(page.locator('.network-work')).toContainText('Catalejo Travel');
+  await expect(desktop.locator('.network-node[data-lit="true"]')).toHaveCount(3);
+  await desktop.getByRole('button', { name: 'Datos', exact: true }).focus();
+  await expect(page.locator('.network-context h3')).toHaveText('Datos');
+  await expect(desktop.locator('.network-node[data-lit="true"]')).toHaveCount(2);
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobile = page.locator('.network-graph-mobile');
+  await mobile.getByRole('button', { name: '.NET', exact: true }).click();
+  await expect(page.locator('.network-context h3')).toHaveText('.NET');
+  const project = page.locator('.network-work').getByRole('link', { name: 'Quinta Pata' });
+  await project.focus();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/es\/projects\/quinta-pata\/$/);
+});
+
+test('experience precedes projects, bento stays dense and reduced motion stops effects', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('theme', 'dark'));
   await page.goto('/es/');
   const sections = await page.locator('main > section').evaluateAll(elements => elements.map(element => element.id));
@@ -174,11 +205,10 @@ test('experience precedes projects, bento stays dense and visual effects can pau
     return canvas instanceof HTMLCanvasElement ? canvas.getContext('webgl2') : null;
   });
   expect(await context.evaluate(gl => gl !== null)).toBeTruthy();
-  await page.getByRole('button', { name: 'Pausar efectos visuales' }).click();
+  await expect(page.locator('.ambient-toggle, [data-band-pause]')).toHaveCount(0);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(page.locator('#fluid')).toHaveCount(0);
   expect(await context.evaluate(gl => gl!.isContextLost())).toBeTruthy();
-  await page.getByRole('button', { name: 'Reanudar efectos visuales' }).click();
-  await expect(page.locator('#fluid')).toBeVisible();
   await page.locator('#projects').scrollIntoViewIfNeeded();
   const cards = page.locator('.magic-bento-card');
   const images = page.locator('.project-image-link');

@@ -1,0 +1,11 @@
+{
+  "generator": "Built-in image_gen",
+  "source": "/home/max/.codex/generated_images/01a121b2-a8e9-7a21-bf5c-e4a33a15286a/exec-16de0487-cff2-481c-8bc2-a99bca5c99d2.png",
+  "asset": "/brand/mo-monogram.png",
+  "prompt": "Use case: logo-brand. Asset type: a single finished logo for the favicon and navigation of Máximo Ozonas, a full stack developer. Design ONE confident original lowercase m/o monogram. Geometric thick black strokes, rounded arch-based m smoothly connected to a perfectly circular o, one compact horizontal ligature silhouette, strong negative-space counters. The m and o must both read clearly. Flat vector-like black ink on actual transparent background. Fill most of the square frame with the mark, centered, generous clear edges. No text besides the monogram, no period, no border, no tile, no mockup, no shadows, no gradients, no 3D, no decorative coding brackets, no thin lines. Must read cleanly at 32px. Calm Swiss modern identity.",
+  "derivatives": [
+    "mo-32.png",
+    "mo-64.png",
+    "mo-180.png"
+  ]
+}

@@ -10,7 +10,7 @@ export default function ScrollReveal({ text }: { text: string }) {
   useEffect(() => {
     const media = gsap.matchMedia();
     media.add('(prefers-reduced-motion: no-preference)', () => {
-      gsap.fromTo(ref.current!.querySelectorAll('.word'), { opacity: .45 }, {
+      gsap.fromTo(ref.current!.querySelectorAll('.word'), { opacity: .6 }, {
         opacity: 1, stagger: .06, ease: 'none', scrollTrigger: { trigger: ref.current, start: 'top 85%', end: 'bottom 55%', scrub: true },
       });
     });

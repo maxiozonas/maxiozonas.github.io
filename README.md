@@ -1,13 +1,13 @@
 # Máximo Ozonas portfolio
 
-Bilingual personal portfolio built with Astro, React islands, TypeScript, Tailwind CSS v4, shadcn/ui (Base UI), React Bits and GSAP. Static HTML preserves content and project navigation without JavaScript, including individual project pages. The interactive navigation hydrates on load, and the project effects hydrate when visible.
+Bilingual personal portfolio built with Astro, React islands, TypeScript, Tailwind CSS v4, shadcn/ui (Base UI), React Bits and GSAP. Static HTML preserves the content, project links and experience summaries without JavaScript.
 
 ## Local development
 
-Use Node.js 22.19 or newer; this workspace uses Node.js 24.
+Use Node.js 22.19 or newer.
 
 ```sh
-npm install
+npm ci
 npm run dev -- --host 127.0.0.1
 ```
 
@@ -16,35 +16,36 @@ Open [Spanish](http://127.0.0.1:4321/es/) or [English](http://127.0.0.1:4321/en/
 ```sh
 npm run check
 npm test
-npm run test:browser
-npm run build
+CHROME_PATH=/usr/bin/chromium npm run test:browser
 npm run preview -- --host 127.0.0.1 --port 4322
 ```
 
-Browser checks use the installed Chrome on Windows. Set `CHROME_PATH` to use a different executable; on other platforms, install the Playwright Chromium browser. Set `PORTFOLIO_URL` to test a production preview, for example `http://127.0.0.1:4322`. Screenshots, axe results and browser traces are saved under the ignored `artifacts/` folder.
+Browser checks use the installed Chrome on Windows. On Linux, set `CHROME_PATH` to an installed browser or install Playwright Chromium. `PORTFOLIO_URL` can target a production preview. Screenshots, accessibility results and failure traces are saved under ignored `artifacts/`.
 
 ## Content and assets
 
-- `src/data/content.ts`: profile, CV-based experience and verified client project scope in both languages.
-- `src/pages/[locale]/projects/[slug].astro`: eight static case-study routes with individual canonical URLs, translated language links and return navigation.
-- `public/projects/`: genuine browser screenshots of Catalejo Travel, Quinta Pata, Inspira Ingeniería and Madryn Buceo, captured on 2026-10-09. PNG originals are retained alongside responsive WebP variants.
-- `public/cv-maximo-ozonas-{es,en}.pdf`: the current verified CV documents from the local `Projects/cv-maximo-ozonas` folder.
-- `public/images/systems-study.webp`: an abstract supporting visual generated with the built-in image-generation tool. It is decorative and is never presented as project work. Generation details are in `scripts/image-assets.json`.
-
-Refresh project screenshots and optimize them with `npm run capture:projects`. The capture script retains the existing screenshot if a public site is unavailable. The output records capture dates and status in `artifacts/project-captures.json`.
+- `src/data/content.ts`: profile, experience, project summaries and skills in both languages.
+- `scripts/experience-content-sources.json`: Gili and XenovaDevs repository snapshots supporting the company contributions.
+- `src/data/case-studies.ts`: project context, features, architecture, technical decisions and outcomes.
+- `scripts/project-content-sources.json`: repository snapshots and files used to substantiate the cases. Implemented functionality is distinguished from public deployment; no outcome metrics are invented.
+- `src/pages/[locale]/projects/[slug].astro`: eight static case-study routes with canonical URLs, translated links and return navigation.
+- `public/projects/`: real public-site screenshots captured on 2026-10-09, with responsive WebP variants. Refresh using `npm run capture:projects`.
+- `public/brand/`: generated m/o monogram and favicon sizes. Generator, prompt and derivatives are recorded in `scripts/brand-assets.json`.
+- `public/technologies/`: local Devicon and Simple Icons technology marks and provenance.
+- `public/education/utn.png`: UTN logo supplied by the user, preserved unchanged with transparent margins handled in CSS.
+- `public/images/systems-study.webp`: generated decorative supporting image; not presented as client work.
+- `public/cv-maximo-ozonas-{es,en}.pdf`: verified CV documents retained from the original portfolio.
 
 ## Design and motion
 
-The design uses Xenova's verified palette: black `#0b0b0b`, off-white `#f6f6f6`, lime `#dcff71`, and secondary blue `#014fff`. Cabinet Grotesk is self-hosted. Semantic Tailwind tokens provide both themes; the initial theme follows the operating system, and a manual choice persists locally. Navigation and buttons are pills, project cards have a 24px radius, and screenshots use a 12px radius. Whitespace separates sections.
+Cabinet Grotesk is self-hosted. The lime m/o identity is shared by the navbar and favicon. The minimal typographic hero introduces Máximo by name and role. GitHub and LinkedIn are explicit icon buttons. The hero has no monogram, project previews or decorative panels. Links use text labels without decorative arrows.
 
-The full-width typographic hero uses React Bits Split Text. The project gallery adapts Magic Bento to a dense four-case grid with real screenshots, lime spotlight and mild perspective. Scroll Reveal and Magnet are adapted with scoped event cleanup and reduced-motion support. Component sources, modifications and the upstream MIT + Commons Clause license are documented in `src/components/reactbits/README.md`.
+Light mode uses mineral white, white surfaces and olive accents. Dark mode uses off-black, lime and a subdued Ghost Fibers background. Theme selection persists locally and initially follows system preference. A segmented ES/EN selector keeps the corresponding project route and saves the language preference. Splash Cursor loads lazily for fine-pointer devices in dark mode.
 
-Experience precedes projects. Its two roles use a document-scrolling adaptation of Scroll Stack, retaining native expandable responsibilities. Larger Tailwind type tokens increase reading sizes across the page. Bento screenshot frames have consistent height, aligned footers and a permanent lime border in dark mode.
+Experience uses a timeline with React Bits Scroll Stack and Spotlight Card. Each company is identified once by its logo; the heading is the role. Each company has an ecosystem summary and two complementary scope paragraphs: the operational reach and the development responsibilities. These preserve substance without feature-by-feature lists or nested cards. Tall cards scroll fully before sticking. Projects retain the screenshot-based Magic Bento grid. Detail pages include functionality, architecture and decisions verified against source repositories. The profile includes an interactive five-stage working wheel centred on a real problem, from understanding the operation to support in production. A separate technology network groups the real marks by language, web/backend, mobile, data, infrastructure and tools. Selecting a technology highlights related nodes and links to reviewed work; the mobile layout uses vertical branches. Education and languages have dedicated panels with the supplied UTN logo and explicit Native/B1 levels. Decorative dividers and section numbering are omitted; action links use rounded buttons without underlines.
 
-Ghost Fibers provides the animated WebGL background; Splash Cursor adds a lime fluid trail on fine-pointer devices. Both use actual React Bits shader sources. A pause control stops the visual effects, motion preferences are respected, and the cursor stops its RAF after five idle seconds. Splash Cursor loads lazily; contexts and listeners are released on unmount. Browser/graphics environments without WebGL retain the complete static portfolio.
+React Bits Animated Content provides scroll entrances for both maps. The SVG branch highlight uses the path-reveal pattern from Branched Menu; topology, workflow wheel, real technology marks and case associations are authored for this portfolio. The technology carousel is removed. Connection signals pause offscreen or when hidden, and reduced motion disables them. No new dependencies are required. Component provenance and upstream licensing are documented in `src/components/reactbits/README.md` and `LICENSE.md`.
 
-The floating navigation combines shadcn NavigationMenu with a project preview menu and Sheet for mobile, plus circular hover choreography inspired by React Bits Pill Nav. Buttons and technology badges also use actual shadcn components installed via its CLI. Configuration is in `components.json`.
+Native View Transitions connect project images and titles across documents. GSAP handles entrances, reveals and desktop experience pinning. Motion respects `prefers-reduced-motion`; WebGL fallbacks retain the static site.
 
-Native [View Transitions](https://docs.astro.build/en/guides/view-transitions/) connect project images and titles across documents, with ordinary navigation as fallback. GSAP handles entrance motion, section reveals and a pinned experience introduction on large screens. The technology band has a pause control. All motion respects `prefers-reduced-motion`.
-
-Deployment remains the existing GitHub Pages workflow. A push to the configured deployment branch builds the static site; local development does not publish it.
+The existing GitHub Pages workflow deploys on a push to its configured branch. Local development does not publish the site.

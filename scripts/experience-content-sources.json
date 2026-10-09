@@ -1,0 +1,129 @@
+{
+  "reviewedAt": "2026-10-09",
+  "policy": "Accomplishments describe implemented functionality. No production deployment or numeric business outcomes inferred. B2B entry describes the implemented application foundation, not a finished sales workflow.",
+  "companies": {
+    "Gili": [
+      {
+        "repository": "maxiozonas/turnero-gili",
+        "commit": "0b26864a097e28aae21be23b769028d4952414bb",
+        "sources": [
+          "README.md",
+          "backend/routes/api.php"
+        ],
+        "snapshotNote": "Local worktree inspected; repository HEAD plus existing local changes."
+      },
+      {
+        "repository": "maxiozonas/gili-logistica",
+        "commit": "afbc2598edb08d4d5857d155de8d6646cb56ba79",
+        "sources": [
+          "README.md",
+          "docs/fletes-liquidacion.md"
+        ]
+      },
+      {
+        "repository": "maxiozonas/picking_app",
+        "commit": "df77deb90d5ef58014f8ce2c07a6bc04698e6df7",
+        "sources": [
+          "AGENTS.md",
+          "flexxus-picking-backend/app/Services/Picking/FlexxusOrderSnapshotService.php"
+        ]
+      },
+      {
+        "repository": "maxiozonas/gili-tickets",
+        "commit": "475de210eed4f5b51d13d92a542a321a471dbd46",
+        "sources": [
+          "README.md",
+          "backend/routes/api.php"
+        ]
+      },
+      {
+        "repository": "maxiozonas/catalog-ia",
+        "commit": "eacafb2876f4dca43cbdfa37f50954ca63bd488d",
+        "sources": [
+          "AGENTS.md",
+          "backend/app/services/workflow.py",
+          "backend/app/api/v1/endpoints/ai.py",
+          "backend/app/api/v1/endpoints/products.py"
+        ]
+      },
+      {
+        "repository": "maxiozonas/showroom-app",
+        "commit": "8e2b2bb29f83ebed655d053886fb7ffbbaae2a82",
+        "sources": [
+          "README.md"
+        ]
+      },
+      {
+        "repository": "maxiozonas/gilib2b",
+        "commit": "93101585f27bcc2864a3bea113a20c8f49a4750f",
+        "sources": [
+          "README.md",
+          "apps/api/routes/api.php"
+        ]
+      }
+    ],
+    "Food Partners": [
+      {
+        "repository": "XenovaDevs/food-partners-backend",
+        "commit": "6b8014be55fe182152f80677795f239f39d0f91d",
+        "sources": [
+          "routes/api.php",
+          "app/Areas/Produccion/Routes/api.php",
+          "app/Areas/Camara/Routes/api.php",
+          "app/Areas/MiLegajo/Routes/api.php",
+          "app/Areas/RRHH/Routes/api.php",
+          "app/Areas/Calidad/Routes/api.php",
+          "app/Areas/Centinela/Routes/api.php"
+        ],
+        "snapshotNote": "Local worktree inspected; repository HEAD plus existing local changes."
+      },
+      {
+        "repository": "XenovaDevs/food-partners-frontend",
+        "commit": "b1b498b6619c24285551463dec02bbccd74e8011",
+        "sources": [
+          "src/features/"
+        ],
+        "snapshotNote": "Local worktree inspected; repository HEAD plus existing local changes."
+      },
+      {
+        "repository": "XenovaDevs/food-partners-camara-frontend",
+        "commit": "e2228ae57dff4b513de9e3324ee2fcfe8433c982",
+        "sources": [
+          "src/features/"
+        ],
+        "snapshotNote": "Local worktree inspected; repository HEAD plus existing local changes."
+      },
+      {
+        "repository": "XenovaDevs/food-partners-calidad-frontend",
+        "commit": "67e68283a41982e056dfc8417e224d46690b4997",
+        "sources": [
+          "src/features/"
+        ],
+        "snapshotNote": "Local worktree inspected; repository HEAD plus existing local changes."
+      },
+      {
+        "repository": "XenovaDevs/food-partners-rrhh-frontend",
+        "commit": "a961f5f9f4033b6267b5091957d53f48a5d6f95c",
+        "sources": [
+          "src/features/"
+        ]
+      },
+      {
+        "repository": "XenovaDevs/food-partners-mi-legajo-frontend",
+        "commit": "b9d6dd3715be6ad2ed2de367c44d75785b648360",
+        "sources": [
+          "README.md",
+          "src/features/"
+        ]
+      },
+      {
+        "repository": "XenovaDevs/food-partners-centinela-frontend",
+        "commit": "8131792b7a584a42d9a62b3b2c7b50627b1c5059",
+        "sources": [
+          "src/features/centinela/pages/CentinelaPage.tsx"
+        ],
+        "snapshotNote": "Local worktree inspected; repository HEAD plus existing local changes."
+      }
+    ]
+  }
+}

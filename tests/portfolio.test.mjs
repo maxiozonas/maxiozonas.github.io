@@ -26,7 +26,8 @@ describe('static bilingual portfolio', () => {
       assert.doesNotMatch(html, /[—–]|repl-input|data-cmd=/);
       assert.match(html, /magic-bento-card/);
       assert.doesNotMatch(html, /data-project-carousel/);
-      assert.match(html, /<details\b[^>]*class="experience-details/);
+      assert.match(html, /Mi Legajo/);
+      assert.match(html, /\/education\/utn.png/);
     });
 
     for (const [name, slug, url] of projects) {
@@ -48,11 +49,13 @@ describe('static bilingual portfolio', () => {
     }
   }
 
-  it('does not present inquiry flows as paid checkout or the ERP rollout as completed', () => {
+  it('describes implemented company work and preserves accurate inquiry and affiliation scope', () => {
     assert.match(htmlFor('es', 'catalejo-travel'), /consulta|consultas/);
     assert.match(htmlFor('es', 'quinta-pata'), /afiliaci[oó]n/);
-    assert.match(htmlFor('es'), /en desarrollo|en curso/i);
-    assert.match(htmlFor('en'), /ongoing/i);
+    assert.match(htmlFor('es'), /ecosistema ERP|ecommerce/);
+    assert.match(htmlFor('en'), /Mi Legajo|freight/);
+    assert.doesNotMatch(htmlFor('es'), /en desarrollo|en curso/i);
+    assert.doesNotMatch(htmlFor('en'), /ongoing development|rollout is ongoing/i);
     assert.doesNotMatch(htmlFor('es', 'catalejo-travel'), /se procesa el pago online|reserva pagada/i);
   });
 

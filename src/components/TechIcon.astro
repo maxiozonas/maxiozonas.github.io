@@ -1,0 +1,10 @@
+---
+import { technologyIcons } from '../data/technologies';
+interface Props { name: string; label?: boolean; }
+const { name, label = true } = Astro.props;
+const icon = technologyIcons[name];
+---
+<span class="tech-label">
+  {icon && <img class:list={['tech-icon', { 'tech-icon-mono': icon.mono }]} src={`/technologies/${icon.slug}.svg`} width="24" height="24" alt="" loading="lazy" decoding="async"/>}
+  {label && <span>{name}</span>}
+</span>

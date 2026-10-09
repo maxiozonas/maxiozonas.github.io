@@ -1,0 +1,58 @@
+{
+  "reviewedAt": "2026-10-09",
+  "policy": "Case study content describes functionality observed in these repository snapshots. No sales, performance or production-rollout metrics are inferred.",
+  "projects": {
+    "catalejo-travel": {
+      "repository": "XenovaDevs/catalejo",
+      "commit": "0b778d504a5a4c8918904b46ad0b003bea038d81",
+      "sources": [
+        "README.md",
+        "apps/api/app/Domain/Pricing/ExperiencePricing.php",
+        "apps/api/app/Http/Controllers/CmsAnalyticsController.php",
+        "apps/api/app/Http/Controllers/CmsMediaController.php",
+        "apps/web/lib/data.ts"
+      ]
+    },
+    "quinta-pata": {
+      "repository": "XenovaDevs/5tapata",
+      "commit": "94c5634c7784f43a90e9719a06ba9875ffc0ea17",
+      "sources": [
+        "app/backend/README.md",
+        "app/backend/src/Modules/Afiliados/Features/ImportarAfiliados/ConfirmarImportacionHandler.cs",
+        "app/backend/src/Modules/Afiliados/Features/VerificarCredencial/VerificarCredencialHandler.cs",
+        "app/backend/src/Modules/Tokenizacion/Features/TokenizacionEndpoints.cs",
+        "app/apps/cms/src/pages/",
+        "app/apps/landing/src/app/",
+        "app/backend/src/Modules/Tokenizacion/Security/CodigoOtpService.cs"
+      ],
+      "note": "The older root README describes the initially contracted scope. Current backend source and README include Usuarios, Afiliados, Planes and Tokenizacion. Repository implementation is distinguished from public deployment."
+    },
+    "inspira-ingenieria": {
+      "repository": "xurbyte/inspira-ingenieria",
+      "commit": "e96ed4e443126856ec4849805434cecddc70aec6",
+      "sources": [
+        "prisma/schema.prisma",
+        "src/app/api/projects/route.ts",
+        "src/app/api/contact/route.ts",
+        "middleware.ts",
+        "src/app/admin/projects/",
+        "src/app/proyectos/"
+      ],
+      "publicSite": "https://www.ingenieriainspira.com/"
+    },
+    "madryn-buceo": {
+      "repository": "XenovaDevs/madryn-buceo-rework",
+      "commit": "c54479e1a2f1d129e1470166189f770af2fbc136",
+      "sources": [
+        "frontend/src/components/diveSites/DiveSitesMap.tsx",
+        "frontend/src/components/cursos/CursosFiltro.tsx",
+        "frontend/src/components/contacto/ContactoForm.tsx",
+        "frontend/src/app/actions/email.ts",
+        "frontend/src/components/detail/SharedDetailTransition.tsx",
+        "frontend/src/app/locales/",
+        "docs/view-transitions-research.md"
+      ],
+      "note": "Current backend directory is empty apart from .gitkeep. This case describes the current frontend and contact flow rather than presenting the previous Spring Boot scope as part of this redesign."
+    }
+  }
+}

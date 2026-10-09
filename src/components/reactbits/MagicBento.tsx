@@ -3,7 +3,6 @@
 // cards; spotlight is scoped to the grid, with reversible GSAP effects.
 import { useEffect, useRef, type CSSProperties } from 'react';
 import { gsap } from 'gsap';
-import { IconArrowUpRight, IconArrowRight } from '@tabler/icons-react';
 import { Badge } from '@/components/ui/badge';
 import type { Project, Locale } from '@/data/content';
 import { projectSrcset } from '@/lib/project-images';
@@ -59,7 +58,7 @@ export default function MagicBento({ projects, locale, enableTilt = true, spotli
     {projects.map((project, index) => <article key={project.slug} className={cn('project-card magic-bento-card group relative overflow-hidden rounded-3xl bg-card text-card-foreground', index === 0 || index === 3 ? 'md:col-span-7' : 'md:col-span-5')}>
       <div className="relative flex items-center justify-between gap-4 px-6 pt-6 md:px-8 md:pt-8">
         <p className="text-sm text-muted-foreground">{project.type}</p>
-        <a className="project-visit inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground transition-transform hover:rotate-45" href={project.url} target="_blank" rel="noopener noreferrer" aria-label={`${locale === 'es' ? 'Visitar sitio' : 'Visit website'}: ${project.name}`}><IconArrowUpRight size={22} stroke={1.5} /></a>
+        <a className="project-visit inline-flex min-h-11 shrink-0 items-center justify-center text-xs font-bold" href={project.url} target="_blank" rel="noopener noreferrer" aria-label={`${locale === 'es' ? 'Visitar sitio' : 'Visit website'}: ${project.name}`}>{locale === 'es' ? 'Sitio web' : 'Website'}</a>
       </div>
       <div className="relative px-6 pb-6 pt-2 md:px-8 md:pb-8">
         <a href={`/${locale}/projects/${project.slug}/`} className="project-title-link inline-block"><h3 className="text-3xl font-bold tracking-tight lg:text-4xl" style={{ viewTransitionName: `title-${project.slug}` }}>{project.name}</h3></a>
@@ -70,7 +69,7 @@ export default function MagicBento({ projects, locale, enableTilt = true, spotli
       </a>
       <div className="relative flex flex-wrap items-center justify-between gap-4 px-6 py-5 md:px-8">
         <div className="flex flex-wrap gap-2">{project.stack.slice(0, 2).map(tech => <Badge variant="secondary" key={tech}>{tech}</Badge>)}</div>
-        <a className="project-detail-link flex min-h-11 items-center gap-2 text-sm font-bold" href={`/${locale}/projects/${project.slug}/`}>{locale === 'es' ? 'Explorar' : 'Explore'}<IconArrowRight size={18} stroke={1.5}/></a>
+        <a className="project-detail-link flex min-h-11 items-center gap-2 text-sm font-bold" href={`/${locale}/projects/${project.slug}/`}>{locale === 'es' ? 'Ver caso' : 'View case'}</a>
       </div>
     </article>)}
   </div>;
