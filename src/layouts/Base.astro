@@ -2,20 +2,26 @@
 import "../styles/global.css";
 import type { Locale } from "../data/content";
 import { content, profile } from "../data/content";
+import Atmosphere from '../components/Atmosphere';
 
 interface Props {
   locale: Locale;
   title?: string;
+  description?: string;
+  image?: string;
 }
 
-const { locale, title } = Astro.props;
+const { locale, title, image } = Astro.props;
 const otherLocale = locale === "es" ? "en" : "es";
 const pageTitle = title ?? `${profile.name} | ${profile.role[locale]}`;
-const description = content[locale].intro;
+const description = Astro.props.description ?? content[locale].intro;
+const pagePath = Astro.url.pathname;
+const canonical = new URL(pagePath, "https://maxiozonas.github.io");
+const alternatePath = pagePath.replace(`/${locale}/`, `/${otherLocale}/`);
 ---
 
 <!doctype html>
-<html lang={locale} data-theme="dark">
+<html lang={locale} data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -23,16 +29,17 @@ const description = content[locale].intro;
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <meta name="author" content={profile.name} />
-    <link rel="canonical" href={`https://maxiozonas.github.io/${locale}/`} />
-    <link rel="alternate" hreflang={locale} href={`https://maxiozonas.github.io/${locale}/`} />
-    <link rel="alternate" hreflang={otherLocale} href={`https://maxiozonas.github.io/${otherLocale}/`} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang={locale} href={canonical} />
+    <link rel="alternate" hreflang={otherLocale} href={`https://maxiozonas.github.io${alternatePath}`} />
     <link rel="alternate" hreflang="x-default" href="https://maxiozonas.github.io/" />
 
     <meta property="og:type" content="profile" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={`https://maxiozonas.github.io/${locale}/`} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={`https://maxiozonas.github.io${image ?? "/projects/catalejo-travel.png"}`} />
+    <meta name="twitter:card" content="summary_large_image" />
 
     <link
       rel="icon"
@@ -45,14 +52,16 @@ const description = content[locale].intro;
       (function () {
         try {
           var theme = localStorage.getItem("theme");
-          document.documentElement.setAttribute("data-theme", theme === "light" ? "light" : "dark");
+          var system = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          document.documentElement.setAttribute("data-theme", theme === "light" || theme === "dark" ? theme : system);
         } catch (error) {
-          document.documentElement.setAttribute("data-theme", "dark");
+          document.documentElement.setAttribute("data-theme", window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
         }
       })();
     </script>
   </head>
   <body>
+    <Atmosphere client:idle locale={locale}/>
     <slot />
   </body>
 </html>

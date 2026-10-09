@@ -1,0 +1,18 @@
+---
+import type { Locale } from "../data/content";
+import { content, profile } from "../data/content";
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const c = content[locale];
+---
+<footer class="site-footer page-shell">
+  <div>
+    <a class="footer-name" href={`/${locale}/`}>{profile.name}</a>
+    <p>{locale === "es" ? "Desarrollo de software y gestión de proyectos." : "Software development and project management."}</p>
+  </div>
+  <div class="footer-downloads">
+    <span>{c.actions.downloadLabel}</span>
+    <a href="/cv-maximo-ozonas-es.pdf" download>Español <span aria-hidden="true">↓</span></a>
+    <a href="/cv-maximo-ozonas-en.pdf" download>English <span aria-hidden="true">↓</span></a>
+  </div>
+</footer>

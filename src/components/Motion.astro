@@ -1,0 +1,25 @@
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+  const media = gsap.matchMedia();
+  media.add('(prefers-reduced-motion: no-preference)', () => {
+    gsap.from('[data-hero-enter]', { opacity: 0, y: 24, duration: .8, stagger: .1, delay: .15, clearProps: 'all' });
+    gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach(element => gsap.from(element, { opacity: 0, y: 42, duration: .9, ease: 'power3.out', clearProps: 'all', scrollTrigger: { trigger: element, start: 'top 94%', once: true } }));
+  });
+  media.add('(min-width: 1024px) and (min-height: 700px) and (prefers-reduced-motion: no-preference)', () => {
+    const intro = document.querySelector<HTMLElement>('.experience-intro');
+    const list = document.querySelector<HTMLElement>('.experience-list');
+    if (intro && list) ScrollTrigger.create({ trigger: intro, start: 'top top+=115', endTrigger: list, end: () => `bottom top+=${intro.offsetHeight + 115}`, pin: true, pinSpacing: false, invalidateOnRefresh: true });
+  });
+  window.addEventListener('pagehide', event => { if (!event.persisted) media.revert(); });
+  window.addEventListener('pageshow', event => { if (event.persisted) ScrollTrigger.refresh(); });
+  document.querySelector<HTMLButtonElement>('[data-band-pause]')?.addEventListener('click', event => {
+    const button = event.currentTarget as HTMLButtonElement;
+    const paused = button.getAttribute('aria-pressed') !== 'true';
+    button.setAttribute('aria-pressed', String(paused)); document.querySelector('[data-technology-band]')?.classList.toggle('is-paused', paused);
+    const es = document.documentElement.lang === 'es';
+    button.setAttribute('aria-label', paused ? (es ? 'Reanudar animación de tecnologías' : 'Resume technology animation') : (es ? 'Pausar animación de tecnologías' : 'Pause technology animation'));
+    button.querySelector('[data-pause-label]')!.textContent = paused ? (es ? 'Reanudar' : 'Resume') : (es ? 'Pausar' : 'Pause');
+  });
+</script>

@@ -1,0 +1,11 @@
+---
+import type { Locale } from '../data/content';
+import { content } from '../data/content';
+import PortfolioNav from './PortfolioNav';
+interface Props { locale: Locale; detail?: boolean; }
+const { locale, detail = false } = Astro.props;
+const alternatePath = Astro.url.pathname.replace(`/${locale}/`, `/${locale === 'es' ? 'en' : 'es'}/`);
+const projects = content[locale].projects.map(({ name, slug, type }) => ({ name, slug, type }));
+---
+<a class="skip-link" href="#main-content">{locale === 'es' ? 'Saltar al contenido' : 'Skip to content'}</a>
+<header class="site-header page-shell"><PortfolioNav client:load locale={locale} detail={detail} alternatePath={alternatePath} projects={projects}/><noscript><nav class="flex justify-center gap-6 py-4" aria-label="Navigation"><a href={`/${locale}/#projects`}>{content[locale].nav.projects}</a><a href={`/${locale}/#experience`}>{content[locale].nav.experience}</a><a href={`/${locale}/#contact`}>{content[locale].nav.contact}</a></nav></noscript></header>

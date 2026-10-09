@@ -1,0 +1,60 @@
+import { useEffect, useRef, useState } from 'react';
+import { gsap } from 'gsap';
+import { IconArrowUpRight, IconMenu2, IconMoon, IconSun } from '@tabler/icons-react';
+import { Button, buttonVariants } from './ui/button';
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from './ui/navigation-menu';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
+import type { Locale } from '@/data/content';
+interface Props { locale: Locale; detail?: boolean; alternatePath: string; projects: { name: string; slug: string; type: string }[]; }
+export default function PortfolioNav({ locale, detail = false, alternatePath, projects }: Props) {
+  const es = locale === 'es';
+  const [open, setOpen] = useState(false);
+  const navRef = useRef<HTMLDivElement>(null);
+  const home = detail ? `/${locale}/` : '';
+  // Circular fill choreography adapted from React Bits Pill Nav. shadcn owns
+  // keyboard navigation, popup behavior and the mobile focus trap.
+  useEffect(() => {
+    const media = gsap.matchMedia();
+    media.add('(prefers-reduced-motion: no-preference)', () => {
+      const cleanups = Array.from(navRef.current!.querySelectorAll<HTMLElement>('[data-pill]')).map(link => {
+        const animation = gsap.fromTo(link.querySelector('.pill-circle'), { scale: 0 }, { scale: 1, duration: .45, ease: 'power3.out', paused: true });
+        const enter = () => animation.play(); const leave = () => animation.reverse();
+        link.addEventListener('mouseenter', enter); link.addEventListener('mouseleave', leave); link.addEventListener('focus', enter); link.addEventListener('blur', leave);
+        return () => { link.removeEventListener('mouseenter', enter); link.removeEventListener('mouseleave', leave); link.removeEventListener('focus', enter); link.removeEventListener('blur', leave); animation.kill(); };
+      });
+      return () => cleanups.forEach(fn => fn());
+    });
+    return () => media.revert();
+  }, []);
+  const toggleTheme = () => {
+    const root = document.documentElement;
+    const theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = theme;
+    try { localStorage.setItem('theme', theme); } catch {}
+  };
+  const pill = (label: string) => <><span className="pill-circle" aria-hidden="true"/><span className="relative">{label}</span></>;
+  return <div ref={navRef} className="nav-shell mx-auto flex items-center justify-between gap-3 rounded-full bg-card/95 p-2 shadow-lg shadow-background/30 backdrop-blur-xl">
+    <a href={`/${locale}/`} className="brand-capsule flex items-center gap-3 pr-2" aria-label={`mo. Máximo Ozonas Full Stack Developer, ${es ? 'inicio' : 'home'}`}><span className="brand-monogram flex size-11 items-center justify-center rounded-full bg-primary text-lg font-bold tracking-tighter text-primary-foreground">mo.</span><span className="brand-name text-sm font-bold">Máximo Ozonas<span className="block text-xs font-normal text-muted-foreground">Full Stack Developer</span></span></a>
+    <div className="hidden md:block"><NavigationMenu aria-label={es ? 'Navegación principal' : 'Main navigation'}><NavigationMenuList>
+      <NavigationMenuItem><NavigationMenuLink className="nav-pill" href={`${home}#experience`} data-pill>{pill(es ? 'Experiencia' : 'Experience')}</NavigationMenuLink></NavigationMenuItem>
+      <NavigationMenuItem><NavigationMenuTrigger className="nav-pill" data-pill>{pill(es ? 'Proyectos' : 'Projects')}</NavigationMenuTrigger><NavigationMenuContent>
+        <ul className="grid w-[480px] grid-cols-2 gap-2 p-3">
+          {projects.map(project => <li key={project.slug}><NavigationMenuLink href={`/${locale}/projects/${project.slug}/`} className="work-menu-link"><img src={`/projects/${project.slug}-480.webp`} alt="" width={120} height={90} className="aspect-video w-full rounded-lg object-cover"/><span className="font-bold">{project.name}</span><span className="text-xs text-muted-foreground">{project.type}</span></NavigationMenuLink></li>)}
+          <li className="col-span-2"><NavigationMenuLink href={`${home}#projects`}>{es ? 'Todos los proyectos' : 'All projects'}<IconArrowUpRight stroke={1.5}/></NavigationMenuLink></li>
+        </ul>
+      </NavigationMenuContent></NavigationMenuItem>
+      <NavigationMenuItem><NavigationMenuLink className="nav-pill" href={`${home}#contact`} data-pill>{pill(es ? 'Contacto' : 'Contact')}</NavigationMenuLink></NavigationMenuItem>
+    </NavigationMenuList></NavigationMenu></div>
+    <div className="flex shrink-0 items-center gap-1">
+      <a href={alternatePath} className={`${buttonVariants({ variant: 'ghost', size: 'icon' })} language-toggle`} aria-label={es ? 'Switch to English' : 'Cambiar a español'} hrefLang={es ? 'en' : 'es'} onClick={() => { try { localStorage.setItem('lang', es ? 'en' : 'es'); } catch {} }}>{es ? 'EN' : 'ES'}</a>
+      <Button variant="ghost" size="icon" id="theme-toggle" aria-label={es ? 'Cambiar tema' : 'Toggle theme'} onClick={toggleTheme}><IconSun className="theme-sun"/><IconMoon className="theme-moon"/></Button>
+      <div className="md:hidden"><Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger render={<Button variant="secondary" size="icon" aria-label={es ? 'Abrir menú' : 'Open menu'}/> }><IconMenu2 /></SheetTrigger>
+        <SheetContent><SheetHeader className="px-7 pt-16"><SheetTitle>{es ? 'Explorá el portfolio' : 'Explore the portfolio'}</SheetTitle><SheetDescription>Máximo Ozonas · Full Stack Developer</SheetDescription></SheetHeader>
+          <nav aria-label={es ? 'Navegación móvil' : 'Mobile navigation'} className="mobile-nav flex flex-col gap-3 px-7 py-8">{[{ id: 'experience', label: es ? 'Experiencia' : 'Experience' }, { id: 'projects', label: es ? 'Proyectos' : 'Projects' }, { id: 'contact', label: es ? 'Contacto' : 'Contact' }].map(item => <a key={item.id} href={`${home}#${item.id}`} onClick={() => setOpen(false)} className="flex min-h-14 items-center justify-between text-2xl font-bold tracking-tight">{item.label}<IconArrowUpRight stroke={1.5}/></a>)}</nav>
+          <a className="mx-7 mt-auto mb-8 text-sm text-muted-foreground" href={`/${locale}/#contact`}>maxiozonas10@gmail.com</a>
+        </SheetContent>
+      </Sheet></div>
+    </div>
+  </div>;
+}

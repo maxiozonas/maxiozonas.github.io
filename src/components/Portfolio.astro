@@ -1,380 +1,52 @@
 ---
-import type { Locale } from "../data/content";
-import { content, profile } from "../data/content";
-import Controls from "./Controls.astro";
-
-interface Props {
-  locale: Locale;
-}
-
+import type { Locale } from '../data/content';
+import { content, profile } from '../data/content';
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import Motion from './Motion.astro';
+import HeroTitle from './HeroTitle';
+import HeroActions from './HeroActions';
+import MagicBento from './reactbits/MagicBento';
+import ScrollReveal from './reactbits/ScrollReveal';
+import ScrollStack from './reactbits/ScrollStack';
+import { buttonVariants } from './ui/button';
+interface Props { locale: Locale; }
 const { locale } = Astro.props;
 const c = content[locale];
-const cvPath = `/cv-maximo-ozonas-${locale}.pdf`;
-const [firstName, lastName] = profile.name.split(" ");
-const initialProject = c.projects[0]!;
-const secondaryProject = c.projects[1]!;
-const carouselData = JSON.stringify(c.projects).replace(/</g, "\\u003c");
+const es = locale === 'es';
+const technologies = ['TypeScript', 'React', 'Next.js', 'Laravel', '.NET', 'Docker', 'React Native', 'PostgreSQL'];
 ---
-
-<a class="skip-link" href="#main-content">{locale === "es" ? "Saltar al contenido" : "Skip to content"}</a>
-
-<header class="site-header">
-  <a class="brand-capsule" href={`/${locale}/`} aria-label={profile.name}>
-    <span class="brand-monogram" aria-hidden="true">MO</span>
-    <span class="brand-name">{profile.name}</span>
-  </a>
-  <details class="nav-capsule" open>
-    <summary>{locale === "es" ? "Menú" : "Menu"}</summary>
-    <div class="nav-capsule-content">
-      <nav class="site-nav" aria-label={locale === "es" ? "Navegación principal" : "Main navigation"}>
-        <a href="#experience">{c.nav.experience}</a>
-        <a href="#projects">{c.nav.projects}</a>
-        <a href="#contact">{c.nav.contact}</a>
-      </nav>
-      <Controls locale={locale} />
-    </div>
-  </details>
-</header>
-<script is:inline>
-  if (window.matchMedia("(max-width: 760px)").matches) {
-    document.querySelector(".nav-capsule")?.removeAttribute("open");
-  }
-</script>
-
-<main id="main-content">
-  <section class="hero page-shell" id="top" aria-labelledby="hero-title">
-    <div class="hero-copy">
-      <h1 id="hero-title" class="hero-name">
-        <span>{firstName}</span>
-        <span>{lastName}<span class="accent-dot" aria-hidden="true">.</span></span>
-      </h1>
-      <p class="hero-role">{c.heroRole}</p>
-      <p class="hero-intro">{c.intro}</p>
-      <div class="hero-actions">
-        <a class="button button-primary" href="#experience">{c.actions.experience}<span aria-hidden="true">→</span></a>
-        <a class="button button-secondary" href={cvPath} download>
-          {c.actions.download}<span class="action-mark" aria-hidden="true">↓</span>
-        </a>
-      </div>
-    </div>
-
-    <div class="project-carousel" data-project-carousel role="region" aria-roledescription="carousel" aria-label={c.carouselLabel} tabindex="0">
-      <div class="project-stage" aria-hidden="true">
-        <div class="project-sheet project-sheet-back">
-          <img
-            src={secondaryProject.image}
-            alt=""
-            width="1440"
-            height="1080"
-            data-project-back-image
-          />
-        </div>
-        <a class="project-frame project-frame-front" href={initialProject.url} target="_blank" rel="noreferrer" tabindex="-1" data-project-front-link>
-          <img
-            src={initialProject.image}
-            alt=""
-            width="1440"
-            height="1080"
-            fetchpriority="high"
-            data-project-front-image
-          />
-        </a>
-      </div>
-      <div class="carousel-footer">
-        <div class="carousel-caption" aria-live="polite" aria-atomic="true">
-          <a class="carousel-project-name" href={initialProject.url} target="_blank" rel="noreferrer" data-project-name>{initialProject.name}</a>
-          <p data-project-type>{initialProject.type}</p>
-        </div>
-        <div class="carousel-controls">
-          <button type="button" class="carousel-button" data-project-prev aria-label={c.carouselPrevious}>←</button>
-          <span class="carousel-count"><span data-project-current>01</span><span aria-hidden="true"> / {String(c.projects.length).padStart(2, "0")}</span></span>
-          <button type="button" class="carousel-button" data-project-next aria-label={c.carouselNext}>→</button>
-        </div>
-      </div>
-    </div>
-    <script type="application/json" data-project-data set:html={carouselData} is:inline></script>
+<Header locale={locale}/>
+<main id="main-content" class="w-full max-w-full overflow-x-clip">
+  <section class="hero page-shell relative flex flex-col items-center justify-center text-center" id="top" aria-labelledby="hero-title">
+    <p class="hero-role mb-7 text-sm text-muted-foreground md:text-base" data-hero-enter>{profile.name}<span class="mx-3 text-brand" aria-hidden="true">/</span>{c.heroRole}</p>
+    <HeroTitle client:load locale={locale}/>
+    <p class="hero-intro mx-auto mt-7 max-w-lg text-base leading-relaxed text-muted-foreground md:mt-9 md:text-lg" data-hero-enter>{es ? 'Desarrollo productos digitales, conecto sistemas y acompaño equipos. De la primera idea a producción.' : 'I build digital products, connect systems and support teams. From the first idea to production.'}</p>
+    <div class="mt-8 md:mt-10" data-hero-enter><HeroActions client:load locale={locale}/></div>
   </section>
-
-  <section class="featured-experience page-shell" aria-label={c.labels.featuredExperience}>
-    <div class="featured-heading">
-      <p class="section-kicker">{c.labels.featuredExperience}</p>
-      <span>{c.labels.ongoing}</span>
-    </div>
-    <div class="featured-grid">
-      {c.jobs.map((job, index) => (
-        <a class="featured-item" href={`#experience-${index === 0 ? "gili" : "food-partners"}`}>
-          <span class="featured-main">
-            <span class="featured-name">{job.company}</span>
-            <span class="featured-summary">{job.summary}</span>
-          </span>
-          <span class="featured-arrow" aria-hidden="true">↗</span>
-        </a>
-      ))}
-    </div>
+  <section class="experience-section page-shell grid gap-12 py-24 lg:grid-cols-[.85fr_1.15fr] lg:gap-24 lg:py-40" id="experience" aria-labelledby="experience-title">
+    <div class="experience-intro self-start"><p class="mb-6 text-sm text-muted-foreground">{es ? 'Experiencia en equipos y operaciones reales' : 'Experience with real teams and operations'}</p><h2 id="experience-title" class="section-title">{es ? 'Más allá' : 'Beyond'}<br/><span class="text-muted-foreground">{es ? 'del código.' : 'the code.'}</span></h2><p class="mt-7 max-w-sm text-base leading-relaxed text-muted-foreground">{c.experienceIntro}</p><a class="text-link mt-8 inline-flex min-h-11 items-center gap-5 font-bold" href={`/cv-maximo-ozonas-${locale}.pdf`} download>{c.actions.download}<span aria-hidden="true">↓</span></a></div>
+    <ScrollStack client:visible>{c.jobs.map((job, index) => <article class="experience-card scroll-stack-card rounded-3xl bg-card p-7 md:p-10" id={`experience-${index === 0 ? 'gili' : 'food-partners'}`} data-reveal>
+      <div class="experience-meta mb-6 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground"><p>{job.role}</p><p>{job.period}</p></div><h3 class="text-3xl font-bold tracking-tight md:text-4xl">{job.company}</h3><p class="mt-6 text-xl leading-snug">{job.summary}</p><p class="mt-5 text-base leading-relaxed text-muted-foreground">{job.description}</p>
+      <details class="experience-details mt-6 rounded-2xl bg-secondary px-5"><summary class="flex min-h-14 cursor-pointer items-center justify-between gap-4 text-sm font-bold">{es ? 'Responsabilidades y alcance' : 'Responsibilities and scope'}<span aria-hidden="true">+</span></summary><div class="pb-6 text-sm leading-relaxed text-muted-foreground"><ul class="flex list-disc flex-col gap-3 pl-4">{job.outcomes.map(outcome => <li>{outcome}</li>)}</ul>{job.flow && <div class="mt-6"><h4 class="mb-3 font-bold">{es ? 'Trazabilidad del proceso' : 'Process traceability'}</h4><ol class="flex list-decimal flex-col gap-2 pl-4">{job.flow.map(step => <li>{step}</li>)}</ol></div>}</div></details>
+      <ul class="technology-list mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground" aria-label={c.labels.technologies}>{job.capabilities.map(skill => <li>{skill}</li>)}</ul><p class="mt-5 text-xs text-muted-foreground">{c.labels.ongoing}</p>
+    </article>)}</ScrollStack>
   </section>
-
-  <section class="experience-section page-shell" id="experience" aria-labelledby="experience-title">
-    <div class="experience-intro">
-      <p class="section-kicker">{c.nav.experience}</p>
-      <h2 id="experience-title" class="experience-sticky">{c.experienceTitle}</h2>
-      <p class="section-lede">{c.experienceIntro}</p>
-      <a class="text-link" href="#projects">{c.experienceLink}<span aria-hidden="true">↘</span></a>
-    </div>
-
-    <div class="experience-list">
-      {c.jobs.map((job, index) => (
-        <article class="experience-card" id={`experience-${index === 0 ? "gili" : "food-partners"}`} data-experience-card>
-          <div class="experience-meta">
-            <p class="section-kicker">{job.role}</p>
-            <p class="experience-period">{job.period}</p>
-          </div>
-          <div class="company-heading">
-            <div>
-              <h3>{job.company}</h3>
-              <p class="experience-summary">{job.summary}</p>
-            </div>
-            <span class="status-label">{c.labels.ongoing}</span>
-          </div>
-          <p class="experience-description">{job.description}</p>
-
-          {job.flow && (
-            <ol class="process-flow" aria-label={locale === "es" ? "Etapas del proceso productivo" : "Production process stages"}>
-              {job.flow.map((step) => <li>{step}</li>)}
-            </ol>
-          )}
-
-          <ul class="outcome-list">
-            {job.outcomes.map((outcome) => <li>{outcome}</li>)}
-          </ul>
-
-          <div class="technology-row">
-            <span class="section-kicker">{c.labels.technologies}</span>
-            <ul class="technology-list">
-              {job.capabilities.map((skill) => <li>{skill}</li>)}
-            </ul>
-          </div>
-        </article>
-      ))}
-    </div>
+  <section id="projects" class="projects-section page-shell pb-20 pt-10 md:pb-32 md:pt-16" aria-labelledby="projects-title">
+    <div class="mb-10 flex flex-col justify-between gap-5 md:mb-14 md:flex-row md:items-end"><h2 id="projects-title" class="section-title" data-reveal>{es ? 'Ideas que ya' : 'Ideas already'}<br/><span class="text-muted-foreground">{es ? 'están afuera.' : 'out in the world.'}</span></h2><p class="max-w-xs text-base leading-relaxed text-muted-foreground">{es ? 'Proyectos de clientes desarrollados con Xenova. Cada uno, un problema distinto.' : 'Client projects built with Xenova. Each one, a different problem.'}</p></div>
+    <MagicBento client:visible projects={c.projects} locale={locale}/>
   </section>
-
-  <section class="projects-section page-shell" id="projects" aria-labelledby="projects-title">
-    <div class="projects-heading">
-      <div>
-        <p class="section-kicker">{c.labels.selectedWork}</p>
-        <h2 id="projects-title">{c.projectsTitle}</h2>
-      </div>
-      <p class="section-lede">{c.projectsIntro}</p>
-    </div>
-    <div class="projects-grid">
-      {c.projects.map((project) => (
-        <article class="project-card">
-          <img
-            class="project-card-image"
-            src={project.image}
-            alt={project.imageAlt}
-            width="1440"
-            height="1080"
-            loading="lazy"
-            decoding="async"
-          />
-          <div class="project-card-content">
-            <h3>{project.name}</h3>
-            <p class="project-description">{project.description}</p>
-            <p class="project-stack-text"><span>{c.labels.technologies}</span>{project.stack.join(" · ")}</p>
-            <div class="project-card-actions">
-              <details class="project-details">
-                <summary>{c.actions.details}</summary>
-                <div class="project-detail-content">
-                  <p>{locale === "es" ? "Alcance del trabajo" : "Project scope"}</p>
-                  <ul>{project.details.map((detail) => <li>{detail}</li>)}</ul>
-                </div>
-              </details>
-              <a class="project-visit" href={project.url} target="_blank" rel="noreferrer">
-                {c.actions.visit}<span aria-hidden="true">↗</span>
-              </a>
-            </div>
-          </div>
-        </article>
-      ))}
-    </div>
+  <section class="profile-section page-shell py-24 md:py-40" aria-labelledby="profile-title">
+    <h2 id="profile-title" class="mb-10 text-sm text-muted-foreground">{es ? 'El contexto también se construye.' : 'Context is part of the craft.'}</h2>
+    <div class="grid items-center gap-10 lg:grid-cols-[1fr_200px] lg:gap-16"><ScrollReveal client:visible text={es ? 'Entender cómo trabaja un equipo es parte de construir buen software. Conecto desarrollo, arquitectura y gestión para resolver necesidades reales.' : 'Understanding how a team works is part of building good software. I connect development, architecture and project management to solve real needs.'}/><img class="profile-object hidden aspect-square rounded-full object-cover lg:block" src="/images/systems-study.webp" alt="" width="200" height="200" loading="lazy"/></div>
+    <div class="mt-16 grid gap-8 md:grid-cols-3 md:gap-12">{[{ title: es ? 'Web y sistemas' : 'Web and systems', items: [...c.skills[0]!.items, ...c.skills[1]!.items] }, { title: es ? 'Móvil y datos' : 'Mobile and data', items: [...c.skills[2]!.items, ...c.skills[3]!.items] }, { title: es ? 'Infraestructura y entrega' : 'Infrastructure and delivery', items: [...c.skills[4]!.items, ...c.skills[5]!.items] }].map(group => <div><h3 class="mb-4 text-lg font-bold">{group.title}</h3><p class="text-base leading-relaxed text-muted-foreground">{group.items.join(', ')}</p></div>)}</div>
+    <div class="mt-12 grid gap-8 md:grid-cols-2"><div><h3 class="mb-3 text-sm font-bold">{c.labels.education}</h3><p class="text-sm text-muted-foreground">{c.degree}</p></div><div><h3 class="mb-3 text-sm font-bold">{c.labels.languages}</h3><p class="text-sm text-muted-foreground">{c.languages.map(language => `${language.name}: ${language.level}`).join(' / ')}</p></div></div>
   </section>
-
-  <section class="contact-section page-shell" id="contact" aria-labelledby="contact-title">
-    <div class="contact-primary">
-      <p class="section-kicker">{c.nav.contact}</p>
-      <h2 id="contact-title">
-        <span>{c.contactTitle[0]}</span>
-        <span class="accent-text">{c.contactTitle[1]}</span>
-      </h2>
-      <p class="contact-intro">{c.contactIntro}</p>
-      <a class="button button-primary contact-button" href={`mailto:${profile.email}`}>
-        {c.actions.email}<span class="action-mark" aria-hidden="true">↗</span>
-      </a>
-      <div class="social-links">
-        <a href={profile.github} target="_blank" rel="noreferrer">{c.actions.github}<span aria-hidden="true">↗</span></a>
-        <a href={profile.linkedin} target="_blank" rel="noreferrer">{c.actions.linkedin}<span aria-hidden="true">↗</span></a>
-      </div>
-      <p class="location-note">{c.labels.location}</p>
-    </div>
-
-    <div class="contact-details">
-      <div class="detail-group">
-        <h3>{c.labels.skills}</h3>
-        <div class="skills-grid">
-          {c.skills.map((group) => (
-            <div class="skill-group">
-              <h4>{group.title}</h4>
-              <p>{group.items.join(" · ")}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div class="credentials-grid">
-        <div class="detail-group">
-          <h3>{c.labels.education}</h3>
-          <p class="credential-copy">{c.degree}</p>
-        </div>
-        <div class="detail-group">
-          <h3>{c.labels.languages}</h3>
-          <ul class="language-list">
-            {c.languages.map((language) => <li><span>{language.name}</span><span>{language.level}</span></li>)}
-          </ul>
-        </div>
-      </div>
-    </div>
+  <div class="technology-band relative overflow-hidden py-10" data-technology-band><div class="technology-track flex w-max" aria-hidden="true">{[0, 1].map(() => <div class="technology-set flex items-center gap-12 pr-12">{technologies.map(technology => <span class="whitespace-nowrap text-4xl font-bold tracking-tight text-muted-foreground md:text-6xl">{technology}</span>)}</div>)}</div><p class="sr-only">{c.labels.technologies}: {technologies.join(', ')}</p><button class="band-pause absolute right-6 bottom-0 min-h-8 rounded-full bg-secondary px-3 text-xs" type="button" aria-pressed="false" aria-label={es ? 'Pausar animación de tecnologías' : 'Pause technology animation'} data-band-pause><span data-pause-label>{es ? 'Pausar' : 'Pause'}</span></button></div>
+  <section class="contact-section page-shell py-24 md:py-40" id="contact" aria-labelledby="contact-title">
+    <div class="contact-panel rounded-3xl bg-primary p-7 text-primary-foreground md:p-16"><p class="mb-8 text-sm">{es ? '¿Tenés una idea en mente?' : 'Have something in mind?'}</p><h2 id="contact-title" class="contact-title font-bold tracking-tighter" data-reveal>{es ? 'Hagamos que' : 'Let’s make'}<br/>{es ? 'funcione.' : 'it work.'}</h2><div class="mt-10 flex flex-col justify-between gap-8 md:flex-row md:items-end"><a class="contact-email text-lg font-bold underline underline-offset-8 md:text-2xl" href={`mailto:${profile.email}`}>{profile.email}</a><a class={buttonVariants({ variant: 'inverse', size: 'lg' })} href={`mailto:${profile.email}`}>{c.actions.email}<span aria-hidden="true">↗</span></a></div></div>
+    <div class="mt-8 flex flex-wrap justify-between gap-6 text-sm"><p class="text-muted-foreground">{es ? 'Bahía Blanca, Argentina. Abierto a trabajar en remoto.' : 'Bahía Blanca, Argentina. Open to remote work.'}</p><div class="flex gap-7"><a class="min-h-11" href={profile.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a><a class="min-h-11" href={profile.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div></div>
   </section>
 </main>
-
-<footer class="site-footer page-shell">
-  <div>
-    <a class="footer-name" href="#top">{profile.name}</a>
-    <p>{c.eyebrow}</p>
-  </div>
-  <div class="footer-downloads">
-    <span>{c.actions.downloadLabel}</span>
-    <a href="/cv-maximo-ozonas-es.pdf" download>Español <span aria-hidden="true">↓</span></a>
-    <a href="/cv-maximo-ozonas-en.pdf" download>English <span aria-hidden="true">↓</span></a>
-  </div>
-</footer>
-
-<script>
-  import { gsap } from "gsap";
-  import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-  interface CarouselProject {
-    name: string;
-    url: string;
-    image: string;
-    imageAlt: string;
-    type: string;
-  }
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  const navCapsule = document.querySelector<HTMLDetailsElement>(".nav-capsule");
-  navCapsule?.addEventListener("click", (event) => {
-    if (!window.matchMedia("(max-width: 760px)").matches || !(event.target instanceof Element)) return;
-    const link = event.target.closest<HTMLAnchorElement>('.site-nav a[href^="#"]');
-    if (!link) return;
-    const destination = document.getElementById(decodeURIComponent(link.hash.slice(1)));
-    if (!destination) return;
-
-    requestAnimationFrame(() => {
-      navCapsule.open = false;
-      if (!destination.hasAttribute("tabindex")) destination.setAttribute("tabindex", "-1");
-      destination.focus({ preventScroll: true });
-    });
-  });
-
-  const carousel = document.querySelector<HTMLElement>("[data-project-carousel]");
-  const projectData = document.querySelector<HTMLScriptElement>("[data-project-data]");
-  const projects: CarouselProject[] = projectData?.textContent ? JSON.parse(projectData.textContent) : [];
-  const previousButton = carousel?.querySelector<HTMLButtonElement>("[data-project-prev]");
-  const nextButton = carousel?.querySelector<HTMLButtonElement>("[data-project-next]");
-  const currentCount = carousel?.querySelector<HTMLElement>("[data-project-current]");
-  const frontImage = carousel?.querySelector<HTMLImageElement>("[data-project-front-image]");
-  const backImage = carousel?.querySelector<HTMLImageElement>("[data-project-back-image]");
-  const frontLink = carousel?.querySelector<HTMLAnchorElement>("[data-project-front-link]");
-  const captionLink = carousel?.querySelector<HTMLAnchorElement>("[data-project-name]");
-  const captionType = carousel?.querySelector<HTMLElement>("[data-project-type]");
-  let activeProject = 0;
-
-  function renderProject(index: number) {
-    if (!projects.length || !frontImage || !backImage || !frontLink || !captionLink || !captionType || !currentCount) return;
-    activeProject = (index + projects.length) % projects.length;
-    const active = projects[activeProject]!;
-    const secondary = projects[(activeProject + 1) % projects.length]!;
-    frontImage.src = active.image;
-    frontImage.alt = active.imageAlt;
-    frontLink.href = active.url;
-    captionLink.href = active.url;
-    captionLink.textContent = active.name;
-    captionType.textContent = active.type;
-    backImage.src = secondary.image;
-    backImage.alt = "";
-    currentCount.textContent = String(activeProject + 1).padStart(2, "0");
-  }
-
-  function changeProject(direction: number) {
-    if (!projects.length) return;
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const frame = carousel?.querySelector<HTMLElement>(".project-frame-front");
-    if (reduceMotion || !frame) {
-      renderProject(activeProject + direction);
-      return;
-    }
-    gsap.to(frame, {
-      rotateY: direction > 0 ? -10 : 10,
-      duration: 0.14,
-      ease: "power1.in",
-      onComplete: () => {
-        renderProject(activeProject + direction);
-        gsap.fromTo(frame, { rotateY: direction > 0 ? 8 : -8 }, { rotateY: 0, duration: 0.32, ease: "power2.out" });
-      },
-    });
-  }
-
-  previousButton?.addEventListener("click", () => changeProject(-1));
-  nextButton?.addEventListener("click", () => changeProject(1));
-  carousel?.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowLeft") {
-      event.preventDefault();
-      changeProject(-1);
-    } else if (event.key === "ArrowRight") {
-      event.preventDefault();
-      changeProject(1);
-    }
-  });
-
-  const scrollMotion = gsap.matchMedia();
-  scrollMotion.add("(min-width: 960px) and (min-height: 720px) and (prefers-reduced-motion: no-preference)", () => {
-    const pinnedHeading = document.querySelector<HTMLElement>(".experience-sticky");
-    const experience = document.querySelector<HTMLElement>("#experience");
-    if (pinnedHeading && experience) {
-      ScrollTrigger.create({
-        trigger: experience,
-        start: "top top+=104",
-        end: "bottom bottom",
-        pin: pinnedHeading,
-        pinSpacing: false,
-        invalidateOnRefresh: true,
-      });
-    }
-
-    const cards = gsap.utils.toArray<HTMLElement>("[data-experience-card]");
-    cards.slice(0, -1).forEach((card) => {
-      gsap.to(card, {
-        scale: 0.985,
-        transformOrigin: "top center",
-        ease: "none",
-        scrollTrigger: {
-          trigger: card,
-          start: "top top+=120",
-          end: "bottom top+=120",
-          scrub: true,
-        },
-      });
-    });
-  });
-</script>
+<Footer locale={locale}/>
+<Motion/>

@@ -1,0 +1,42 @@
+---
+import Base from "../../../layouts/Base.astro";
+import Header from "../../../components/Header.astro";
+import Footer from "../../../components/Footer.astro";
+import ProjectImage from "../../../components/ProjectImage.astro";
+import Motion from "../../../components/Motion.astro";
+import { content } from "../../../data/content";
+import type { Locale, Project } from "../../../data/content";
+export function getStaticPaths() {
+  return (["es", "en"] as Locale[]).flatMap((locale) => content[locale].projects.map((project, index, projects) => ({
+    params: { locale, slug: project.slug },
+    props: { locale, project, next: projects[(index + 1) % projects.length] },
+  })));
+}
+interface Props { locale: Locale; project: Project; next: Project; }
+const { locale, project, next } = Astro.props;
+const es = locale === "es";
+const c = content[locale];
+---
+<Base locale={locale} title={`${project.name} | Máximo Ozonas`} description={project.summary} image={project.image}>
+  <Header locale={locale} detail />
+  <main id="main-content" class="project-detail-page page-shell">
+    <a class="back-link" href={`/${locale}/#projects`}><span aria-hidden="true">←</span>{es ? "Volver a proyectos" : "Back to projects"}</a>
+    <div class="detail-heading">
+      <p class="project-type">{project.type}</p>
+      <h1 style={`view-transition-name: title-${project.slug}`}>{project.name}</h1>
+      <p class="detail-summary">{project.summary}</p>
+      <a class="button button-primary" href={project.url} target="_blank" rel="noopener noreferrer">{c.actions.visit}<span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="detail-image"><ProjectImage project={project} priority shared large /></div>
+    <section class="detail-scope" aria-labelledby="scope-title">
+      <div><h2 id="scope-title">{es ? "Alcance del trabajo" : "Project scope"}</h2><p>{project.description}</p></div>
+      <div class="detail-deliverables">{project.details.map((detail) => <p data-reveal>{detail}</p>)}<ul class="technology-list" aria-label={c.labels.technologies}>{project.stack.map((technology) => <li>{technology}</li>)}</ul></div>
+    </section>
+    <a class="next-project" href={`/${locale}/projects/${next.slug}/`}>
+      <div><p>{es ? "Siguiente proyecto" : "Next project"}</p><h2>{next.name}</h2></div>
+      <span aria-hidden="true">↗</span>
+    </a>
+  </main>
+  <Footer locale={locale} />
+  <Motion />
+</Base>

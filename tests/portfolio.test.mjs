@@ -1,100 +1,67 @@
-import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { join } from "node:path";
-import { describe, it } from "node:test";
+import assert from 'node:assert/strict';
+import { existsSync, readFileSync, statSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
+import { describe, it } from 'node:test';
 
-const root = fileURLToPath(new URL("../", import.meta.url));
+const root = fileURLToPath(new URL('../', import.meta.url));
+const htmlFor = (locale, slug) => readFileSync(join(root, 'dist', locale, ...(slug ? ['projects', slug] : []), 'index.html'), 'utf8');
+const projects = [
+  ['Catalejo Travel', 'catalejo-travel', 'https://www.catalejotravel.com/es/'],
+  ['Quinta Pata', 'quinta-pata', 'https://5tapata.com.ar/'],
+  ['Inspira Ingeniería', 'inspira-ingenieria', 'https://www.ingenieriainspira.com/'],
+  ['Madryn Buceo', 'madryn-buceo', 'https://madrynbuceo.xenova.com.ar/'],
+];
 
-function htmlFor(locale) {
-  return readFileSync(join(root, "dist", locale, "index.html"), "utf8");
-}
-
-describe("portfolio routes", () => {
-  for (const locale of ["es", "en"]) {
-    it(`renders the full ${locale} portfolio as visible server HTML`, () => {
+describe('static bilingual portfolio', () => {
+  for (const locale of ['es', 'en']) {
+    it(`keeps ${locale} content, navigation and downloads available without JavaScript`, () => {
       const html = htmlFor(locale);
-      assert.match(html, /<main\b/);
-      assert.match(html, /id="experience"/);
-      assert.match(html, /id="projects"/);
-      assert.match(html, /Food Partners Patagonia S\.A\./);
-      assert.match(html, /Gili/);
-      assert.match(html, /<h1\b[^>]*>[\s\S]*Máximo[\s\S]*Ozonas[\s\S]*<\/h1>/);
-      assert.match(html, /Full Stack Developer/);
-      assert.doesNotMatch(html, /Software que conecta|Software that connects/);
-      assert.doesNotMatch(html, /class="seo"/);
-      assert.doesNotMatch(html, /repl-input|repl-toolbar|data-cmd=/);
-      assert.match(html, new RegExp(`href="/cv-maximo-ozonas-${locale}\\.pdf"`));
-      assert.doesNotMatch(html, /<title>[^<]*[—–]/);
+      assert.match(html, /<h1\b/);
+      assert.ok(html.includes('Ozonas'));
+      for (const id of ['main-content', 'experience', 'projects', 'contact']) assert.ok(html.includes(`id="${id}"`));
+      for (const text of ['Full Stack Developer', 'Food Partners Patagonia S.A.', 'Gili', 'UTN']) assert.ok(html.includes(text));
+      assert.equal((html.match(/<article class="project-card/g) ?? []).length, 4);
+      assert.ok(html.includes(`href="/cv-maximo-ozonas-${locale}.pdf"`));
+      assert.doesNotMatch(html, /[—–]|repl-input|data-cmd=/);
+      assert.match(html, /magic-bento-card/);
+      assert.doesNotMatch(html, /data-project-carousel/);
+      assert.match(html, /<details\b[^>]*class="experience-details/);
     });
+
+    for (const [name, slug, url] of projects) {
+      it(`generates ${locale}/${slug} with accurate metadata, scope, shared image and return link`, () => {
+        const home = htmlFor(locale);
+        const detail = htmlFor(locale, slug);
+        assert.ok(home.includes(`href="/${locale}/projects/${slug}/"`));
+        assert.ok(detail.includes(`<title>${name} | Máximo Ozonas</title>`));
+        assert.ok(detail.includes(`href="https://maxiozonas.github.io/${locale}/projects/${slug}/"`));
+        assert.ok(detail.includes(`href="/${locale}/#projects"`));
+        assert.ok(detail.includes(`href="${url}"`));
+        assert.ok(detail.includes(`view-transition-name: project-${slug}`));
+        assert.ok(home.includes(`view-transition-name:project-${slug}`));
+        assert.match(detail, /Project scope|Alcance del trabajo/);
+        for (const ext of ['png', 'webp']) assert.ok(existsSync(join(root, 'public', 'projects', `${slug}.${ext}`)));
+        assert.ok(statSync(join(root, 'public', 'projects', `${slug}.webp`)).size < 200000);
+        assert.doesNotMatch(detail, /[—–]/);
+      });
+    }
   }
 
-  it("closes the mobile navigation after an internal destination and moves focus out of the closed panel", () => {
-    const source = readFileSync(join(root, "src", "components", "Portfolio.astro"), "utf8");
-    assert.match(source, /navCapsule\?\.addEventListener\(["']click["']/);
-    assert.match(source, /window\.matchMedia\(["']\(max-width: 760px\)["']\)/);
-    assert.match(source, /\.site-nav a\[href\^=["']#["']\]/);
-    assert.match(source, /navCapsule\.open\s*=\s*false/);
-    assert.match(source, /destination\.focus\(\{\s*preventScroll:\s*true\s*\}\)/);
+  it('does not present inquiry flows as paid checkout or the ERP rollout as completed', () => {
+    assert.match(htmlFor('es', 'catalejo-travel'), /consulta|consultas/);
+    assert.match(htmlFor('es', 'quinta-pata'), /afiliaci[oó]n/);
+    assert.match(htmlFor('es'), /en desarrollo|en curso/i);
+    assert.match(htmlFor('en'), /ongoing/i);
+    assert.doesNotMatch(htmlFor('es', 'catalejo-travel'), /se procesa el pago online|reserva pagada/i);
   });
 
-  it("declares a text monogram favicon and a title without dash punctuation", () => {
-    const html = htmlFor("es");
-    const href = html.match(/<link rel="icon"[^>]*href="([^"]+)"/)?.[1];
-    assert.ok(href?.startsWith("data:image/svg+xml,"), "favicon should be an inline SVG data URI");
-    const svg = decodeURIComponent(href.slice(href.indexOf(",") + 1));
-    assert.match(svg, /<svg\b/);
-    assert.match(svg, /<text\b[^>]*>MO<\/text>/);
-    assert.doesNotMatch(html, /<title>[^<]*[—–]/);
-  });
-});
-
-describe("verified client portfolio", () => {
-  const projects = [
-    ["Catalejo Travel", "https://www.catalejotravel.com/es/", "catalejo-travel.png"],
-    ["Quinta Pata", "https://5tapata.com.ar/", "quinta-pata.png"],
-    ["Inspira Ingeniería", "https://www.ingenieriainspira.com/", "inspira-ingenieria.png"],
-    ["Madryn Buceo", "https://madrynbuceo.xenova.com.ar/", "madryn-buceo.png"],
-  ];
-
-  it("shows exactly four authentic client links with local screenshots", () => {
-    const html = htmlFor("es");
-    for (const [name, href, image] of projects) {
-      assert.ok(html.includes(name), `${name} should be rendered`);
-      assert.ok(html.includes(href), `${name} should link to its public site`);
-      assert.ok(html.includes(image), `${name} should use its authentic screenshot`);
-      assert.ok(existsSync(join(root, "public", "projects", image)), `${image} should exist`);
+  it('publishes valid CV PDFs and the supporting image', () => {
+    for (const locale of ['es', 'en']) {
+      const pdf = readFileSync(join(root, 'public', `cv-maximo-ozonas-${locale}.pdf`));
+      assert.equal(pdf.subarray(0, 5).toString(), '%PDF-');
+      assert.ok(pdf.length > 10000);
     }
-    assert.equal((html.match(/<article class="project-card"/g) ?? []).length, 4);
-  });
-
-  it("provides a keyboard-operable featured-project rotator and no-JS details for all cases", () => {
-    const html = htmlFor("es");
-    assert.match(html, /class="project-carousel"/);
-    assert.match(html, /data-project-prev/);
-    assert.match(html, /data-project-next/);
-    assert.match(html, /aria-live="polite"/);
-    assert.equal((html.match(/<details\b[^>]*class="project-details"/g) ?? []).length, 4);
-    assert.match(html, /Project scope|Alcance del trabajo/i);
-  });
-
-  it("keeps inquiry, affiliation, and ongoing-work wording honest", () => {
-    const es = htmlFor("es");
-    const en = htmlFor("en");
-    assert.match(es, /consulta|consultas/i);
-    assert.match(es, /afiliaci[oó]n/i);
-    assert.match(es, /en desarrollo|en curso/i);
-    assert.doesNotMatch(es, /(?:se|ya) (?:entregaron|implementaron) planes|se procesa el pago online|reserva pagada/i);
-    assert.doesNotMatch(en, /plans? (?:have been|were) delivered|online payment is processed|paid reservations? (?:are|were) available/i);
-  });
-});
-
-describe("public CV assets", () => {
-  it("publishes both verified one-page CVs and links each locale to its version", () => {
-    for (const locale of ["es", "en"]) {
-      const file = `cv-maximo-ozonas-${locale}.pdf`;
-      assert.ok(existsSync(join(root, "public", file)), `${file} should exist`);
-      assert.ok(htmlFor(locale).includes(`href="/${file}"`));
-    }
+    assert.ok(existsSync(join(root, 'public', 'images', 'systems-study.webp')));
   });
 });

@@ -1,0 +1,20 @@
+---
+import type { Project } from "../data/content";
+import { projectSrcset, previewSizes } from "../lib/project-images";
+interface Props { project: Project; priority?: boolean; shared?: boolean; large?: boolean; }
+const { project, priority = false, shared = false, large = false } = Astro.props;
+---
+<picture>
+  <source srcset={projectSrcset(project.slug)} sizes={large ? "(min-width: 1440px) 1280px, 90vw" : previewSizes} type="image/webp" />
+  <img
+    class="project-card-image"
+    src={project.image}
+    alt={project.imageAlt}
+    width="1440"
+    height="1080"
+    loading={priority ? "eager" : "lazy"}
+    fetchpriority={priority ? "high" : "auto"}
+    decoding="async"
+    style={shared ? `view-transition-name: project-${project.slug}` : undefined}
+  />
+</picture>

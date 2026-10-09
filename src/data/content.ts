@@ -23,6 +23,8 @@ export interface Job {
 }
 
 export interface Project {
+  slug: string;
+  summary: string;
   name: string;
   url: string;
   image: string;
@@ -86,6 +88,8 @@ export interface PortfolioContent {
 
 const projectsEn: Project[] = [
   {
+    slug: "catalejo-travel",
+    summary: "Patagonia experiences, seasonal pricing and a custom CMS.",
     name: "Catalejo Travel",
     url: "https://www.catalejotravel.com/es/",
     image: "/projects/catalejo-travel.png",
@@ -101,6 +105,8 @@ const projectsEn: Project[] = [
     stack: ["Next.js", "React", "TypeScript", "Laravel"],
   },
   {
+    slug: "quinta-pata",
+    summary: "Pet healthcare affiliations and verifiable digital credentials.",
     name: "Quinta Pata",
     url: "https://5tapata.com.ar/",
     image: "/projects/quinta-pata.png",
@@ -116,10 +122,12 @@ const projectsEn: Project[] = [
     stack: [".NET", "Entity Framework Core", "PostgreSQL", "Next.js", "React"],
   },
   {
+    slug: "inspira-ingenieria",
+    summary: "Engineering projects with a secure content administration area.",
     name: "Inspira Ingeniería",
     url: "https://www.ingenieriainspira.com/",
     image: "/projects/inspira-ingenieria.png",
-    imageAlt: "Inspira Ingeniería corporate website with a building under construction",
+    imageAlt: "Inspira Ingeniería corporate website presenting structural engineering projects",
     type: "Corporate website",
     description:
       "A corporate site and protected project administration area for an engineering company, with attention to performance, accessible structure, search metadata and form security.",
@@ -131,10 +139,12 @@ const projectsEn: Project[] = [
     stack: ["Next.js", "TypeScript", "Prisma", "Cloudinary"],
   },
   {
+    slug: "madryn-buceo",
+    summary: "A diving website connected to reservation management.",
     name: "Madryn Buceo",
     url: "https://madrynbuceo.xenova.com.ar/",
     image: "/projects/madryn-buceo.png",
-    imageAlt: "Madryn Buceo website featuring a sea lion underwater in Patagonia",
+    imageAlt: "Madryn Buceo website presenting underwater experiences in Patagonia",
     type: "Diving and tourism",
     description:
       "A corporate website for a diving operator, paired with a reservation and management system backed by Spring Boot and delivered through a Scrum workflow.",
@@ -149,6 +159,8 @@ const projectsEn: Project[] = [
 
 const projectsEs: Project[] = [
   {
+    slug: "catalejo-travel",
+    summary: "Experiencias en Patagonia, tarifas por temporada y un CMS propio.",
     name: "Catalejo Travel",
     url: "https://www.catalejotravel.com/es/",
     image: "/projects/catalejo-travel.png",
@@ -164,6 +176,8 @@ const projectsEs: Project[] = [
     stack: ["Next.js", "React", "TypeScript", "Laravel"],
   },
   {
+    slug: "quinta-pata",
+    summary: "Afiliaciones de salud animal y credenciales digitales verificables.",
     name: "Quinta Pata",
     url: "https://5tapata.com.ar/",
     image: "/projects/quinta-pata.png",
@@ -179,10 +193,12 @@ const projectsEs: Project[] = [
     stack: [".NET", "Entity Framework Core", "PostgreSQL", "Next.js", "React"],
   },
   {
+    slug: "inspira-ingenieria",
+    summary: "Proyectos de ingeniería con administración segura de contenidos.",
     name: "Inspira Ingeniería",
     url: "https://www.ingenieriainspira.com/",
     image: "/projects/inspira-ingenieria.png",
-    imageAlt: "Sitio corporativo de Inspira Ingeniería con un edificio en construcción",
+    imageAlt: "Sitio corporativo de Inspira Ingeniería que presenta proyectos de estructuras seguras",
     type: "Sitio corporativo",
     description:
       "Sitio corporativo y área protegida de administración de proyectos para una empresa de ingeniería, con foco en rendimiento, estructura accesible, metadatos para buscadores y seguridad de formularios.",
@@ -194,10 +210,12 @@ const projectsEs: Project[] = [
     stack: ["Next.js", "TypeScript", "Prisma", "Cloudinary"],
   },
   {
+    slug: "madryn-buceo",
+    summary: "Un sitio de buceo conectado con la gestión de reservas.",
     name: "Madryn Buceo",
     url: "https://madrynbuceo.xenova.com.ar/",
     image: "/projects/madryn-buceo.png",
-    imageAlt: "Sitio de Madryn Buceo con un lobo marino bajo el agua en la Patagonia",
+    imageAlt: "Sitio de Madryn Buceo que presenta experiencias submarinas en la Patagonia",
     type: "Buceo y turismo",
     description:
       "Sitio corporativo para un operador de buceo, junto con un sistema de reservas y gestión respaldado por Spring Boot y desarrollado con un flujo de trabajo Scrum.",
@@ -221,7 +239,7 @@ export const content: Record<Locale, PortfolioContent> = {
     experienceTitle: "Software for operations.",
     experienceIntro:
       "I turn operational needs into dependable software, from discovery and architecture through delivery and production support.",
-    experienceLink: "Explore experience",
+    experienceLink: "View projects",
     projectsTitle: "Selected projects.",
     projectsIntro: "Four client projects spanning travel, engineering, pet health and diving.",
     contactTitle: ["Let's talk about", "what your team needs."],
@@ -237,7 +255,7 @@ export const content: Record<Locale, PortfolioContent> = {
       experience: "View experience",
       download: "Download CV",
       visit: "Visit website",
-      details: "See development",
+      details: "View project",
       email: "Email me",
       github: "GitHub",
       linkedin: "LinkedIn",
@@ -260,12 +278,12 @@ export const content: Record<Locale, PortfolioContent> = {
       {
         company: "Gili",
         role: "Development Lead",
-        period: "Oct 2025 – Present",
+        period: "Oct 2025 - Present",
         summary: "Internal software, integrations and project delivery.",
         description:
           "Lead software and project work across internal operations. I align requirements and priorities with business users, shape the roadmap and architecture, and coordinate external vendors through development, testing, deployment and ongoing server operations.",
         outcomes: [
-          "Internal picking and logistics workflows, including freight settlement.",
+          "Order picking, logistics and freight settlement tools.",
           "A showroom queue with tickets, kiosk, tablet, QR codes and signage; it supports walk-in order without scheduled appointments.",
           "A B2B portal, ticketing workflows and catalogue automation.",
           "Integrations with Flexxus and Magento, plus production maintenance and support.",
@@ -275,8 +293,8 @@ export const content: Record<Locale, PortfolioContent> = {
       {
         company: "Food Partners Patagonia S.A.",
         role: "Full Stack Developer · Xenova",
-        period: "Sep 2025 – Present",
-        summary: "An integral ERP for seafood production, traceability and people operations.",
+        period: "Sep 2025 - Present",
+        summary: "Production, traceability and people operations in one ERP.",
         description:
           "Ongoing development of an integral ERP for an Argentine red shrimp processor. The work connects operational areas from vessel discharge and port intake through production, cold storage and export preparation, alongside quality reporting and people operations.",
         flow: [
@@ -284,15 +302,15 @@ export const content: Record<Locale, PortfolioContent> = {
           "Raw shrimp weighing and washing",
           "Freezing lines and production records",
           "Palletization, labels and cold-room lots",
-          "Stock transfers, orders and export documents",
+          "Stock transfers, orders and container exports",
         ],
         outcomes: [
-          "Production, quality and inventory applications are developed as independent React 19 and TypeScript apps backed by a Laravel 12 REST API.",
-          "Granular permissions use JWT authentication and Spatie; teams select the plant relevant to their work.",
-          "People operations cover employee records, attendance and hours, leave requests, supervisor-to-HR approvals, contracts, PPE, payslips and internal communication.",
+          "Production and quality controls, a cold-storage map, inventory, lot and pallet traceability, inter-plant transfers and foreign-trade documentation.",
+          "Laravel REST API and independent React/TypeScript applications by business area, with authentication, granular permissions, per-plant database selection and real-time error monitoring.",
+          "People operations cover employee records, attendance and hours, leave requests, supervisor-to-HR approvals, PDF payslips, internal communication and disciplinary workflows.",
           "Employee self-service is an installable PWA. Module rollout is ongoing, so not every area is described as live.",
         ],
-        capabilities: ["Laravel 12", "React 19", "TypeScript", "Vite", "JWT", "Spatie"],
+        capabilities: ["Laravel", "React", "TypeScript", "API REST", "PWA"],
       },
     ],
     projects: projectsEn,
@@ -304,7 +322,7 @@ export const content: Record<Locale, PortfolioContent> = {
       { title: "Infrastructure", items: ["Linux", "VPS", "Docker Compose", "CI/CD", "Git", "AWS"] },
       { title: "Development tools", items: ["Claude Code", "Codex", "OpenCode"] },
     ],
-    degree: "University Technical Degree in Programming · UTN · 2021–2024",
+    degree: "University Technical Degree in Programming · UTN · 2021-2024",
     languages: [
       { name: "Spanish", level: "Native" },
       { name: "English", level: "Intermediate (B1)" },
@@ -320,7 +338,7 @@ export const content: Record<Locale, PortfolioContent> = {
     experienceTitle: "Software para operaciones.",
     experienceIntro:
       "Transformo necesidades operativas en software confiable, desde el relevamiento y la arquitectura hasta la entrega y el soporte en producción.",
-    experienceLink: "Explorar experiencia",
+    experienceLink: "Ver proyectos",
     projectsTitle: "Proyectos seleccionados.",
     projectsIntro: "Cuatro trabajos para turismo, ingeniería, salud animal y buceo.",
     contactTitle: ["Hablemos de lo que", "necesita tu equipo."],
@@ -336,7 +354,7 @@ export const content: Record<Locale, PortfolioContent> = {
       experience: "Ver experiencia",
       download: "Descargar CV",
       visit: "Visitar sitio",
-      details: "Ver desarrollo",
+      details: "Ver proyecto",
       email: "Escribirme",
       github: "GitHub",
       linkedin: "LinkedIn",
@@ -359,7 +377,7 @@ export const content: Record<Locale, PortfolioContent> = {
       {
         company: "Gili",
         role: "Líder de Desarrollo",
-        period: "Oct 2025 – Actualidad",
+        period: "Oct 2025 - Actualidad",
         summary: "Software interno, integraciones y gestión de proyectos.",
         description:
           "Lidero el trabajo de software y proyectos para las operaciones internas. Alineo requerimientos y prioridades con las áreas de negocio, defino el roadmap y la arquitectura, y coordino proveedores externos durante el desarrollo, las pruebas, el despliegue y la operación de servidores.",
@@ -374,8 +392,8 @@ export const content: Record<Locale, PortfolioContent> = {
       {
         company: "Food Partners Patagonia S.A.",
         role: "Full Stack Developer · Xenova",
-        period: "Sep 2025 – Actualidad",
-        summary: "Un ERP integral para producción pesquera, trazabilidad y gestión de personas.",
+        period: "Sep 2025 - Actualidad",
+        summary: "Producción, trazabilidad y gestión de personas en un ERP.",
         description:
           "Desarrollo en curso de un ERP integral para una procesadora argentina de langostino. El sistema conecta áreas operativas desde la descarga de buques y la recepción en puerto hasta la producción, la cámara de frío y la preparación de exportaciones, junto con reportes de calidad y gestión de personas.",
         flow: [
@@ -383,15 +401,15 @@ export const content: Record<Locale, PortfolioContent> = {
           "Pesaje y lavado de langostino crudo",
           "Líneas de congelado y registros de producción",
           "Paletizado, etiquetado y lotes en cámara",
-          "Transferencias de stock, pedidos y documentación de exportación",
+          "Transferencias, pedidos y exportaciones en contenedores",
         ],
         outcomes: [
-          "Las aplicaciones de producción, calidad e inventario se desarrollan como aplicaciones independientes con React 19 y TypeScript, respaldadas por una API REST en Laravel 12.",
-          "Los permisos granulares usan autenticación JWT y Spatie; cada equipo selecciona la planta correspondiente a su trabajo.",
-          "Gestión de personas: legajos, asistencia y horas, solicitudes de licencias, aprobación de supervisores y RR. HH., contratos, EPP, recibos e información interna.",
+          "Controles de producción y calidad, mapa de cámaras frigoríficas, stock, trazabilidad de lotes y pallets, transferencias entre plantas y documentación de comercio exterior.",
+          "API REST en Laravel y aplicaciones React/TypeScript por sector, con autenticación, permisos granulares, selección de base por planta y monitoreo de errores en tiempo real.",
+          "Gestión de personas: legajos, fichadas, horas, licencias, vacaciones, aprobaciones de supervisores y RR. HH., recibos PDF, comunicaciones y flujos disciplinarios.",
           "El autoservicio del personal es una PWA instalable. El despliegue de módulos sigue en curso y no se presenta cada área como ya operativa.",
         ],
-        capabilities: ["Laravel 12", "React 19", "TypeScript", "Vite", "JWT", "Spatie"],
+        capabilities: ["Laravel", "React", "TypeScript", "API REST", "PWA"],
       },
     ],
     projects: projectsEs,
@@ -403,7 +421,7 @@ export const content: Record<Locale, PortfolioContent> = {
       { title: "Infraestructura", items: ["Linux", "VPS", "Docker Compose", "CI/CD", "Git", "AWS"] },
       { title: "Herramientas de desarrollo", items: ["Claude Code", "Codex", "OpenCode"] },
     ],
-    degree: "Técnico Universitario en Programación · UTN · 2021–2024",
+    degree: "Técnico Universitario en Programación · UTN · 2021-2024",
     languages: [
       { name: "Español", level: "Nativo" },
       { name: "Inglés", level: "Intermedio (B1)" },
