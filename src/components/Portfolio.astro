@@ -8,7 +8,7 @@ import HeroTitle from './HeroTitle';
 import HeroActions from './HeroActions';
 import ProfileCredentials from './ProfileCredentials.astro';
 import TechIcon from './TechIcon.astro';
-import SkillsNetwork from './SkillsNetwork';
+import SkillsFolders from './SkillsFolders';
 import WorkMap from './WorkMap';
 import { getTechnologyUsage } from '../data/technology-usage';
 import MagicBento from './reactbits/MagicBento';
@@ -59,9 +59,9 @@ const es = locale === 'es';
       </div>
       <WorkMap client:visible locale={locale}/>
     </div>
-    <div class="network-section" aria-labelledby="network-title">
-      <div class="network-heading"><div><p class="section-eyebrow">{c.labels.technologies}</p><h2 id="network-title">{es ? 'Un stack conectado.' : 'A connected stack.'}</h2></div><p>{es ? 'Lenguajes, interfaces, datos e infraestructura. Cada pieza tiene su lugar.' : 'Languages, interfaces, data and infrastructure. Each piece has its place.'}</p></div>
-      <SkillsNetwork client:visible locale={locale} groups={c.skills} usage={getTechnologyUsage(locale)}/>
+    <div class="toolbox-section" id="toolbox" aria-labelledby="toolbox-title">
+      <div class="toolbox-heading"><div><p class="section-eyebrow">{c.labels.technologies}</p><h2 id="toolbox-title">{es ? 'Mi caja de herramientas.' : 'My toolbox.'}</h2></div><p>{es ? 'Abrí una carpeta y explorá las tecnologías que uso. Cada una tiene su lugar y su trabajo detrás.' : 'Open a folder and explore the technologies I use. Each one has its place and the work behind it.'}</p></div>
+      <SkillsFolders client:visible locale={locale} groups={c.skills} usage={getTechnologyUsage(locale)}/>
     </div>
     <ProfileCredentials locale={locale}/>
   </section>

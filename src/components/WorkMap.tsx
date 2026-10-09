@@ -2,7 +2,7 @@ import { useId, useState } from 'react';
 import type { Locale } from '../data/content';
 import { workflow } from '../data/workflow';
 import AnimatedContent from './reactbits/AnimatedContent';
-import { MapSurface } from './maps/Connections';
+import { MapSurface } from './maps/MapSurface';
 
 const point = (radius: number, degrees: number) => {
   const angle = degrees * Math.PI / 180;
