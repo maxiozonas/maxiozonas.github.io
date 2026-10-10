@@ -25,7 +25,7 @@ export default function WorkMap({ locale }: { locale: Locale }) {
       <svg viewBox="0 0 500 500" className="work-wheel-sectors" aria-hidden="true">
         {steps.map((step, index) => <path key={step.name} d={sector(-90 + index * 72)} data-active={selected === index} onPointerEnter={event => { if (event.pointerType === 'mouse') setSelected(index); }} onClick={() => setSelected(index)}/>)}
       </svg>
-      <div className="work-wheel-center"><span>{locale === 'es' ? 'El punto de partida' : 'The starting point'}</span><p>{locale === 'es' ? <>Un problema<br/><strong>real.</strong></> : <>A real<br/><strong>problem.</strong></>}</p></div>
+      <div className="work-wheel-center"><span>{locale === 'es' ? 'Etapas del desarrollo' : 'Development stages'}</span><p>{locale === 'es' ? <>El<br/><strong>proyecto</strong></> : <>The<br/><strong>project</strong></>}</p></div>
       <div role="group" aria-label={locale === 'es' ? 'Explorar mi proceso de trabajo' : 'Explore my working process'}>
         {steps.map((step, index) => {
           const location = point(190, -90 + index * 72);

@@ -27,13 +27,13 @@ const es = locale === 'es';
       <p class="hero-role" data-hero-enter>{es ? 'Desarrollo de software' : 'Software development'}</p>
       <HeroTitle client:load/>
       <p class="hero-profession" data-hero-enter>Full Stack Developer</p>
-      <p class="hero-intro" data-hero-enter>{es ? 'Aplicaciones web y móviles. Integraciones entre sistemas. De la idea a producción.' : 'Web and mobile apps. System integrations. From idea to production.'}</p>
+      <p class="hero-intro" data-hero-enter>{c.intro}</p>
       <div class="hero-actions-wrap" data-hero-enter><HeroActions client:load locale={locale}/></div>
       <div class="hero-location" data-hero-enter><span>Bahía Blanca, Argentina</span><span>{es ? 'Trabajo remoto' : 'Remote work'}</span></div>
     </div>
   </section>
   <section class="experience-section page-shell grid gap-12 py-24 lg:grid-cols-[.75fr_1.25fr] lg:gap-20 lg:py-32" id="experience" aria-labelledby="experience-title">
-    <div class="experience-intro self-start"><p class="section-eyebrow">{es ? 'Experiencia' : 'Experience'}</p><h2 id="experience-title" class="section-title">{es ? 'Dentro de' : 'Inside'}<br/><span class="text-muted-foreground">{es ? 'la operación.' : 'the operation.'}</span></h2><p class="mt-7 max-w-sm text-base leading-relaxed text-muted-foreground">{c.experienceIntro}</p><a class="text-link mt-8 inline-flex min-h-11 items-center font-bold" href={`/cv-maximo-ozonas-${locale}.pdf`} download>{c.actions.download}</a><div class="experience-key"><span class="status-dot"></span>{es ? 'Dos equipos. Problemas reales.' : 'Two teams. Real problems.'}</div></div>
+    <div class="experience-intro self-start"><p class="section-eyebrow">{es ? 'Trayectoria' : 'Background'}</p><h2 id="experience-title" class="section-title">{c.experienceTitle}</h2><p class="mt-7 max-w-sm text-base leading-relaxed text-muted-foreground">{c.experienceIntro}</p><a class="text-link mt-8 inline-flex min-h-11 items-center font-bold" href={`/cv-maximo-ozonas-${locale}.pdf`} download>{c.actions.download}</a><div class="experience-key"><span class="status-dot"></span>{es ? 'Gili y Food Partners Patagonia' : 'Gili and Food Partners Patagonia'}</div></div>
     <ScrollStack client:visible>{c.jobs.map((job, index) => <article class="experience-card scroll-stack-card" id={`experience-${index === 0 ? 'gili' : 'food-partners'}`}>
       <SpotlightCard client:visible className="experience-spotlight" spotlightColor="#dcff71" intensity={.12} borderGlow={.25} proximity={30} flare={false}>
         <div class="experience-meta"><span>{job.period}</span><span class="job-current"><span class="status-dot"></span>{es ? 'Actualidad' : 'Current'}</span></div>
@@ -45,28 +45,28 @@ const es = locale === 'es';
     </article>)}</ScrollStack>
   </section>
   <section id="projects" class="projects-section page-shell pb-20 pt-10 md:pb-32 md:pt-16" aria-labelledby="projects-title">
-    <p class="section-eyebrow">{es ? 'Trabajo seleccionado' : 'Selected work'}</p>
-    <div class="mb-10 flex flex-col justify-between gap-5 md:mb-14 md:flex-row md:items-end"><h2 id="projects-title" class="section-title" data-reveal>{es ? 'Ideas que ya' : 'Ideas already'}<br/><span class="text-muted-foreground">{es ? 'están afuera.' : 'out in the world.'}</span></h2><p class="max-w-xs text-base leading-relaxed text-muted-foreground">{es ? 'Turismo, ingeniería y salud animal. Cada proyecto, un problema distinto.' : 'Travel, engineering and pet healthcare. Each project, a different problem.'}</p></div>
+    <p class="section-eyebrow">{es ? 'Sitios y aplicaciones' : 'Websites and applications'}</p>
+    <div class="mb-10 flex flex-col justify-between gap-5 md:mb-14 md:flex-row md:items-end"><h2 id="projects-title" class="section-title" data-reveal>{c.projectsTitle}</h2><p class="max-w-xs text-base leading-relaxed text-muted-foreground">{c.projectsIntro}</p></div>
     <MagicBento client:visible projects={c.projects} locale={locale}/>
   </section>
   <section class="profile-section page-shell py-24 md:py-32" id="skills" aria-labelledby="profile-title">
-    <p class="section-eyebrow">{es ? 'Cómo trabajo' : 'How I work'}</p>
+    <p class="section-eyebrow">{es ? 'Proceso de trabajo' : 'Development process'}</p>
     <div class="profile-composition">
       <div class="profile-copy">
-        <h2 id="profile-title" class="profile-heading">{es ? 'Buen software empieza por entender.' : 'Good software starts with understanding.'}</h2>
-        <p class="profile-support">{es ? 'Conecto desarrollo, arquitectura y gestión. Entender cómo trabaja un equipo es parte de construir una solución que le sirva.' : 'I connect development, architecture and delivery. Understanding how a team works is part of building a useful solution.'}</p>
-        <p class="profile-map-hint">{es ? 'Explorá cada parte del mapa. El proceso vuelve al equipo, porque el trabajo no termina con el despliegue.' : 'Explore each part of the map. The process comes back to the team, because the work continues beyond deployment.'}</p>
+        <h2 id="profile-title" class="profile-heading">{es ? 'Cómo trabajo' : 'How I work'}</h2>
+        <p class="profile-support">{es ? 'Hablo con el equipo que va a usar el sistema, defino el alcance y desarrollo la aplicación. También me ocupo del despliegue y del soporte.' : 'I talk to the team who will use the system, agree on the scope and build the application. I also handle deployment and support.'}</p>
+        <p class="profile-map-hint">{es ? 'Seleccioná una etapa para ver qué hago en cada una.' : 'Select a stage to see what I do at each step.'}</p>
       </div>
       <WorkMap client:visible locale={locale}/>
     </div>
     <div class="toolbox-section" id="toolbox" aria-labelledby="toolbox-title">
-      <div class="toolbox-heading"><div><p class="section-eyebrow">{c.labels.technologies}</p><h2 id="toolbox-title">{es ? 'Mi caja de herramientas.' : 'My toolbox.'}</h2></div><p>{es ? 'Abrí una carpeta y explorá las tecnologías que uso. Cada una tiene su lugar y su trabajo detrás.' : 'Open a folder and explore the technologies I use. Each one has its place and the work behind it.'}</p></div>
+      <div class="toolbox-heading"><div><p class="section-eyebrow">Skills</p><h2 id="toolbox-title">{es ? 'Tecnologías que uso' : 'Technologies I use'}</h2></div><p>{es ? 'Abrí una carpeta y seleccioná una tecnología para ver en qué proyectos la usé.' : 'Open a folder and select a technology to see the projects I used it in.'}</p></div>
       <SkillsFolders client:visible locale={locale} groups={c.skills} usage={getTechnologyUsage(locale)}/>
     </div>
     <ProfileCredentials locale={locale}/>
   </section>
   <section class="contact-section page-shell py-24 md:py-32" id="contact" aria-labelledby="contact-title">
-    <div class="contact-panel rounded-3xl bg-primary p-7 text-primary-foreground md:p-16"><p class="mb-8 text-sm">{es ? '¿Tenés una idea en mente?' : 'Have something in mind?'}</p><h2 id="contact-title" class="contact-title font-bold tracking-tighter" data-reveal>{es ? 'Hagamos que' : 'Let’s make'}<br/>{es ? 'funcione.' : 'it work.'}</h2><div class="mt-10 flex flex-col justify-between gap-8 md:flex-row md:items-end"><a class="contact-email text-lg font-bold md:text-2xl" href={`mailto:${profile.email}`}>{profile.email}</a><a class={buttonVariants({ variant: 'inverse', size: 'lg' })} href={`mailto:${profile.email}`}>{c.actions.email}</a></div></div>
+    <div class="contact-panel rounded-3xl bg-primary p-7 text-primary-foreground md:p-16"><p class="mb-8 text-sm">{es ? 'Contacto' : 'Contact'}</p><h2 id="contact-title" class="contact-title font-bold tracking-tighter" data-reveal>{c.contactTitle.join(' ')}</h2><div class="mt-10 flex flex-col justify-between gap-8 md:flex-row md:items-end"><a class="contact-email text-lg font-bold md:text-2xl" href={`mailto:${profile.email}`}>{profile.email}</a><a class={buttonVariants({ variant: 'inverse', size: 'lg' })} href={`mailto:${profile.email}`}>{c.actions.email}</a></div></div>
     <div class="mt-8 flex flex-wrap justify-between gap-6 text-sm"><p class="text-muted-foreground">{es ? 'Bahía Blanca, Argentina. Abierto a trabajar en remoto.' : 'Bahía Blanca, Argentina. Open to remote work.'}</p><div class="flex gap-3"><a class="social-button" href={profile.github} target="_blank" rel="noopener noreferrer">GitHub</a><a class="social-button" href={profile.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a></div></div>
   </section>
 </main>

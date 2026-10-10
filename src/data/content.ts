@@ -230,17 +230,17 @@ export const content: Record<Locale, PortfolioContent> = {
   en: {
     eyebrow: "Full Stack Developer · Software Development & Project Management",
     heroRole: "Full Stack Developer",
-    intro: "I build web and mobile software end to end, from the first requirement through production.",
+    intro: "I build web and mobile applications and integrate them with the systems each team uses.",
     carouselLabel: "Project preview",
     carouselPrevious: "Previous project",
     carouselNext: "Next project",
-    experienceTitle: "Software for operations.",
+    experienceTitle: "Work experience",
     experienceIntro:
-      "I turn operational needs into dependable software, from discovery and architecture through delivery and production support.",
+      "I work on internal applications, system integrations and production support at Gili and Food Partners Patagonia.",
     experienceLink: "View projects",
-    projectsTitle: "Selected projects.",
+    projectsTitle: "Projects",
     projectsIntro: "Four client projects spanning travel, engineering, pet health and diving.",
-    contactTitle: ["Let's talk about", "what your team needs."],
+    contactTitle: ["Get in touch"],
     contactIntro: "Web and mobile software, system integrations and production operations.",
     nav: {
       experience: "Experience",
@@ -276,8 +276,8 @@ export const content: Record<Locale, PortfolioContent> = {
         "company": "Gili",
         "role": "Development Lead",
         "period": "Oct 2025 - Present",
-        "summary": "A digital ecosystem for a complete commercial operation.",
-        "description": "Led the development of an ecosystem of web and mobile applications for Gili’s operations. The work combined product development, integration with existing systems and technical coordination across deliveries.",
+        "summary": "Web and mobile applications for sales and logistics.",
+        "description": "Led application development at Gili, integrated existing systems and coordinated technical deliveries with the teams using the software.",
         "capabilities": [
           "Laravel",
           "React",
@@ -288,7 +288,7 @@ export const content: Record<Locale, PortfolioContent> = {
         ],
         "scope": [
           {
-            "title": "From showroom to warehouse",
+            "title": "Sales, logistics and ecommerce",
             "description": "Built solutions for commercial operations, logistics, ecommerce and internal support. Integrated Flexxus and Magento to connect business information with the tools used by each team."
           },
           {
@@ -301,8 +301,8 @@ export const content: Record<Locale, PortfolioContent> = {
         "company": "Food Partners Patagonia S.A.",
         "role": "Full Stack Developer · Xenova",
         "period": "Sep 2025 - Present",
-        "summary": "An integrated platform for an industrial operation.",
-        "description": "Built an ERP ecosystem for a major company in my country’s fishing industry, with a modular API and specialised applications for each area, delivering a solution to every part of the company. The work covered industrial operations, staff management and hardware management.",
+        "summary": "ERP and internal applications for the fishing industry.",
+        "description": "Built a modular API and applications for production, staff and hardware management at Food Partners Patagonia.",
         "capabilities": [
           "Laravel",
           "React",
@@ -313,12 +313,12 @@ export const content: Record<Locale, PortfolioContent> = {
         ],
         "scope": [
           {
-            "title": "A connected production chain",
-            "description": "Connected production, quality, cold storage and exports, from raw-material intake to finished-product dispatch. A shared foundation organises information and traceability across plants."
+            "title": "Production and traceability",
+            "description": "Connected production, quality, cold storage and exports, from raw-material intake to finished-product dispatch. The system keeps traceability records across plants."
           },
           {
-            "title": "Tools for the teams",
-            "description": "Built HR platforms, Mi Legajo for employees and Centinela for system monitoring. Distinct applications share an architecture while adapting to the work of each area."
+            "title": "HR and monitoring",
+            "description": "Built HR platforms, Mi Legajo for employees and Centinela for system monitoring, with a shared architecture across applications."
           }
         ]
       }
@@ -341,17 +341,17 @@ export const content: Record<Locale, PortfolioContent> = {
   es: {
     eyebrow: "Full Stack Developer · Desarrollo de Software y Gestión de Proyectos",
     heroRole: "Full Stack Developer",
-    intro: "Desarrollo software web y móvil de punta a punta, desde el primer requerimiento hasta producción.",
+    intro: "Desarrollo aplicaciones web y móviles, y las integro con los sistemas que usa cada equipo.",
     carouselLabel: "Vista previa de proyectos",
     carouselPrevious: "Proyecto anterior",
     carouselNext: "Proyecto siguiente",
-    experienceTitle: "Software para operaciones.",
+    experienceTitle: "Experiencia laboral",
     experienceIntro:
-      "Transformo necesidades operativas en software confiable, desde el relevamiento y la arquitectura hasta la entrega y el soporte en producción.",
+      "Trabajo en aplicaciones internas, integraciones y soporte en producción para Gili y Food Partners Patagonia.",
     experienceLink: "Ver proyectos",
-    projectsTitle: "Proyectos seleccionados.",
+    projectsTitle: "Proyectos",
     projectsIntro: "Cuatro trabajos para turismo, ingeniería, salud animal y buceo.",
-    contactTitle: ["Hablemos de lo que", "necesita tu equipo."],
+    contactTitle: ["Escribime"],
     contactIntro: "Software web y móvil, integraciones entre sistemas y operación en producción.",
     nav: {
       experience: "Experiencia",
@@ -387,8 +387,8 @@ export const content: Record<Locale, PortfolioContent> = {
         "company": "Gili",
         "role": "Líder de Desarrollo",
         "period": "Oct 2025 - Actualidad",
-        "summary": "Un ecosistema digital para una operación comercial completa.",
-        "description": "Lideré el desarrollo de un ecosistema de aplicaciones web y móviles para la operación de Gili. El trabajo combinó producto, integraciones con sistemas existentes y la coordinación técnica de cada entrega.",
+        "summary": "Aplicaciones web y móviles para ventas y logística.",
+        "description": "Lideré el desarrollo de aplicaciones en Gili, integré sistemas existentes y coordiné las entregas con los equipos que usan el software.",
         "capabilities": [
           "Laravel",
           "React",
@@ -399,7 +399,7 @@ export const content: Record<Locale, PortfolioContent> = {
         ],
         "scope": [
           {
-            "title": "Del showroom al depósito",
+            "title": "Ventas, logística y ecommerce",
             "description": "Construí soluciones para atención comercial, logística, ecommerce y soporte interno. Integré Flexxus y Magento para conectar la información del negocio con las herramientas de cada equipo."
           },
           {
@@ -412,8 +412,8 @@ export const content: Record<Locale, PortfolioContent> = {
         "company": "Food Partners Patagonia S.A.",
         "role": "Full Stack Developer · Xenova",
         "period": "Sep 2025 - Actualidad",
-        "summary": "Una plataforma integral para una operación industrial.",
-        "description": "Desarrollé un ecosistema ERP para una importante empresa del sector pesquero de mi país, con una API modular y aplicaciones especializadas por área, llevando una solución a cada parte de la empresa. El trabajo abarcó desde la operación industrial hasta la gestión del personal y del hardware.",
+        "summary": "ERP y aplicaciones internas para la industria pesquera.",
+        "description": "Desarrollé una API modular y aplicaciones para producción, gestión de personal y hardware en Food Partners Patagonia.",
         "capabilities": [
           "Laravel",
           "React",
@@ -424,12 +424,12 @@ export const content: Record<Locale, PortfolioContent> = {
         ],
         "scope": [
           {
-            "title": "Una cadena productiva conectada",
-            "description": "Conecté producción, calidad, cámaras y exportación, desde la recepción de materia prima hasta la salida del producto. Una base compartida organiza la información y la trazabilidad entre plantas."
+            "title": "Producción y trazabilidad",
+            "description": "Conecté producción, calidad, cámaras y exportación, desde la recepción de materia prima hasta la salida del producto. El sistema registra la trazabilidad entre plantas."
           },
           {
-            "title": "Herramientas para los equipos",
-            "description": "Desarrollé plataformas de RR. HH., Mi Legajo para el personal y Centinela para el monitoreo de los sistemas. Aplicaciones distintas sobre una misma arquitectura, adaptadas al trabajo de cada área."
+            "title": "RR. HH. y monitoreo",
+            "description": "Desarrollé plataformas de RR. HH., Mi Legajo para el personal y Centinela para el monitoreo de sistemas, con una arquitectura compartida entre las aplicaciones."
           }
         ]
       }

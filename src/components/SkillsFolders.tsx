@@ -15,8 +15,8 @@ const palettes = [
   { front: '#b9c4ce', back: '#8496a6' },
 ];
 const subtitles = {
-  es: ['La base del código', 'Interfaces y servicios', 'Apps que acompañan', 'Información conectada', 'De local a producción', 'Parte de mi flujo'],
-  en: ['The foundation', 'Interfaces and services', 'Apps on the move', 'Connected information', 'From local to production', 'Part of my workflow'],
+  es: ['Programación', 'Frameworks y APIs', 'Desarrollo móvil', 'SQL', 'Servidores y despliegues', 'Asistentes de código'],
+  en: ['Programming', 'Frameworks and APIs', 'Mobile development', 'SQL', 'Servers and deployments', 'Coding assistants'],
 };
 
 function TechnologyMark({ name }: { name: string }) {
@@ -53,7 +53,7 @@ export default function SkillsFolders({ locale, groups, usage }: Props) {
           onClose={() => setSelected(previous => previous?.group === index ? null : previous)}
           detail={current ? <div className="folder-technology-info">
             <h3>{current}</h3>
-            {works.length > 0 ? <><p>{es ? 'Lo usé en' : 'Used in'}</p><div className="folder-projects">{works.map(work => <a key={work.href} href={work.href}>{work.name}</a>)}</div></> : <p>{es ? 'Parte de mi caja de herramientas.' : 'Part of my toolkit.'}</p>}
+            {works.length > 0 ? <><p>{es ? 'Lo usé en' : 'Used in'}</p><div className="folder-projects">{works.map(work => <a key={work.href} href={work.href}>{work.name}</a>)}</div></> : <p>{es ? 'Sin proyectos publicados en este portfolio.' : 'No projects listed in this portfolio.'}</p>}
           </div> : undefined}
         />;
       })}

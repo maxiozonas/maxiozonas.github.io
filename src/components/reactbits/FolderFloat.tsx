@@ -28,6 +28,16 @@ export default function FolderFloat({ label, sublabel, groupName, frontColor, ba
     name={groupName}
     className="folder-float"
     style={{ '--ff-front': frontColor, '--ff-back': backColor } as CSSProperties}
+    onPointerLeave={event => {
+      if (event.pointerType === 'mouse' && openedByHover.current && !event.currentTarget.contains(document.activeElement)) {
+        event.currentTarget.open = false;
+      }
+    }}
+    onBlur={event => {
+      if (openedByHover.current && !event.currentTarget.contains(event.relatedTarget) && !event.currentTarget.matches(':hover')) {
+        event.currentTarget.open = false;
+      }
+    }}
     onToggle={event => {
       if (!event.currentTarget.open) {
         openedByHover.current = false;
@@ -48,7 +58,7 @@ export default function FolderFloat({ label, sublabel, groupName, frontColor, ba
         openedByHover.current = true;
       }
     }} onClick={event => {
-      // The animated flap can trigger pointerleave; preserve the first click.
+      // Clicking a hover preview pins it open until the next click or Escape.
       if (event.detail > 0 && openedByHover.current) {
         event.preventDefault();
         openedByHover.current = false;

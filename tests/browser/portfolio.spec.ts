@@ -179,13 +179,40 @@ test('portfolio and project scope work without JavaScript', async ({ browser }) 
   await context.close();
 });
 
+for (const locale of ['es', 'en']) {
+  for (const reducedMotion of ['no-preference', 'reduce'] as const) {
+    test(`${locale}: technology folders close after hover with ${reducedMotion} motion`, async ({ page }) => {
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await page.emulateMedia({ reducedMotion });
+      await page.goto(`/${locale}/`);
+      await page.locator('.skills-folders').scrollIntoViewIfNeeded();
+      await expect(page.locator('.skills-folders')).toHaveAttribute('data-hydrated', 'true');
+      const folder = page.locator('.folder-float').nth(1);
+      await folder.locator('summary').hover();
+      await expect(folder).toHaveJSProperty('open', true);
+      await folder.getByRole('button', { name: 'Laravel', exact: true }).hover();
+      await expect(folder.locator('h3')).toHaveText('Laravel');
+      await page.mouse.move(0, 0);
+      await expect(folder).toHaveJSProperty('open', false);
+      await expect(folder.getByRole('button', { name: 'Laravel', exact: true })).toBeHidden();
+      await folder.locator('summary').hover();
+      await expect(folder).toHaveJSProperty('open', true);
+      await folder.locator('summary').click();
+      await page.mouse.move(0, 0);
+      await expect(folder).toHaveJSProperty('open', true);
+      await folder.locator('summary').click();
+      await expect(folder).toHaveJSProperty('open', false);
+    });
+  }
+}
+
 test('work map and technology folders respond to pointer, keyboard and mobile selection', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/es/');
   await page.locator('.work-map').scrollIntoViewIfNeeded();
   await expect(page.locator('.work-map [data-hydrated="true"]')).toHaveCount(1);
   await page.locator('.work-map').getByRole('button', { name: 'Acompañar', exact: true }).click();
-  await expect(page.locator('.work-map-detail h3')).toHaveText('El sistema sigue aprendiendo.');
+  await expect(page.locator('.work-map-detail h3')).toHaveText('Soporte y mantenimiento');
   await page.locator('.skills-folders').scrollIntoViewIfNeeded();
   await expect(page.locator('.skills-folders')).toHaveAttribute('data-hydrated', 'true');
   const web = page.locator('.folder-float').filter({ has: page.locator('summary', { hasText: 'Web y backend' }) });
