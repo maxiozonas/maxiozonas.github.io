@@ -16,7 +16,7 @@ function updateCardGlowProperties(card: HTMLElement, mouseX: number, mouseY: num
   card.style.setProperty('--glow-radius', `${radius}px`);
 }
 
-export default function MagicBento({ projects, locale, enableTilt = true, spotlightRadius = 400, glowColor = '220, 255, 113' }: {
+export default function MagicBento({ projects, locale, enableTilt = true, spotlightRadius = 400, glowColor }: {
   projects: Project[]; locale: Locale; enableTilt?: boolean; spotlightRadius?: number; glowColor?: string;
 }) {
   const gridRef = useRef<HTMLDivElement>(null);
@@ -54,7 +54,7 @@ export default function MagicBento({ projects, locale, enableTilt = true, spotli
     return () => media.revert();
   }, [enableTilt, spotlightRadius]);
 
-  return <div ref={gridRef} className="bento-section grid grid-cols-1 grid-flow-dense gap-4 md:grid-cols-12 md:gap-5" style={{ '--glow-color': glowColor } as CSSProperties}>
+  return <div ref={gridRef} className="bento-section grid grid-cols-1 grid-flow-dense gap-4 md:grid-cols-12 md:gap-5" style={glowColor ? { '--glow-color': glowColor } as CSSProperties : undefined}>
     {projects.map((project, index) => <article key={project.slug} className={cn('project-card magic-bento-card group relative overflow-hidden rounded-3xl bg-card text-card-foreground', index === 0 || index === 3 ? 'md:col-span-7' : 'md:col-span-5')}>
       <div className="relative flex items-center justify-between gap-4 px-6 pt-6 md:px-8 md:pt-8">
         <p className="text-sm text-muted-foreground">{project.type}</p>
