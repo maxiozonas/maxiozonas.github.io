@@ -116,16 +116,34 @@ test('theme persists and follows system preference before manual selection', asy
   await expect(page.locator('[data-band-pause], .ambient-toggle')).toHaveCount(0);
 });
 
-test('experience heading stays in view while the next job enters', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/es/');
-  await page.waitForTimeout(1100);
-  await page.locator('.experience-intro').evaluate(element => window.scrollTo({ top: element.getBoundingClientRect().top + window.scrollY + 150, behavior: 'instant' }));
-  await page.waitForTimeout(400);
-  const box = await page.locator('.experience-intro').boundingBox();
-  expect(box!.y).toBeGreaterThanOrEqual(112);
-  expect(box!.y).toBeLessThanOrEqual(118);
-});
+for (const [width, height] of [[1440, 900], [1366, 600]]) {
+  test(`experience heading stays in view while the next job enters at ${width}×${height}`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    await page.goto('/es/');
+    await page.waitForTimeout(1100);
+    await page.locator('.experience-intro').evaluate(element => window.scrollTo({ top: element.getBoundingClientRect().top + window.scrollY + 150, behavior: 'instant' }));
+    await page.waitForTimeout(400);
+    const box = await page.locator('.experience-intro').boundingBox();
+    expect(box!.y).toBeGreaterThanOrEqual(112);
+    expect(box!.y).toBeLessThanOrEqual(118);
+  });
+}
+
+for (const [width, height] of [[1366, 768], [1280, 720]]) {
+  test(`experience cards visibly stack on a ${width}×${height} notebook`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/es/');
+    await page.locator('#experience').scrollIntoViewIfNeeded();
+    const cards = page.locator('.scroll-stack-card');
+    const target = await cards.nth(1).evaluate((card, viewportHeight) => card.getBoundingClientRect().top + scrollY - viewportHeight * .45, height);
+    await page.evaluate(top => window.scrollTo({ top, behavior: 'instant' }), target);
+    await expect.poll(() => cards.first().evaluate(card => new DOMMatrixReadOnly(getComputedStyle(card).transform).a)).toBeLessThan(.995);
+    const first = (await cards.first().boundingBox())!;
+    const next = (await cards.nth(1).boundingBox())!;
+    expect(first.y + first.height).toBeGreaterThan(next.y + 20);
+  });
+}
 
 test('mobile detail, reduced motion and controls remain usable', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });

@@ -34,7 +34,7 @@ export default function PortfolioNav({ locale, detail = false, alternatePath, pr
   };
   const pill = (label: string) => <><span className="pill-circle" aria-hidden="true"/><span className="relative">{label}</span></>;
   return <div ref={navRef} className="nav-shell mx-auto flex items-center justify-between gap-3 rounded-full bg-card/95 p-2 shadow-lg shadow-background/30 backdrop-blur-xl">
-    <a href={`/${locale}/`} className="brand-capsule flex items-center gap-3 pr-2" aria-label={`mo. Máximo Ozonas Full Stack Developer, ${es ? 'inicio' : 'home'}`}><span className="brand-monogram flex size-11 items-center justify-center rounded-full bg-primary text-lg font-bold tracking-tighter text-primary-foreground"><img src="/brand/mo-monogram.png" alt="" width="34" height="18"/></span><span className="brand-name text-sm font-bold">Máximo Ozonas<span className="block text-xs font-normal text-muted-foreground">Full Stack Developer</span></span></a>
+    <a href={`/${locale}/`} className="brand-capsule flex items-center gap-3 pr-2" aria-label={`mo. Máximo Ozonas Full Stack Developer, ${es ? 'inicio' : 'home'}`}><span className="brand-monogram flex size-11 items-center justify-center rounded-full bg-primary text-lg font-bold tracking-tighter text-primary-foreground"><img src="/brand/mo-monogram.png" alt="" width="34" height="18"/></span><span className="brand-name text-sm font-bold"><span className="brand-full">Máximo Ozonas</span><span className="brand-short">Máximo</span><span className="brand-role block text-xs font-normal text-muted-foreground">Full Stack Developer</span></span></a>
     <div className="hidden md:block"><NavigationMenu aria-label={es ? 'Navegación principal' : 'Main navigation'}><NavigationMenuList>
       <NavigationMenuItem><NavigationMenuLink className="nav-pill" href={`${home}#experience`} data-pill>{pill(es ? 'Experiencia' : 'Experience')}</NavigationMenuLink></NavigationMenuItem>
       <NavigationMenuItem><NavigationMenuTrigger className="nav-pill" data-pill>{pill(es ? 'Proyectos' : 'Projects')}</NavigationMenuTrigger><NavigationMenuContent>
@@ -52,12 +52,12 @@ export default function PortfolioNav({ locale, detail = false, alternatePath, pr
           ? <span key={language} className="language-current" aria-current="true" lang={language}>{language.toUpperCase()}</span>
           : <a key={language} href={alternatePath} className="language-toggle" aria-label={es ? 'Switch to English' : 'Cambiar a español'} hrefLang={language} lang={language} onClick={() => { try { localStorage.setItem('lang', language); } catch {} }}>{language.toUpperCase()}</a>)}
       </div>
-      <Button variant="ghost" size="icon" id="theme-toggle" aria-label={es ? 'Cambiar tema' : 'Toggle theme'} onClick={toggleTheme}><IconSun className="theme-sun"/><IconMoon className="theme-moon"/></Button>
+      <Button variant="ghost" size="icon" id="theme-toggle" aria-label={es ? 'Cambiar tema' : 'Toggle theme'} onClick={toggleTheme}><IconSun className="theme-sun" aria-hidden="true"/><IconMoon className="theme-moon" aria-hidden="true"/></Button>
       <div className="md:hidden"><Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger render={<Button variant="secondary" size="icon" aria-label={es ? 'Abrir menú' : 'Open menu'}/> }><IconMenu2 /></SheetTrigger>
-        <SheetContent><SheetHeader className="px-7 pt-16"><SheetTitle>{es ? 'Explorá el portfolio' : 'Explore the portfolio'}</SheetTitle><SheetDescription>Máximo Ozonas · Full Stack Developer</SheetDescription></SheetHeader>
+        <SheetTrigger render={<Button variant="secondary" size="icon" aria-label={es ? 'Abrir menú' : 'Open menu'}/> }><IconMenu2 aria-hidden="true"/></SheetTrigger>
+        <SheetContent className="portfolio-sheet" closeLabel={es ? 'Cerrar menú' : 'Close menu'}><SheetHeader className="px-7 pt-16"><SheetTitle>{es ? 'Explorá el portfolio' : 'Explore the portfolio'}</SheetTitle><SheetDescription>Máximo Ozonas · Full Stack Developer</SheetDescription></SheetHeader>
           <nav aria-label={es ? 'Navegación móvil' : 'Mobile navigation'} className="mobile-nav flex flex-col gap-3 px-7 py-8">{[{ id: 'experience', label: es ? 'Experiencia' : 'Experience' }, { id: 'projects', label: es ? 'Proyectos' : 'Projects' }, { id: 'contact', label: es ? 'Contacto' : 'Contact' }].map(item => <a key={item.id} href={`${home}#${item.id}`} onClick={() => setOpen(false)} className="flex min-h-14 items-center justify-between text-2xl font-bold tracking-tight">{item.label}</a>)}</nav>
-          <a className="mx-7 mt-auto mb-8 text-sm text-muted-foreground" href={`/${locale}/#contact`}>maxiozonas10@gmail.com</a>
+          <a className="mx-7 mt-auto mb-8 flex min-h-11 items-center text-sm text-muted-foreground" href={`/${locale}/#contact`} onClick={() => setOpen(false)}>maxiozonas10@gmail.com</a>
         </SheetContent>
       </Sheet></div>
     </div>

@@ -9,7 +9,7 @@ export default function ScrollStack({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const media = gsap.matchMedia();
-    media.add('(min-width: 1024px) and (min-height: 800px) and (prefers-reduced-motion: no-preference)', () => {
+    media.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
       const cards = Array.from(ref.current!.querySelectorAll<HTMLElement>('.scroll-stack-card'));
       cards.slice(0, -1).forEach((card, index) => {
         gsap.to(card, { scale: .95, transformOrigin: 'top center', ease: 'none', scrollTrigger: { trigger: cards[index + 1], start: 'top 90%', end: 'top 180px', scrub: true } });
