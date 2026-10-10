@@ -301,8 +301,8 @@ export const content: Record<Locale, PortfolioContent> = {
         "company": "Food Partners Patagonia S.A.",
         "role": "Full Stack Developer · Xenova",
         "period": "Sep 2025 - Present",
-        "summary": "ERP and internal applications for the fishing industry.",
-        "description": "Built a modular API and applications for production, staff and hardware management at Food Partners Patagonia.",
+        "summary": "ERP development and project coordination for the fishing industry.",
+        "description": "I coordinate meetings with company teams, gather requirements and organise project priorities. I also handle architecture, development, testing, deployments and application support.",
         "capabilities": [
           "Laravel",
           "React",
@@ -412,8 +412,8 @@ export const content: Record<Locale, PortfolioContent> = {
         "company": "Food Partners Patagonia S.A.",
         "role": "Full Stack Developer · Xenova",
         "period": "Sep 2025 - Actualidad",
-        "summary": "ERP y aplicaciones internas para la industria pesquera.",
-        "description": "Desarrollé una API modular y aplicaciones para producción, gestión de personal y hardware en Food Partners Patagonia.",
+        "summary": "Desarrollo y coordinación de un ERP para la industria pesquera.",
+        "description": "Coordino reuniones con las áreas de la empresa, relevo requerimientos y organizo las prioridades del proyecto. También me ocupo de la arquitectura, el desarrollo, las pruebas, los despliegues y el soporte de las aplicaciones.",
         "capabilities": [
           "Laravel",
           "React",
