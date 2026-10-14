@@ -1,10 +1,12 @@
+import { foodPartnersProjects } from './food-partners';
+import { yogurProjects } from './yogur-griego-rey';
 export type Locale = "en" | "es";
 
 export const profile = {
   name: "Máximo Ozonas",
   role: {
-    en: "Full Stack Developer · Software Development & Project Management",
-    es: "Full Stack Developer · Desarrollo de Software y Gestión de Proyectos",
+    en: "Tech Lead · Software Development & Project Management",
+    es: "Tech Lead · Desarrollo de Software y Gestión de Proyectos",
   },
   email: "maxiozonas10@gmail.com",
   github: "https://github.com/maxiozonas",
@@ -12,8 +14,11 @@ export const profile = {
 };
 
 export interface Job {
+  id: string;
   company: string;
+  url?: string;
   role: string;
+  logo?: { src: string; width: number; height: number };
   period: string;
   summary: string;
   description: string;
@@ -21,17 +26,26 @@ export interface Job {
   capabilities: string[];
 }
 
+export interface ProjectOverviewContent {
+  heading: string;
+  areas: { title: string; description: string }[];
+}
+
 export interface Project {
   slug: string;
   summary: string;
   name: string;
-  url: string;
+  url?: string;
   image: string;
+  mobileImage?: string;
   imageAlt: string;
   type: string;
   description: string;
   details: string[];
   stack: string[];
+  affiliation?: 'Xenova';
+  featured?: boolean;
+  overview?: ProjectOverviewContent;
 }
 
 export interface PortfolioContent {
@@ -87,6 +101,8 @@ export interface PortfolioContent {
 const projectsEn: Project[] = [
   {
     slug: "catalejo-travel",
+    mobileImage: '/projects/catalejo-travel-mobile.webp',
+    affiliation: 'Xenova',
     summary: "Patagonia experiences, seasonal pricing and a custom CMS.",
     name: "Catalejo Travel",
     url: "https://www.catalejotravel.com/es/",
@@ -104,6 +120,8 @@ const projectsEn: Project[] = [
   },
   {
     slug: "quinta-pata",
+    mobileImage: '/projects/quinta-pata-mobile.webp',
+    affiliation: 'Xenova',
     summary: "Pet healthcare affiliations and verifiable digital credentials.",
     name: "Quinta Pata",
     url: "https://5tapata.com.ar/",
@@ -121,6 +139,8 @@ const projectsEn: Project[] = [
   },
   {
     slug: "inspira-ingenieria",
+    mobileImage: '/projects/inspira-ingenieria-mobile.webp',
+    affiliation: 'Xenova',
     summary: "Engineering projects with a secure content administration area.",
     name: "Inspira Ingeniería",
     url: "https://www.ingenieriainspira.com/",
@@ -138,6 +158,8 @@ const projectsEn: Project[] = [
   },
   {
     slug: "madryn-buceo",
+    mobileImage: '/projects/madryn-buceo-mobile.webp',
+    affiliation: 'Xenova',
     summary: "Diving experiences, PADI courses and an interactive dive site map.",
     name: "Madryn Buceo",
     url: "https://madrynbuceo.xenova.com.ar/",
@@ -158,6 +180,8 @@ const projectsEn: Project[] = [
 const projectsEs: Project[] = [
   {
     slug: "catalejo-travel",
+    mobileImage: '/projects/catalejo-travel-mobile.webp',
+    affiliation: 'Xenova',
     summary: "Experiencias en Patagonia, tarifas por temporada y un CMS propio.",
     name: "Catalejo Travel",
     url: "https://www.catalejotravel.com/es/",
@@ -175,6 +199,8 @@ const projectsEs: Project[] = [
   },
   {
     slug: "quinta-pata",
+    mobileImage: '/projects/quinta-pata-mobile.webp',
+    affiliation: 'Xenova',
     summary: "Afiliaciones de salud animal y credenciales digitales verificables.",
     name: "Quinta Pata",
     url: "https://5tapata.com.ar/",
@@ -192,6 +218,8 @@ const projectsEs: Project[] = [
   },
   {
     slug: "inspira-ingenieria",
+    mobileImage: '/projects/inspira-ingenieria-mobile.webp',
+    affiliation: 'Xenova',
     summary: "Proyectos de ingeniería con administración segura de contenidos.",
     name: "Inspira Ingeniería",
     url: "https://www.ingenieriainspira.com/",
@@ -209,6 +237,8 @@ const projectsEs: Project[] = [
   },
   {
     slug: "madryn-buceo",
+    mobileImage: '/projects/madryn-buceo-mobile.webp',
+    affiliation: 'Xenova',
     summary: "Experiencias de buceo, cursos PADI y un mapa interactivo de inmersiones.",
     name: "Madryn Buceo",
     url: "https://madrynbuceo.xenova.com.ar/",
@@ -228,18 +258,18 @@ const projectsEs: Project[] = [
 
 export const content: Record<Locale, PortfolioContent> = {
   en: {
-    eyebrow: "Full Stack Developer · Software Development & Project Management",
-    heroRole: "Full Stack Developer",
-    intro: "I build web and mobile applications and integrate them with the systems each team uses.",
+    eyebrow: "Tech Lead · Software Development & Project Management",
+    heroRole: "Tech Lead",
+    intro: "I lead software projects, build web and mobile applications, and handle their deployment and support.",
     carouselLabel: "Project preview",
     carouselPrevious: "Previous project",
     carouselNext: "Next project",
     experienceTitle: "Work experience",
     experienceIntro:
-      "I work on internal applications, system integrations and production support at Gili and Food Partners Patagonia.",
+      "I develop web and mobile applications, integrate business systems and coordinate technical deliveries at Gili and Xenova.",
     experienceLink: "View projects",
     projectsTitle: "Projects",
-    projectsIntro: "Four client projects spanning travel, engineering, pet health and diving.",
+    projectsIntro: "From an industrial ERP to client websites and management applications.",
     contactTitle: ["Get in touch"],
     contactIntro: "Web and mobile software, system integrations and production operations.",
     nav: {
@@ -273,7 +303,9 @@ export const content: Record<Locale, PortfolioContent> = {
     },
     jobs: [
       {
+        "id": "gili",
         "company": "Gili",
+        "logo": { "src": "/companies/gili.png", "width": 160, "height": 79 },
         "role": "Development Lead",
         "period": "Oct 2025 - Present",
         "summary": "Web and mobile applications for sales and logistics.",
@@ -298,11 +330,14 @@ export const content: Record<Locale, PortfolioContent> = {
         ]
       },
       {
-        "company": "Food Partners Patagonia S.A.",
-        "role": "Full Stack Developer · Xenova",
-        "period": "Sep 2025 - Present",
-        "summary": "ERP development and project coordination for the fishing industry.",
-        "description": "I coordinate meetings with company teams, gather requirements and organise project priorities. I also handle architecture, development, testing, deployments and application support.",
+        "id": "xenova",
+        "company": "Xenova",
+        "logo": { "src": "/companies/xenova.png", "width": 4167, "height": 1490 },
+        "url": "https://xenova.com.ar/en",
+        "role": "Tech Lead · Developer",
+        "period": "Present",
+        "summary": "Technical leadership for client projects and Xenova's own products.",
+        "description": "I handle requirements and scope with clients, define the architecture and coordinate the development team. I also build frontend and backend features and take responsibility for testing, deployments and support.",
         "capabilities": [
           "Laravel",
           "React",
@@ -313,17 +348,17 @@ export const content: Record<Locale, PortfolioContent> = {
         ],
         "scope": [
           {
-            "title": "Production and traceability",
-            "description": "Connected production, quality, cold storage and exports, from raw-material intake to finished-product dispatch. The system keeps traceability records across plants."
+            "title": "Client projects and products",
+            "description": "I work across Xenova's projects: business management systems, public websites, mobile applications, integrations and our own products. Food Partners, Catalejo Travel and Yogur Griego Rey are among the client projects."
           },
           {
-            "title": "HR and monitoring",
-            "description": "Built HR platforms, Mi Legajo for employees and Centinela for system monitoring, with a shared architecture across applications."
+            "title": "Architecture and operations",
+            "description": "I choose the technical approach, organise priorities and review deliveries. I handle integrations, server configuration, production deployments and application maintenance."
           }
         ]
       }
     ],
-    projects: projectsEn,
+    projects: [foodPartnersProjects.en, ...projectsEn.slice(0, 1), yogurProjects.en, ...projectsEn.slice(1)],
     skills: [
       { title: "Languages", items: ["TypeScript", "JavaScript", "PHP", "Python", "Java", "C#"] },
       { title: "Web and backend", items: ["React", "Next.js", "Laravel", ".NET", "Spring Boot", "FastAPI"] },
@@ -339,18 +374,18 @@ export const content: Record<Locale, PortfolioContent> = {
     ],
   },
   es: {
-    eyebrow: "Full Stack Developer · Desarrollo de Software y Gestión de Proyectos",
-    heroRole: "Full Stack Developer",
-    intro: "Desarrollo aplicaciones web y móviles, y las integro con los sistemas que usa cada equipo.",
+    eyebrow: "Tech Lead · Desarrollo de Software y Gestión de Proyectos",
+    heroRole: "Tech Lead",
+    intro: "Dirijo proyectos de software, desarrollo aplicaciones web y móviles, y me ocupo del despliegue y el soporte.",
     carouselLabel: "Vista previa de proyectos",
     carouselPrevious: "Proyecto anterior",
     carouselNext: "Proyecto siguiente",
     experienceTitle: "Experiencia laboral",
     experienceIntro:
-      "Trabajo en aplicaciones internas, integraciones y soporte en producción para Gili y Food Partners Patagonia.",
+      "Desarrollo aplicaciones web y móviles, integro sistemas de negocio y coordino entregas técnicas en Gili y Xenova.",
     experienceLink: "Ver proyectos",
     projectsTitle: "Proyectos",
-    projectsIntro: "Cuatro trabajos para turismo, ingeniería, salud animal y buceo.",
+    projectsIntro: "Desde un ERP industrial hasta sitios web y aplicaciones de gestión para clientes.",
     contactTitle: ["Escribime"],
     contactIntro: "Software web y móvil, integraciones entre sistemas y operación en producción.",
     nav: {
@@ -384,7 +419,9 @@ export const content: Record<Locale, PortfolioContent> = {
     },
     jobs: [
       {
+        "id": "gili",
         "company": "Gili",
+        "logo": { "src": "/companies/gili.png", "width": 160, "height": 79 },
         "role": "Líder de Desarrollo",
         "period": "Oct 2025 - Actualidad",
         "summary": "Aplicaciones web y móviles para ventas y logística.",
@@ -409,11 +446,14 @@ export const content: Record<Locale, PortfolioContent> = {
         ]
       },
       {
-        "company": "Food Partners Patagonia S.A.",
-        "role": "Full Stack Developer · Xenova",
-        "period": "Sep 2025 - Actualidad",
-        "summary": "Desarrollo y coordinación de un ERP para la industria pesquera.",
-        "description": "Coordino reuniones con las áreas de la empresa, relevo requerimientos y organizo las prioridades del proyecto. También me ocupo de la arquitectura, el desarrollo, las pruebas, los despliegues y el soporte de las aplicaciones.",
+        "id": "xenova",
+        "company": "Xenova",
+        "logo": { "src": "/companies/xenova.png", "width": 4167, "height": 1490 },
+        "url": "https://xenova.com.ar/es",
+        "role": "Tech Lead · Developer",
+        "period": "Actualidad",
+        "summary": "Desarrollo y coordinación de proyectos de clientes y productos propios de Xenova.",
+        "description": "Me ocupo del relevamiento y el alcance con los clientes, defino la arquitectura y coordino al equipo de desarrollo. También desarrollo frontend y backend y me hago cargo de las pruebas, los despliegues y el soporte.",
         "capabilities": [
           "Laravel",
           "React",
@@ -424,17 +464,17 @@ export const content: Record<Locale, PortfolioContent> = {
         ],
         "scope": [
           {
-            "title": "Producción y trazabilidad",
-            "description": "Conecté producción, calidad, cámaras y exportación, desde la recepción de materia prima hasta la salida del producto. El sistema registra la trazabilidad entre plantas."
+            "title": "Proyectos y productos",
+            "description": "Trabajo en los proyectos de Xenova: sistemas de gestión, sitios web, aplicaciones móviles, integraciones y productos propios. Entre los trabajos para clientes están Food Partners, Catalejo Travel y Yogur Griego Rey."
           },
           {
-            "title": "RR. HH. y monitoreo",
-            "description": "Desarrollé plataformas de RR. HH., Mi Legajo para el personal y Centinela para el monitoreo de sistemas, con una arquitectura compartida entre las aplicaciones."
+            "title": "Arquitectura y operación",
+            "description": "Elijo las soluciones técnicas, organizo prioridades y reviso las entregas. Me encargo de las integraciones, la configuración de servidores, los despliegues en producción y el mantenimiento de las aplicaciones."
           }
         ]
       }
     ],
-    projects: projectsEs,
+    projects: [foodPartnersProjects.es, ...projectsEs.slice(0, 1), yogurProjects.es, ...projectsEs.slice(1)],
     skills: [
       { title: "Lenguajes", items: ["TypeScript", "JavaScript", "PHP", "Python", "Java", "C#"] },
       { title: "Web y backend", items: ["React", "Next.js", "Laravel", ".NET", "Spring Boot", "FastAPI"] },

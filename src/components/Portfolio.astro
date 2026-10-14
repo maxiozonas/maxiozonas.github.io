@@ -6,6 +6,7 @@ import Footer from './Footer.astro';
 import Motion from './Motion.astro';
 import HeroTitle from './HeroTitle';
 import HeroActions from './HeroActions';
+import HeroArtwork from './HeroArtwork';
 import ProfileCredentials from './ProfileCredentials.astro';
 import TechIcon from './TechIcon.astro';
 import SkillsFolders from './SkillsFolders';
@@ -23,21 +24,22 @@ const es = locale === 'es';
 <Header locale={locale}/>
 <main id="main-content" class="w-full max-w-full overflow-x-clip">
   <section class="hero page-shell" id="top" aria-labelledby="hero-title">
+    <HeroArtwork client:idle/>
     <div class="hero-copy">
       <p class="hero-role" data-hero-enter>{es ? 'Desarrollo de software' : 'Software development'}</p>
       <HeroTitle client:load/>
-      <p class="hero-profession" data-hero-enter>Full Stack Developer</p>
+      <p class="hero-profession" data-hero-enter>{c.heroRole}</p>
       <p class="hero-intro" data-hero-enter>{c.intro}</p>
       <div class="hero-actions-wrap" data-hero-enter><HeroActions client:load locale={locale}/></div>
       <div class="hero-location" data-hero-enter><span>Bahía Blanca, Argentina</span><span>{es ? 'Trabajo remoto' : 'Remote work'}</span></div>
     </div>
   </section>
   <section class="experience-section page-shell grid gap-12 py-24 lg:grid-cols-[.75fr_1.25fr] lg:gap-20 lg:py-32" id="experience" aria-labelledby="experience-title">
-    <div class="experience-intro self-start"><p class="section-eyebrow">{es ? 'Trayectoria' : 'Background'}</p><h2 id="experience-title" class="section-title">{c.experienceTitle}</h2><p class="mt-7 max-w-sm text-base leading-relaxed text-muted-foreground">{c.experienceIntro}</p><a class="text-link mt-8 inline-flex min-h-11 items-center font-bold" href={`/cv-maximo-ozonas-${locale}.pdf`} download>{c.actions.download}</a><div class="experience-key"><span class="status-dot"></span>{es ? 'Gili y Food Partners Patagonia' : 'Gili and Food Partners Patagonia'}</div></div>
-    <ScrollStack client:visible>{c.jobs.map((job, index) => <article class="experience-card scroll-stack-card" id={`experience-${index === 0 ? 'gili' : 'food-partners'}`}>
+    <div class="experience-intro self-start"><p class="section-eyebrow">{es ? 'Trayectoria' : 'Background'}</p><h2 id="experience-title" class="section-title">{c.experienceTitle}</h2><p class="mt-7 max-w-sm text-base leading-relaxed text-muted-foreground">{c.experienceIntro}</p><a class="text-link mt-8 inline-flex min-h-11 items-center font-bold" href={`/cv-maximo-ozonas-${locale}.pdf`} download>{c.actions.download}</a><div class="experience-key"><span class="status-dot"></span>{es ? 'Gili y Xenova' : 'Gili and Xenova'}</div></div>
+    <ScrollStack client:visible>{c.jobs.map(job => <article class="experience-card scroll-stack-card" id={`experience-${job.id}`}>
       <SpotlightCard client:visible className="experience-spotlight" spotlightColor="var(--spotlight-color)" intensity={.12} borderGlow={.25} proximity={30} flare={false}>
         <div class="experience-meta"><span>{job.period}</span><span class="job-current"><span class="status-dot"></span>{es ? 'Actualidad' : 'Current'}</span></div>
-        <div class="job-heading"><span class:list={['company-logo', { 'company-logo-gili': index === 0 }]}><img src={`/companies/${index === 0 ? 'gili' : 'food-partners'}.png`} alt={job.company} width={index === 0 ? 160 : 334} height={index === 0 ? 79 : 72}/></span><h3>{job.role}</h3></div>
+        <div class="job-heading">{job.logo ? <span class:list={['company-logo', { 'company-logo-gili': job.id === 'gili', 'company-logo-xenova': job.id === 'xenova' }]}>{job.url ? <a href={job.url} target="_blank" rel="noopener noreferrer"><img src={job.logo.src} alt={job.company} width={job.logo.width} height={job.logo.height}/></a> : <img src={job.logo.src} alt={job.company} width={job.logo.width} height={job.logo.height}/>}</span> : <span class="company-name">{job.company}</span>}<h3>{job.role}</h3></div>
         <p class="job-summary">{job.summary}</p><p class="job-description">{job.description}</p>
         <dl class="job-scope">{job.scope.map(area => <div><dt>{area.title}</dt><dd>{area.description}</dd></div>)}</dl>
         <ul class="job-stack" aria-label={c.labels.technologies}>{job.capabilities.map(skill => <li><TechIcon name={skill}/></li>)}</ul>

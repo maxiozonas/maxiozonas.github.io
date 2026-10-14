@@ -1,5 +1,13 @@
 {
   "reviewedAt": "2026-10-09",
+  "xenovaPresentation": {
+    "reviewedAt": "2026-10-14",
+    "roleReference": "https://juanirmariani.com/en",
+    "companyReference": "https://xenova.com.ar/es",
+    "projectAffiliationReference": "https://xenova.com.ar/es/projects",
+    "logoSource": "https://xenova.com.ar/images/Imagotipo_Lima.png",
+    "note": "User confirmed responsibility across Xenova client projects and owned products: client scoping, architecture, development, coordination, deployments and support. The current user-selected role label is Tech Lead · Developer. The official lime logo is retained in its original colours. No start date, usage metrics or unrelated project claims are copied from the reference portfolio."
+  },
   "policy": "Accomplishments describe implemented functionality. No production deployment or numeric business outcomes inferred. B2B entry describes the implemented application foundation, not a finished sales workflow.",
   "companies": {
     "Gili": [

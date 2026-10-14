@@ -11,12 +11,11 @@ export function getTechnologyUsage(locale: Locale): Record<string, TechnologyUse
     const technologies = new Set([...project.stack, ...caseStudies[locale][project.slug].architecture.flatMap(layer => layer.technologies)]);
     for (const technology of technologies) add(technology, { name: project.name, href: `/${locale}/projects/${project.slug}/` });
   }
-  content[locale].jobs.forEach((job, index) => {
-    const slug = index === 0 ? 'gili' : 'food-partners';
+  content[locale].jobs.forEach(job => {
     const technologies = new Set(job.capabilities);
     if (technologies.has('Laravel')) technologies.add('PHP');
     if (technologies.has('Expo')) technologies.add('React Native');
-    for (const technology of technologies) add(technology, { name: index === 0 ? 'Gili' : 'Food Partners', href: `#experience-${slug}` });
+    for (const technology of technologies) add(technology, { name: job.company, href: `#experience-${job.id}` });
   });
   return usage;
 }

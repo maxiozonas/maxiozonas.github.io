@@ -7,28 +7,43 @@ const browser = await chromium.launch({
 });
 mkdirSync('artifacts', { recursive: true });
 const results = [];
+const selected = new Set(process.argv.slice(2));
 for (const [slug, url] of [
   ['catalejo-travel', 'https://www.catalejotravel.com/es/'],
   ['quinta-pata', 'https://5tapata.com.ar/'],
   ['inspira-ingenieria', 'https://www.ingenieriainspira.com/'],
   ['madryn-buceo', 'https://madrynbuceo.xenova.com.ar/'],
+  ['yogur-griego-rey', 'https://yogurgriegorey.com.ar/'],
 ]) {
-  const page = await browser.newPage({ viewport: { width: 1440, height: 1080 }, deviceScaleFactor: 1 });
-  try {
-    const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 25000 });
-    await page.waitForLoadState('networkidle', { timeout: 18000 }).catch(() => {});
-    await page.evaluate(async () => {
-      await Promise.all([...document.images].filter(image => image.loading !== 'lazy').map(image => image.decode().catch(() => {})));
-    });
-    await page.waitForTimeout(1500);
-    const title = await page.title();
-    if (!response?.ok() || /error|not found|unavailable/i.test(title)) throw new Error(`${response?.status()}: ${title}`);
-    await page.screenshot({ path: `public/projects/${slug}.png` });
-    results.push({ slug, url, title, status: response.status(), capturedAt: new Date().toISOString() });
-  } catch (error) {
-    results.push({ slug, url, error: String(error), retainedExistingScreenshot: true });
-  } finally {
-    await page.close();
+  if (selected.size && !selected.has(slug)) continue;
+  for (const [device, viewport, deviceScaleFactor] of [
+    ['desktop', { width: 1440, height: 900 }, 1],
+    ['mobile', { width: 390, height: 844 }, 2],
+  ]) {
+    const context = await browser.newContext({ viewport, deviceScaleFactor, reducedMotion: 'reduce', isMobile: device === 'mobile', hasTouch: device === 'mobile' });
+    const page = await context.newPage();
+    try {
+      const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 25000 });
+      await page.waitForLoadState('networkidle', { timeout: 8000 }).catch(() => {});
+      await page.evaluate(() => document.fonts.ready);
+      const reject = page.getByRole('button', { name: /^(rechazar|reject|decline|solo necesarias|reject all)$/i }).first();
+      if (await reject.isVisible()) await reject.click();
+      await page.evaluate(async () => {
+        await Promise.all([...document.images].filter(image => image.loading !== 'lazy').map(image => image.decode().catch(() => {})));
+      });
+      await page.waitForTimeout(1500);
+      const title = await page.title();
+      if (!response?.ok() || /error|not found|unavailable/i.test(title)) throw new Error(`${response?.status()}: ${title}`);
+      const file = `${slug}${device === 'mobile' ? '-mobile' : ''}.png`;
+      await page.screenshot({ path: `public/projects/${file}` });
+      results.push({ slug, device, url, file, viewport, deviceScaleFactor, title, status: response.status(), capturedAt: new Date().toISOString() });
+      console.log(`Captured ${slug}: ${device}`);
+    } catch (error) {
+      results.push({ slug, device, url, error: String(error), retainedExistingScreenshot: true });
+      console.log(`Capture failed for ${slug}: ${device}: ${String(error)}`);
+    } finally {
+      await context.close();
+    }
   }
 }
 await browser.close();

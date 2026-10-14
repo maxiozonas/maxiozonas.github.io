@@ -1,4 +1,6 @@
 import type { Locale } from './content';
+import { foodPartnersStudies } from './food-partners';
+import { yogurStudies } from './yogur-griego-rey';
 interface Feature { title: string; text: string; }
 interface Layer { name: string; description: string; technologies: string[]; }
 export interface CaseStudy {
@@ -12,6 +14,8 @@ export interface CaseStudy {
 }
 export const caseStudies: Record<Locale, Record<string, CaseStudy>> = {
   es: {
+    'food-partners': foodPartnersStudies.es,
+    'yogur-griego-rey': yogurStudies.es,
     'catalejo-travel': {
       focus: 'Contenido, tarifas y consultas',
       deliverable: 'Sitio público + CMS + API',
@@ -102,6 +106,8 @@ export const caseStudies: Record<Locale, Record<string, CaseStudy>> = {
     },
   },
   en: {
+    'food-partners': foodPartnersStudies.en,
+    'yogur-griego-rey': yogurStudies.en,
     'catalejo-travel': {
       focus: 'Content, pricing and enquiries', deliverable: 'Public website + CMS + API',
       context: 'I built the Catalejo Travel website and admin app so the agency could edit excursions, images and prices. Pricing varies by season and passenger type. The catalogue is available in Spanish and English, and the planner sends enquiries to the sales team through WhatsApp.',

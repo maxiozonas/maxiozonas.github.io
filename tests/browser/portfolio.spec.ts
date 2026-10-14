@@ -3,6 +3,44 @@ import AxeBuilder from '@axe-core/playwright';
 import { mkdirSync } from 'node:fs';
 mkdirSync('artifacts/screenshots', { recursive: true });
 
+test('Madryn Buceo preview keeps the complete website image visible', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/es/');
+  const preview = page.locator('[data-project="madryn-buceo"] .project-image-link');
+  await preview.scrollIntoViewIfNeeded();
+  const image = preview.locator('.project-card-image').first();
+  await image.evaluate(element => (element as HTMLImageElement).decode());
+  const visible = await image.evaluate(element => {
+    const img = element as HTMLImageElement;
+    const rect = img.getBoundingClientRect();
+    return { height: rect.height, expectedHeight: rect.width * img.naturalHeight / img.naturalWidth };
+  });
+  expect(Math.abs(visible.height - visible.expectedHeight)).toBeLessThan(2);
+});
+
+for (const locale of ['es', 'en']) {
+  test(`${locale}: project details show complete desktop and mobile views at both viewport sizes`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    for (const width of [1440, 390]) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const slug of ['catalejo-travel', 'quinta-pata', 'inspira-ingenieria', 'madryn-buceo', 'yogur-griego-rey']) {
+        await page.goto(`/${locale}/projects/${slug}/`);
+        const showcase = page.locator('.case-showcase');
+        await showcase.scrollIntoViewIfNeeded();
+        await expect(showcase.locator('.project-desktop')).toBeVisible();
+        await expect(showcase.locator('.project-phone')).toBeVisible();
+        for (const image of await showcase.locator('img').all()) {
+          await image.evaluate(element => (element as HTMLImageElement).decode());
+          expect(await image.evaluate(element => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+        }
+        expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+        await expect(page.locator('.case-contribution-title')).toHaveText(locale === 'es' ? 'Mi participación' : 'My contribution');
+      }
+    }
+  });
+}
+
 for (const locale of ['es', 'en']) {
   for (const [width, height] of [[1440, 900], [1024, 768], [768, 900], [390, 844], [320, 700]]) {
     test(`${locale}: responsive layout at ${width}px`, async ({ page }) => {
@@ -61,7 +99,7 @@ for (const locale of ['es', 'en']) {
       await page.screenshot({ path: `artifacts/screenshots/${locale}-full-${theme}.png`, fullPage: true });
       const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
       expect(audit.violations).toEqual([]);
-      await page.locator('.project-image-link').first().click();
+      await page.locator('[data-project="catalejo-travel"] .project-image-link').click();
       await expect(page).toHaveURL(new RegExp(`/${locale}/projects/catalejo-travel/`));
       await expect(page.locator('.detail-heading h1')).toHaveText('Catalejo Travel');
       expect(await page.locator('link[rel="canonical"]').getAttribute('href')).toContain(`/${locale}/projects/catalejo-travel/`);
@@ -78,7 +116,7 @@ for (const locale of ['es', 'en']) {
       await expect(page).toHaveURL(new RegExp(`/${locale === 'es' ? 'en' : 'es'}/projects/catalejo-travel/`));
       await page.locator('.back-link').click();
       await expect(page).toHaveURL(/#projects$/);
-      await expect(page.locator('.project-card')).toHaveCount(4);
+      await expect(page.locator('.project-card')).toHaveCount(6);
     });
   }
 }
@@ -98,11 +136,39 @@ test('Magic Bento reacts to the pointer and native route transitions run', async
   expect(await card.evaluate(element => Number((element as HTMLElement).style.getPropertyValue('--glow-intensity')))).toBeGreaterThan(0);
   expect(await card.evaluate(element => (element as HTMLElement).style.transform)).toContain('rotate');
   await page.screenshot({ path: 'artifacts/screenshots/magic-bento-hover.png' });
-  await page.locator('.project-image-link').first().click();
+  await page.locator('[data-project="catalejo-travel"] .project-image-link').click();
   await expect(page).toHaveURL(/\/es\/projects\/catalejo-travel\/$/);
   expect(await page.evaluate(() => sessionStorage.getItem('portfolio-transition'))).toBe('true');
   await page.goBack();
-  await expect(page.locator('.project-card')).toHaveCount(4);
+  await expect(page.locator('.project-card')).toHaveCount(6);
+});
+
+test('hero dot grid responds to the pointer, follows the theme and stops for reduced motion', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.addInitScript(() => localStorage.setItem('theme', 'light'));
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/es/');
+  const canvas = page.locator('.hero-artwork canvas[data-ready="true"]');
+  await expect(canvas).toBeVisible();
+  await page.waitForTimeout(1800);
+  const before = await canvas.screenshot();
+  await page.mouse.move(1180, 360, { steps: 10 });
+  await page.waitForTimeout(350);
+  const after = await canvas.screenshot();
+  expect(after.equals(before)).toBe(false);
+  await page.locator('#theme-toggle').click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect.poll(() => canvas.evaluate(element => {
+    const gl = (element as HTMLCanvasElement).getContext('webgl2')!;
+    const program = gl.getParameter(gl.CURRENT_PROGRAM) as WebGLProgram;
+    const location = gl.getUniformLocation(program, 'uActive');
+    return location ? Array.from(gl.getUniform(program, location) as Float32Array).map(value => Math.round(value * 255)) : [];
+  })).toEqual([220, 255, 113]);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(page.locator('.hero-artwork canvas')).toHaveCount(0);
+  await expect(page.locator('.hero-artwork-fallback')).toBeVisible();
+  expect(errors).toEqual([]);
 });
 
 test('theme persists and follows system preference before manual selection', async ({ page }) => {
@@ -173,7 +239,11 @@ test('portfolio and project scope work without JavaScript', async ({ browser }) 
   await page.goto('/es/');
   await expect(page.locator('#hero-title')).toBeVisible();
   await expect(page.locator('.job-summary')).toHaveCount(2);
-  await expect(page.locator('#experience-food-partners .job-scope')).toContainText('Mi Legajo');
+  await expect(page.locator('#experience-xenova .job-heading')).toContainText('Tech Lead');
+  await expect(page.locator('[data-project="food-partners"]')).toContainText('ERP');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(page.locator('.hero-artwork-fallback')).toBeVisible();
+  await expect(page.locator('.hero-artwork canvas')).toHaveCount(0);
   await page.locator('.project-image-link').first().click();
   await expect(page.locator('#scope-title')).toHaveText('Alcance del trabajo');
   await context.close();
@@ -266,9 +336,14 @@ test('experience precedes projects, bento stays dense and reduced motion stops e
   expect(await context.evaluate(gl => gl!.isContextLost())).toBeTruthy();
   await page.locator('#projects').scrollIntoViewIfNeeded();
   const cards = page.locator('.magic-bento-card');
-  const images = page.locator('.project-image-link');
+  const images = page.locator('.project-card:not(.project-card-featured):not(.project-card-last) .project-image-link');
   const heights = await images.evaluateAll(elements => elements.map(element => element.getBoundingClientRect().height));
   expect(Math.max(...heights) - Math.min(...heights)).toBeLessThan(2);
+  const featured = page.locator('.project-card-featured');
+  expect((await featured.boundingBox())!.width).toBeGreaterThan((await cards.nth(1).boundingBox())!.width);
+  expect((await cards.last().boundingBox())!.width).toBe((await featured.boundingBox())!.width);
+  await expect(featured.locator('img')).toHaveCount(0);
+  await expect(featured.locator('.project-overview')).toContainText('Mi Legajo');
   expect(await cards.first().evaluate(element => getComputedStyle(element).borderTopWidth)).toBe('1px');
   expect(await page.locator('.bento-section').evaluate(element => getComputedStyle(element).gridAutoFlow)).toContain('dense');
 });

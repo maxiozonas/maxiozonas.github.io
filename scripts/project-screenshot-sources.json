@@ -1,0 +1,142 @@
+[
+  {
+    "slug": "catalejo-travel",
+    "device": "desktop",
+    "url": "https://www.catalejotravel.com/es/",
+    "file": "catalejo-travel.png",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "deviceScaleFactor": 1,
+    "title": "Catalejo Travel | Patagonia en modo 4x4",
+    "status": 200,
+    "capturedAt": "2026-10-14T16:21:14.995Z"
+  },
+  {
+    "slug": "catalejo-travel",
+    "device": "mobile",
+    "url": "https://www.catalejotravel.com/es/",
+    "file": "catalejo-travel-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "deviceScaleFactor": 2,
+    "title": "Catalejo Travel | Patagonia en modo 4x4",
+    "status": 200,
+    "capturedAt": "2026-10-14T16:21:25.997Z"
+  },
+  {
+    "slug": "quinta-pata",
+    "device": "desktop",
+    "url": "https://5tapata.com.ar/",
+    "file": "quinta-pata.png",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "deviceScaleFactor": 1,
+    "title": "5ta Pata OSPM — Obra Social Para Mascotas",
+    "status": 200,
+    "capturedAt": "2026-10-14T16:21:36.687Z"
+  },
+  {
+    "slug": "quinta-pata",
+    "device": "mobile",
+    "url": "https://5tapata.com.ar/",
+    "file": "quinta-pata-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "deviceScaleFactor": 2,
+    "title": "5ta Pata OSPM — Obra Social Para Mascotas",
+    "status": 200,
+    "capturedAt": "2026-10-14T16:21:47.423Z"
+  },
+  {
+    "slug": "inspira-ingenieria",
+    "device": "desktop",
+    "url": "https://www.ingenieriainspira.com/",
+    "file": "inspira-ingenieria.png",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "deviceScaleFactor": 1,
+    "title": "Inspira Ingeniería",
+    "status": 200,
+    "capturedAt": "2026-10-14T16:21:58.674Z"
+  },
+  {
+    "slug": "inspira-ingenieria",
+    "device": "mobile",
+    "url": "https://www.ingenieriainspira.com/",
+    "file": "inspira-ingenieria-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "deviceScaleFactor": 2,
+    "title": "Inspira Ingeniería",
+    "status": 200,
+    "capturedAt": "2026-10-14T16:22:09.232Z"
+  },
+  {
+    "slug": "madryn-buceo",
+    "device": "desktop",
+    "url": "https://madrynbuceo.xenova.com.ar/",
+    "file": "madryn-buceo.png",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "deviceScaleFactor": 1,
+    "title": "Madryn Buceo | Aventuras Submarinas en Puerto Madryn",
+    "status": 200,
+    "capturedAt": "2026-10-14T16:22:20.639Z"
+  },
+  {
+    "slug": "madryn-buceo",
+    "device": "mobile",
+    "url": "https://madrynbuceo.xenova.com.ar/",
+    "file": "madryn-buceo-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "deviceScaleFactor": 2,
+    "title": "Madryn Buceo | Aventuras Submarinas en Puerto Madryn",
+    "status": 200,
+    "capturedAt": "2026-10-14T16:22:31.638Z"
+  },
+  {
+    "slug": "yogur-griego-rey",
+    "device": "desktop",
+    "url": "https://yogurgriegorey.com.ar/",
+    "file": "yogur-griego-rey.png",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "deviceScaleFactor": 1,
+    "title": "Yogur Griego Rey — Yogur griego artesanal en Puerto Madryn",
+    "status": 200,
+    "capturedAt": "2026-10-14T16:22:42.318Z"
+  },
+  {
+    "slug": "yogur-griego-rey",
+    "device": "mobile",
+    "url": "https://yogurgriegorey.com.ar/",
+    "file": "yogur-griego-rey-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "deviceScaleFactor": 2,
+    "title": "Yogur Griego Rey — Yogur griego artesanal en Puerto Madryn",
+    "status": 200,
+    "capturedAt": "2026-10-14T16:22:52.994Z"
+  }
+]

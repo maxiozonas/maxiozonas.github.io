@@ -1,7 +1,31 @@
 {
-  "reviewedAt": "2026-10-09",
+  "reviewedAt": "2026-10-14",
   "policy": "Case study content describes functionality observed in these repository snapshots. No sales, performance or production-rollout metrics are inferred.",
   "projects": {
+    "food-partners": {
+      "sourceManifest": "scripts/experience-content-sources.json",
+      "companyKey": "Food Partners",
+      "affiliationSource": "https://xenova.com.ar/es/projects/food-partners",
+      "note": "Reuses the reviewed Food Partners ERP scope previously presented as experience. The preview is a short text summary of production, traceability, quality, cold storage, HR and monitoring. Application screenshots are omitted at the user's request. The company logo is used only for navigation and social metadata. No private application URL or numeric outcome is inferred; technology claims follow the reviewed source code."
+    },
+    "yogur-griego-rey": {
+      "repository": "XenovaDevs/yogur-griego-rey",
+      "commit": "6c154fefe585053d387dc441743de407529bee7f",
+      "publicSite": "https://yogurgriegorey.com.ar/",
+      "affiliationSource": "https://xenova.com.ar/es/projects/yogur-griego-rey",
+      "sources": [
+        "apps/gestion/src/App.tsx",
+        "apps/backend/app/Http/Controllers/Api/VentaController.php",
+        "apps/backend/app/Services/ArqueoService.php",
+        "apps/backend/app/Services/RepartoService.php",
+        "apps/backend/app/Services/ProduccionService.php",
+        "apps/backend/app/Services/GananciasService.php",
+        "apps/landing/src/lib/catalog.ts",
+        "apps/landing/src/lib/whatsapp.ts",
+        "apps/landing/src/components/cart/cart-context.tsx"
+      ],
+      "note": "Current source includes operational modules beyond the older README foundation roadmap. The screenshot shows the public website. Internal implementation is distinguished from a verified production deployment; WhatsApp orders are not an online payment checkout."
+    },
     "catalejo-travel": {
       "repository": "XenovaDevs/catalejo",
       "commit": "0b778d504a5a4c8918904b46ad0b003bea038d81",
@@ -28,6 +52,7 @@
       "note": "The older root README describes the initially contracted scope. Current backend source and README include Usuarios, Afiliados, Planes and Tokenizacion. Repository implementation is distinguished from public deployment."
     },
     "inspira-ingenieria": {
+      "affiliationSource": "https://xenova.com.ar/es/projects",
       "repository": "xurbyte/inspira-ingenieria",
       "commit": "e96ed4e443126856ec4849805434cecddc70aec6",
       "sources": [

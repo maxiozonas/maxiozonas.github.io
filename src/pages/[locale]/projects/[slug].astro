@@ -7,6 +7,7 @@ import TechIcon from '../../../components/TechIcon.astro';
 import Motion from '../../../components/Motion.astro';
 import { content } from '../../../data/content';
 import { caseStudies } from '../../../data/case-studies';
+import { projectContributions } from '../../../data/project-contributions';
 import type { Locale, Project } from '../../../data/content';
 export function getStaticPaths() {
   return (['es', 'en'] as Locale[]).flatMap(locale => content[locale].projects.map((project, index, projects) => ({
@@ -19,23 +20,40 @@ const { locale, project, next } = Astro.props;
 const es = locale === 'es';
 const c = content[locale];
 const study = caseStudies[locale][project.slug]!;
+const contribution = projectContributions[locale][project.slug] ?? project.description;
 ---
 <Base locale={locale} title={`${project.name} | Máximo Ozonas`} description={project.summary} image={project.image}>
   <Header locale={locale} detail/>
   <main id="main-content" class="project-detail-page page-shell">
     <a class="back-link" href={`/${locale}/#projects`}>{es ? 'Todos los proyectos' : 'All projects'}</a>
-    <div class="detail-heading">
-      <div><p class="project-type">{es ? 'Caso de proyecto' : 'Project case study'} / {project.type}</p><h1 style={`view-transition-name: title-${project.slug}`}>{project.name}</h1><p class="detail-summary">{project.summary}</p><a class="button button-primary" href={project.url} target="_blank" rel="noopener noreferrer">{c.actions.visit}</a></div>
-      <dl class="detail-facts"><div><dt>{es ? 'Entregables' : 'Deliverables'}</dt><dd>{study.deliverable}</dd></div><div><dt>{es ? 'Enfoque' : 'Focus'}</dt><dd>{study.focus}</dd></div><div><dt>Stack</dt><dd><ul class="detail-stack">{project.stack.map(technology => <li><TechIcon name={technology}/></li>)}</ul></dd></div></dl>
+    <div class="case-hero">
+      <header class="detail-heading">
+        <div class="case-heading-meta"><p class="project-type">{project.type}</p>{project.affiliation && <p class="project-affiliation">{es ? 'Desarrollado en' : 'Built at'} <a href={`https://xenova.com.ar/${locale}`} target="_blank" rel="noopener noreferrer">{project.affiliation}</a></p>}</div>
+        <h1 style={`view-transition-name: title-${project.slug}`}>{project.name}</h1>
+        <div class="detail-intro-row"><p class="detail-summary">{project.summary}</p>{project.url && <a class="button button-primary" href={project.url} target="_blank" rel="noopener noreferrer">{c.actions.visit}</a>}</div>
+      </header>
+      <dl class="detail-facts"><div><dt>{es ? 'Entregables' : 'Deliverables'}</dt><dd>{study.deliverable}</dd></div><div><dt>{es ? 'Enfoque' : 'Focus'}</dt><dd>{study.focus}</dd></div><div><dt>{es ? 'Tecnologías' : 'Technologies'}</dt><dd><ul class="detail-stack">{project.stack.map(technology => <li><TechIcon name={technology}/></li>)}</ul></dd></div></dl>
     </div>
-    <div class="detail-image"><ProjectImage project={project} priority shared large/></div>
-    <nav class="case-navigation" aria-label={es ? 'Secciones del proyecto' : 'Project sections'}><a href="#scope-title">{es ? 'Contexto' : 'Context'}</a><a href="#features-title">{es ? 'Funcionalidades' : 'Features'}</a><a href="#architecture-title">{es ? 'Arquitectura' : 'Architecture'}</a><a href="#decisions-title">{es ? 'Decisiones' : 'Decisions'}</a></nav>
-    <section class="case-context" aria-labelledby="scope-title"><div><p class="section-eyebrow">{es ? 'El problema' : 'The problem'}</p><h2 id="scope-title" class="case-title">{es ? 'Alcance del trabajo' : 'Project scope'}</h2></div><div class="detail-deliverables"><p>{study.context}</p><p>{project.description}</p></div></section>
-    <section class="case-section" aria-labelledby="features-title"><p class="section-eyebrow">{es ? 'Aplicación' : 'Application'}</p><h2 id="features-title" class="case-title">{es ? 'Funcionalidades' : 'Features'}</h2><div class="case-features">{study.features.map((feature) => <article data-reveal><h3>{feature.title}</h3><p>{feature.text}</p></article>)}</div></section>
-    <section class="case-section" aria-labelledby="architecture-title"><p class="section-eyebrow">{es ? 'Implementación' : 'Implementation'}</p><h2 id="architecture-title" class="case-title">{es ? 'Arquitectura' : 'Architecture'}</h2><div class="case-architecture">{study.architecture.map((layer) => <article><h3>{layer.name}</h3><p>{layer.description}</p><ul>{layer.technologies.map(technology => <li><TechIcon name={technology}/></li>)}</ul></article>)}</div></section>
-    <section class="case-section case-decisions" aria-labelledby="decisions-title"><div><p class="section-eyebrow">{es ? 'Desarrollo' : 'Development'}</p><h2 id="decisions-title" class="case-title">{es ? 'Decisiones técnicas' : 'Technical decisions'}</h2></div><div>{study.decisions.map(decision => <article data-reveal><h3>{decision.title}</h3><p>{decision.text}</p></article>)}</div></section>
-    <section class="case-result" aria-labelledby="result-title"><p class="section-eyebrow">{es ? 'Entrega' : 'Delivery'}</p><h2 id="result-title" class="case-title">{es ? 'Resultado' : 'Outcome'}</h2><p>{study.result}</p></section>
-    <a class="next-project" href={`/${locale}/projects/${next.slug}/`} aria-labelledby="next-project-kicker next-project-title next-project-action">
+    <section class="case-showcase" aria-labelledby="showcase-title">
+      <div class="case-showcase-heading"><h2 id="showcase-title">{project.overview ? (es ? 'La aplicación' : 'The application') : (es ? 'La web, en escritorio y móvil' : 'The website, on desktop and mobile')}</h2>{!project.overview && <p>{es ? 'Sitio público' : 'Public website'}</p>}</div>
+      <div class:list={['detail-image', { 'detail-image-overview': Boolean(project.overview) }]}><ProjectImage project={project} priority shared large/></div>
+    </section>
+    <div class="case-body">
+      <nav class="case-navigation" aria-label={es ? 'Secciones del proyecto' : 'Project sections'}>
+        <span class="case-navigation-label">{es ? 'En este proyecto' : 'In this project'}</span>
+        <a href="#scope-title">{es ? 'Contexto' : 'Context'}</a>
+        <a href="#features-title">{es ? 'Funcionalidades' : 'Features'}</a>
+        <a href="#architecture-title">{es ? 'Arquitectura' : 'Architecture'}</a>
+        <a href="#decisions-title">{es ? 'Decisiones' : 'Decisions'}</a>
+        <a href="#result-title">{es ? 'Entrega' : 'Delivery'}</a>
+      </nav>
+      <section class="case-context" aria-labelledby="scope-title"><div><p class="section-eyebrow">{es ? 'Contexto y participación' : 'Context and contribution'}</p><h2 id="scope-title" class="case-title">{es ? 'Alcance del trabajo' : 'Project scope'}</h2></div><div class="detail-deliverables"><p>{study.context}</p><h3 class="case-contribution-title">{es ? 'Mi participación' : 'My contribution'}</h3><p>{contribution}</p></div></section>
+      <section class="case-section" aria-labelledby="features-title"><div class="case-section-heading"><p class="section-eyebrow">{es ? 'Aplicación' : 'Application'}</p><h2 id="features-title" class="case-title">{es ? 'Funcionalidades' : 'Features'}</h2></div><div class="case-features">{study.features.map((feature) => <article data-reveal><h3>{feature.title}</h3><p>{feature.text}</p></article>)}</div></section>
+      <section class="case-section" aria-labelledby="architecture-title"><div class="case-section-heading"><p class="section-eyebrow">{es ? 'Implementación' : 'Implementation'}</p><h2 id="architecture-title" class="case-title">{es ? 'Cómo está construido' : 'How it is built'}</h2></div><div class="case-architecture">{study.architecture.map((layer) => <article><div><h3>{layer.name}</h3><ul>{layer.technologies.map(technology => <li><TechIcon name={technology}/></li>)}</ul></div><p>{layer.description}</p></article>)}</div></section>
+      <section class="case-section case-decisions" aria-labelledby="decisions-title"><div><p class="section-eyebrow">{es ? 'Criterios de desarrollo' : 'Development choices'}</p><h2 id="decisions-title" class="case-title">{es ? 'Decisiones técnicas' : 'Technical decisions'}</h2></div><div>{study.decisions.map(decision => <article data-reveal><h3>{decision.title}</h3><p>{decision.text}</p></article>)}</div></section>
+      <section class="case-result" aria-labelledby="result-title"><p class="section-eyebrow">{es ? 'Entrega' : 'Delivery'}</p><h2 id="result-title" class="case-title">{es ? 'Qué quedó implementado' : 'What was implemented'}</h2><p>{study.result}</p></section>
+    </div>
+    <a class="next-project case-next" href={`/${locale}/projects/${next.slug}/`} aria-labelledby="next-project-kicker next-project-title next-project-action">
       <div class="next-project-copy">
         <p class="next-project-kicker" id="next-project-kicker">{es ? 'Siguiente proyecto' : 'Next project'}</p>
         <h2 id="next-project-title" style={`view-transition-name: title-${next.slug}`}>{next.name}</h2>
@@ -48,3 +66,15 @@ const study = caseStudies[locale][project.slug]!;
   <Footer locale={locale}/>
   <Motion/>
 </Base>
+
+<script>
+  const sectionLinks = document.querySelectorAll<HTMLAnchorElement>('.case-navigation a');
+  const updateCurrentSection = () => {
+    for (const link of sectionLinks) {
+      if (link.hash === location.hash) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    }
+  };
+  updateCurrentSection();
+  window.addEventListener('hashchange', updateCurrentSection);
+</script>

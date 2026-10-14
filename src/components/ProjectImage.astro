@@ -1,10 +1,13 @@
 ---
 import type { Project } from "../data/content";
 import { projectSrcset, previewSizes } from "../lib/project-images";
+import ProjectOverview from './ProjectOverview';
+import ProjectDevices from './ProjectDevices';
 interface Props { project: Project; priority?: boolean; shared?: boolean; large?: boolean; }
 const { project, priority = false, shared = false, large = false } = Astro.props;
+const locale = Astro.url.pathname.startsWith('/es/') ? 'es' : 'en';
 ---
-<picture>
+{project.overview ? <ProjectOverview overview={project.overview} transitionName={shared ? `project-${project.slug}` : undefined}/> : large ? <ProjectDevices project={project} locale={locale} priority={priority} shared={shared}/> : <picture>
   <source srcset={projectSrcset(project.slug)} sizes={large ? "(min-width: 1440px) 1280px, 90vw" : previewSizes} type="image/webp" />
   <img
     class="project-card-image"
@@ -17,4 +20,4 @@ const { project, priority = false, shared = false, large = false } = Astro.props
     decoding="async"
     style={shared ? `view-transition-name: project-${project.slug}` : undefined}
   />
-</picture>
+</picture>}
