@@ -51,6 +51,8 @@ React Bits Animated Content provides the working wheel's scroll entrance. Folder
 
 `ProjectDevices` presents the public websites in CSS browser and phone frames on project cards and detail pages, retaining the complete screenshots without cropping the hero. The space around the device frames is transparent so the composition sits directly on its parent surface. On small screens, the detail views stack vertically. Case studies have a full-width heading, deliverables, explicit personal contributions, readable architecture rows and a plain text section index with a selected-link underline. Food Partners retains its text overview instead of application screenshots.
 
+Project cards list their complete documented stack with small local technology logos and readable labels. Detail headings, showcases, case sections and next-project links share a 1160px content container. The delivery and next-project panels use the same responsive inner padding.
+
 Native View Transitions connect project images and titles across documents. GSAP handles entrances, reveals and desktop experience pinning. Motion respects `prefers-reduced-motion`; WebGL fallbacks retain the static site.
 
 The existing GitHub Pages workflow deploys on a push to its configured branch. Local development does not publish the site.

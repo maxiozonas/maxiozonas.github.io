@@ -3,7 +3,7 @@
 // cards; spotlight is scoped to the grid, with reversible GSAP effects.
 import { useEffect, useRef, type CSSProperties } from 'react';
 import { gsap } from 'gsap';
-import { Badge } from '@/components/ui/badge';
+import { technologyIcons } from '@/data/technologies';
 import type { Project, Locale } from '@/data/content';
 import { cn } from '@/lib/utils';
 import ProjectOverview from '../ProjectOverview';
@@ -71,8 +71,16 @@ export default function MagicBento({ projects, locale, enableTilt = true, spotli
       <a className={cn('project-image-link relative mx-6 block overflow-hidden rounded-t-xl md:mx-8', project.overview && 'project-overview-link')} href={`/${locale}/projects/${project.slug}/`} aria-label={`${locale === 'es' ? 'Ver proyecto' : 'View project'}: ${project.name}`}>
         {project.overview ? <ProjectOverview overview={project.overview} transitionName={`project-${project.slug}`}/> : <ProjectDevices project={project} locale={locale} variant="card" wide={wide} shared/>}
       </a>
-      <div className="relative flex flex-wrap items-center justify-between gap-4 px-6 py-5 md:px-8">
-        <div className="flex flex-wrap gap-2">{project.stack.slice(0, 2).map(tech => <Badge variant="secondary" key={tech}>{tech}</Badge>)}</div>
+      <div className="project-card-footer relative px-6 py-5 md:px-8">
+        <ul className="project-card-stack" aria-label={locale === 'es' ? 'Tecnologías del proyecto' : 'Project technologies'}>
+          {project.stack.map(name => {
+            const icon = technologyIcons[name];
+            return <li key={name}><span className="tech-label">
+              {icon && <img className={cn('tech-icon', icon.mono && 'tech-icon-mono')} src={`/technologies/${icon.slug}.svg`} width="20" height="20" alt="" loading="lazy" decoding="async"/>}
+              <span>{name}</span>
+            </span></li>;
+          })}
+        </ul>
         <a className="project-detail-link flex min-h-11 items-center gap-2 text-sm font-bold" href={`/${locale}/projects/${project.slug}/`}>{locale === 'es' ? 'Ver caso' : 'View case'}</a>
       </div>
     </article>;

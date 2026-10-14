@@ -342,7 +342,7 @@ test('experience precedes projects, bento stays dense and reduced motion stops e
   const featured = page.locator('.project-card-featured');
   expect((await featured.boundingBox())!.width).toBeGreaterThan((await cards.nth(1).boundingBox())!.width);
   expect((await cards.last().boundingBox())!.width).toBe((await featured.boundingBox())!.width);
-  await expect(featured.locator('img')).toHaveCount(0);
+  await expect(featured.locator('.project-image-link img')).toHaveCount(0);
   await expect(featured.locator('.project-overview')).toContainText('Mi Legajo');
   expect(await cards.first().evaluate(element => getComputedStyle(element).borderTopWidth)).toBe('1px');
   expect(await page.locator('.bento-section').evaluate(element => getComputedStyle(element).gridAutoFlow)).toContain('dense');

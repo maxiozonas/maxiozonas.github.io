@@ -25,6 +25,7 @@ const contribution = projectContributions[locale][project.slug] ?? project.descr
 <Base locale={locale} title={`${project.name} | Máximo Ozonas`} description={project.summary} image={project.image}>
   <Header locale={locale} detail/>
   <main id="main-content" class="project-detail-page page-shell">
+    <div class="project-detail-content">
     <a class="back-link" href={`/${locale}/#projects`}>{es ? 'Todos los proyectos' : 'All projects'}</a>
     <div class="case-hero">
       <header class="detail-heading">
@@ -62,6 +63,7 @@ const contribution = projectContributions[locale][project.slug] ?? project.descr
       </div>
       <div class="next-project-preview"><ProjectImage project={next} shared/></div>
     </a>
+    </div>
   </main>
   <Footer locale={locale}/>
   <Motion/>
