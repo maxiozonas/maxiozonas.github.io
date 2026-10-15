@@ -78,6 +78,14 @@ export default function SplashCursor({
   COLOR = '#ff0000'
 }: SplashCursorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const colorRef = useRef(COLOR);
+  const resetColorRef = useRef<(() => void) | null>(null);
+
+  // Changing the palette must not destroy the canvas's WebGL context.
+  useEffect(() => {
+    colorRef.current = COLOR;
+    resetColorRef.current?.();
+  }, [COLOR]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -1172,7 +1180,7 @@ export default function SplashCursor({
 
     function generateColor(): ColorRGB {
       if (!config.RAINBOW_MODE) {
-        return hexToRGB(config.COLOR!);
+        return hexToRGB(colorRef.current);
       }
       const c = HSVtoRGB(Math.random(), 1.0, 1.0);
       c.r *= 0.15;
@@ -1311,9 +1319,20 @@ export default function SplashCursor({
         updatePointerUpData(pointer);
       }
     });
+    resetColorRef.current = () => {
+      pointers.forEach(pointer => { pointer.color = generateColor(); });
+      // Discard the previous theme's dye without rebuilding shaders or buffers.
+      gl.clearColor(0, 0, 0, 0);
+      for (const target of [dye.read, dye.write]) {
+        gl.bindFramebuffer(gl.FRAMEBUFFER, target.fbo);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+      }
+      render(null);
+    };
     const visibility = () => { if (document.hidden) { cancelAnimationFrame(frameId); frameId = 0; } else if (!frameId) { lastUpdateTime = Date.now(); updateFrame(); } };
     document.addEventListener('visibilitychange', visibility);
     return () => {
+      resetColorRef.current = null;
       cancelAnimationFrame(frameId);
       cleanups.forEach(cleanup => cleanup());
       document.removeEventListener('visibilitychange', visibility);
@@ -1334,8 +1353,7 @@ export default function SplashCursor({
     COLOR_UPDATE_SPEED,
     BACK_COLOR,
     TRANSPARENT,
-    RAINBOW_MODE,
-    COLOR
+    RAINBOW_MODE
   ]);
 
   return (
