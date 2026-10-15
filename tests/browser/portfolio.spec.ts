@@ -143,7 +143,7 @@ test('Magic Bento reacts to the pointer and native route transitions run', async
   await expect(page.locator('.project-card')).toHaveCount(6);
 });
 
-test('hero dot grid responds to the pointer, follows the theme and stops for reduced motion', async ({ page }) => {
+test('hero constellation sits beside the copy, follows the theme and pauses when appropriate', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.addInitScript(() => localStorage.setItem('theme', 'light'));
   const errors: string[] = [];
@@ -151,6 +151,9 @@ test('hero dot grid responds to the pointer, follows the theme and stops for red
   await page.goto('/es/');
   const canvas = page.locator('.hero-artwork canvas[data-ready="true"]');
   await expect(canvas).toBeVisible();
+  const copy = (await page.locator('.hero-copy').boundingBox())!;
+  const artwork = (await page.locator('.hero-artwork').boundingBox())!;
+  expect(artwork.x).toBeGreaterThan(copy.x + copy.width);
   await page.waitForTimeout(1800);
   const before = await canvas.screenshot();
   await page.mouse.move(1180, 360, { steps: 10 });
@@ -160,14 +163,30 @@ test('hero dot grid responds to the pointer, follows the theme and stops for red
   await page.locator('#theme-toggle').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await expect.poll(() => canvas.evaluate(element => {
-    const gl = (element as HTMLCanvasElement).getContext('webgl2')!;
-    const program = gl.getParameter(gl.CURRENT_PROGRAM) as WebGLProgram;
-    const location = gl.getUniformLocation(program, 'uActive');
-    return location ? Array.from(gl.getUniform(program, location) as Float32Array).map(value => Math.round(value * 255)) : [];
-  })).toEqual([220, 255, 113]);
+    const surface = element as HTMLCanvasElement;
+    const pixels = surface.getContext('2d')!.getImageData(0, 0, surface.width, surface.height).data;
+    let red = 0;
+    let blue = 0;
+    for (let i = 0; i < pixels.length; i += 4) {
+      red += pixels[i] * pixels[i + 3];
+      blue += pixels[i + 2] * pixels[i + 3];
+    }
+    return red > blue * 1.5;
+  })).toBe(true);
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await expect(page.locator('.hero-artwork canvas')).toHaveCount(0);
+  await expect(canvas).toBeHidden();
   await expect(page.locator('.hero-artwork-fallback')).toBeVisible();
+  const frozen = await canvas.evaluate(element => (element as HTMLCanvasElement).toDataURL());
+  await page.waitForTimeout(200);
+  expect(await canvas.evaluate(element => (element as HTMLCanvasElement).toDataURL())).toBe(frozen);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await expect(canvas).toBeVisible();
+  await expect.poll(() => canvas.evaluate(element => (element as HTMLCanvasElement).toDataURL())).not.toBe(frozen);
+  await page.locator('#contact').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(200);
+  const offscreen = await canvas.evaluate(element => (element as HTMLCanvasElement).toDataURL());
+  await page.waitForTimeout(200);
+  expect(await canvas.evaluate(element => (element as HTMLCanvasElement).toDataURL())).toBe(offscreen);
   expect(errors).toEqual([]);
 });
 
@@ -243,7 +262,7 @@ test('portfolio and project scope work without JavaScript', async ({ browser }) 
   await expect(page.locator('[data-project="food-partners"]')).toContainText('ERP');
   await page.setViewportSize({ width: 1440, height: 900 });
   await expect(page.locator('.hero-artwork-fallback')).toBeVisible();
-  await expect(page.locator('.hero-artwork canvas')).toHaveCount(0);
+  await expect(page.locator('.hero-artwork canvas')).toBeHidden();
   await page.locator('.project-image-link').first().click();
   await expect(page.locator('#scope-title')).toHaveText('Alcance del trabajo');
   await context.close();
