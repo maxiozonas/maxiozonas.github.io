@@ -23,11 +23,19 @@ describe('static bilingual portfolio', () => {
       assert.ok(html.includes('Ozonas'));
       for (const id of ['main-content', 'experience', 'projects', 'contact']) assert.ok(html.includes(`id="${id}"`));
       for (const text of ['Tech Lead', 'Food Partners Patagonia S.A.', 'Yogur Griego Rey', 'Gili', 'UTN']) assert.ok(html.includes(text));
-      assert.equal((html.match(/<article[^>]*class="project-card/g) ?? []).length, projects.length);
+      assert.equal((html.match(/<details[^>]*class="project-index-item/g) ?? []).length, projects.length);
       assert.doesNotMatch(html, /Full Stack Developer/);
       assert.ok(html.includes(`href="/cv-maximo-ozonas-${locale}.pdf"`));
       assert.doesNotMatch(html, /[—–]|repl-input|data-cmd=/);
-      assert.match(html, /magic-bento-card/);
+      assert.match(html, /data-project-index/);
+      assert.match(html, /hero-typographic/);
+      assert.match(html, /data-background="light-rays"/);
+      assert.doesNotMatch(html, /data-background="ghost-fibers"|id="fluid"/);
+      assert.equal((html.match(/class="experience-chapter scroll-stack-card"/g) ?? []).length, 2);
+      assert.match(html, /id="company-gili"/);
+      assert.match(html, /id="company-xenova"/);
+      assert.doesNotMatch(html, /experience-card|experience-spotlight|experience-intro/);
+      assert.doesNotMatch(html, /magic-bento-card|hero-artwork|hero-constellation/);
       assert.doesNotMatch(html, /data-project-carousel/);
       assert.match(html, /Mi Legajo/);
       assert.match(html, /\/education\/utn.png/);
@@ -76,7 +84,8 @@ describe('static bilingual portfolio', () => {
       assert.match(home, /id="experience-xenova"/);
       assert.doesNotMatch(home, /id="experience-food-partners"|cofounder|cofundador/i);
       assert.ok(home.includes(`href="/${locale}/projects/food-partners/"`));
-      assert.match(home, /data-project="food-partners"[^>]*project-card-featured md:col-span-12/);
+      assert.match(home, /class="project-index-entry" data-project="food-partners"/);
+      assert.match(home, /class="project-index-item"[^>]*open/);
       assert.doesNotMatch(home, /erp-diagram|featured-project-copy/);
       assert.match(detail, /Mi Legajo/);
       assert.match(detail, /Centinela/);
@@ -103,5 +112,11 @@ describe('static bilingual portfolio', () => {
       assert.ok(pdf.length > 10000);
     }
     assert.ok(existsSync(join(root, 'public', 'images', 'systems-study.webp')));
+    for (const theme of ['light', 'dark']) {
+      const image = readFileSync(join(root, 'public', 'images', `atmosphere-${theme}.webp`));
+      assert.equal(image.subarray(0, 4).toString(), 'RIFF');
+      assert.equal(image.subarray(8, 12).toString(), 'WEBP');
+      assert.ok(image.length < 200000);
+    }
   });
 });

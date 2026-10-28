@@ -1,0 +1,35 @@
+---
+import { content, type Locale } from '../data/content';
+import ScrollStack from './reactbits/ScrollStack';
+import TechIcon from './TechIcon.astro';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const c = content[locale];
+---
+<section class="experience-section" id="experience" aria-labelledby="experience-title">
+  <div class="experience-heading page-shell">
+    <h2 id="experience-title" class="section-title" data-reveal>{c.experienceTitle}</h2>
+    <p>{c.experienceIntro}</p>
+    <a class="text-link" href={`/cv-maximo-ozonas-${locale}.pdf`} download>{c.actions.download}</a>
+  </div>
+  <ScrollStack client:visible>{c.jobs.map(job => <article class="experience-chapter scroll-stack-card" data-company={job.id} id={`experience-${job.id}`} aria-labelledby={`company-${job.id}`}>
+    <div class="chapter-inner page-shell">
+      <div class="chapter-identity job-heading">
+        <h3 id={`company-${job.id}`} class="chapter-company">
+          <span class="sr-only">{job.company}</span>
+          {job.logo ? <span class:list={['chapter-wordmark', `chapter-wordmark-${job.id}`]} aria-hidden="true"><img src={job.logo.src} alt="" width={job.logo.width} height={job.logo.height} loading="lazy" decoding="async"/></span> : <span aria-hidden="true">{job.company}</span>}
+        </h3>
+        <p class="chapter-role">{job.role}</p>
+        <p class="chapter-period"><span class="status-dot" aria-hidden="true"></span>{job.period}</p>
+        {job.url && <a class="chapter-company-link" href={job.url} target="_blank" rel="noopener noreferrer">{new URL(job.url).hostname.replace(/^www\./, '')}</a>}
+        <ul class="chapter-technologies" aria-label={c.labels.technologies}>{job.capabilities.map(skill => <li><TechIcon name={skill}/></li>)}</ul>
+      </div>
+      <div class="chapter-story">
+        <p class="job-summary">{job.summary}</p>
+        <p class="job-description">{job.description}</p>
+        <dl class="job-scope">{job.scope.map(area => <div><dt>{area.title}</dt><dd>{area.description}</dd></div>)}</dl>
+      </div>
+    </div>
+  </article>)}</ScrollStack>
+</section>
