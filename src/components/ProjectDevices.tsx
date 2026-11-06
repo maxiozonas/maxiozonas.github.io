@@ -5,17 +5,17 @@ import { cn } from '@/lib/utils';
 export default function ProjectDevices({ project, locale, variant = 'detail', wide = false, shared = false, priority = false }: {
   project: Project;
   locale: Locale;
-  variant?: 'card' | 'detail';
+  variant?: 'card' | 'detail' | 'stage';
   wide?: boolean;
   shared?: boolean;
   priority?: boolean;
 }) {
   const es = locale === 'es';
   const hostname = project.url ? new URL(project.url).hostname.replace(/^www\./, '') : project.name;
-  const desktopSizes = variant === 'detail' ? '(min-width: 1440px) 1000px, 80vw'
+  const desktopSizes = variant === 'stage' ? '(max-width: 767px) 80vw, 580px' : variant === 'detail' ? '(min-width: 1440px) 1000px, 80vw'
     : wide ? '(max-width: 767px) 68vw, (max-width: 1199px) 65vw, 700px'
     : '(max-width: 767px) 68vw, 470px';
-  return <div className={cn('project-devices', variant === 'card' ? 'project-devices--card' : 'project-devices--detail')}>
+  return <div className={cn('project-devices', variant === 'card' ? 'project-devices--card' : variant === 'stage' ? 'project-devices--stage' : 'project-devices--detail')}>
     <figure className="project-desktop">
       <div className="project-browser">
         <div className="project-browser-bar" aria-hidden="true"><span className="browser-dots"><i/><i/><i/></span><span>{hostname}</span></div>
@@ -35,7 +35,7 @@ export default function ProjectDevices({ project, locale, variant = 'detail', wi
         <span className="phone-camera" aria-hidden="true"/>
         <div className="project-screen">
           <picture>
-            <source srcSet={`/projects/${project.slug}-mobile-390.webp 390w, ${project.mobileImage} 780w`} sizes={variant === 'card' ? (wide ? '175px' : '125px') : '(max-width: 767px) 240px, 230px'} type="image/webp"/>
+            <source srcSet={`/projects/${project.slug}-mobile-390.webp 390w, ${project.mobileImage} 780w`} sizes={variant === 'stage' ? '(max-width: 767px) 90px, 140px' : variant === 'card' ? (wide ? '175px' : '125px') : '(max-width: 767px) 240px, 230px'} type="image/webp"/>
             <img className="project-mobile-image project-device-image" src={project.mobileImage} alt={`${es ? 'Vista móvil' : 'Mobile view'}: ${project.name}`}
               width={390} height={844} loading={priority ? 'eager' : 'lazy'} decoding="async"/>
           </picture>

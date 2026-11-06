@@ -7,12 +7,12 @@ import FolderFloat from './reactbits/FolderFloat';
 interface Props { locale: Locale; groups: { title: string; items: string[] }[]; usage: Record<string, TechnologyUse[]>; }
 
 const palettes = [
-  { front: '#9fbee8', back: '#698ebc' },
-  { front: '#beb0e1', back: '#8e7bba' },
-  { front: '#ebb5a5', back: '#c48676' },
-  { front: '#aad0bd', back: '#75a68e' },
-  { front: '#e4cc97', back: '#bba06b' },
-  { front: '#b9c4ce', back: '#8496a6' },
+  { front: 'color-mix(in srgb, var(--identity-accent) 70%, white)', back: 'color-mix(in srgb, var(--identity-accent) 82%, black)' },
+  { front: 'color-mix(in srgb, var(--identity-accent) 60%, white)', back: 'color-mix(in srgb, var(--identity-accent) 76%, black)' },
+  { front: 'color-mix(in srgb, var(--identity-accent) 78%, white)', back: 'color-mix(in srgb, var(--identity-accent) 86%, black)' },
+  { front: 'color-mix(in srgb, var(--identity-accent) 52%, white)', back: 'color-mix(in srgb, var(--identity-accent) 72%, black)' },
+  { front: 'color-mix(in srgb, var(--identity-accent) 66%, white)', back: 'color-mix(in srgb, var(--identity-accent) 80%, black)' },
+  { front: 'color-mix(in srgb, var(--identity-accent) 58%, white)', back: 'color-mix(in srgb, var(--identity-accent) 74%, black)' },
 ];
 const subtitles = {
   es: ['Programación', 'Frameworks y APIs', 'Desarrollo móvil', 'SQL', 'Servidores y despliegues', 'Asistentes de código'],

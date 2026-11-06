@@ -1,17 +1,16 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 const LightRays = lazy(() => import('./reactbits/LightRays'));
-const palettes = {
-  light: '#014fff',
-  dark: '#bedc83',
-};
+const fallbackRays = '#4ade80';
 export default function Atmosphere() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [rays, setRays] = useState(fallbackRays);
   const [interactive, setInteractive] = useState(false);
   useEffect(() => {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     const pointer = matchMedia('(min-width: 768px) and (hover: hover) and (pointer: fine)');
     const update = () => {
       setTheme(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
+      setRays(getComputedStyle(document.documentElement).getPropertyValue('--rays').trim() || fallbackRays);
       setInteractive(pointer.matches && !reduced.matches);
     };
     const observer = new MutationObserver(update);
@@ -21,7 +20,7 @@ export default function Atmosphere() {
   }, []);
   return <div className="site-atmosphere" data-background="light-rays" aria-hidden="true">
     {interactive ? <Suspense fallback={null}><LightRays
-      raysColor={palettes[theme]} lightMode={theme === 'light'}
+      raysColor={rays} lightMode={theme === 'light'}
       raysOrigin="top-right" tilt={28} lightSpread={.55} rayLength={1.4}
       rayDensity={1.4} raySharpness={.55} raysSpeed={.3}
       intensity={1.15} glow={.35} haze={.15} atmosphere={0}

@@ -9,7 +9,7 @@ import HeroActions from './HeroActions';
 import ProfileCredentials from './ProfileCredentials.astro';
 import ExperienceChapters from './ExperienceChapters.astro';
 import SkillsFolders from './SkillsFolders';
-import WorkMap from './WorkMap';
+import WorkSteps from './WorkSteps';
 import { getTechnologyUsage } from '../data/technology-usage';
 import ProjectIndex from './ProjectIndex';
 import { buttonVariants } from './ui/button';
@@ -32,25 +32,27 @@ const es = locale === 'es';
     </div>
   </section>
   <ExperienceChapters locale={locale}/>
+  <ProfileCredentials locale={locale}/>
   <section id="projects" class="projects-section page-shell pb-20 pt-10 md:pb-32 md:pt-16" aria-labelledby="projects-title">
     <div class="projects-heading"><h2 id="projects-title" class="section-title" data-reveal>{c.projectsTitle}</h2><p>{c.projectsIntro}</p></div>
     <ProjectIndex client:visible projects={c.projects} locale={locale}/>
   </section>
-  <section class="profile-section page-shell py-24 md:py-32" id="skills" aria-labelledby="profile-title">
+  <section class="profile-section page-shell pb-12 pt-24 md:pb-16 md:pt-32" id="skills" aria-labelledby="profile-title">
     <p class="section-eyebrow">{es ? 'Proceso de trabajo' : 'Development process'}</p>
-    <div class="profile-composition">
-      <div class="profile-copy">
-        <h2 id="profile-title" class="profile-heading">{es ? 'Cómo trabajo' : 'How I work'}</h2>
+    <div class="profile-copy">
+      <h2 id="profile-title" class="profile-heading">{es ? 'Cómo trabajo' : 'How I work'}</h2>
+      <div>
         <p class="profile-support">{es ? 'Hablo con el equipo que va a usar el sistema, defino el alcance y desarrollo la aplicación. También me ocupo del despliegue y del soporte.' : 'I talk to the team who will use the system, agree on the scope and build the application. I also handle deployment and support.'}</p>
-        <p class="profile-map-hint">{es ? 'Seleccioná una etapa para ver qué hago en cada una.' : 'Select a stage to see what I do at each step.'}</p>
+        <p class="profile-map-hint">{es ? 'Seguí con el scroll para recorrer las cinco etapas.' : 'Keep scrolling to move through the five stages.'}</p>
       </div>
-      <WorkMap client:visible locale={locale}/>
     </div>
+  </section>
+  <WorkSteps client:visible locale={locale}/>
+  <section class="profile-section page-shell pb-24 md:pb-32" aria-label={es ? 'Tecnologías y formación' : 'Technologies and education'}>
     <div class="toolbox-section" id="toolbox" aria-labelledby="toolbox-title">
       <div class="toolbox-heading"><div><p class="section-eyebrow">Skills</p><h2 id="toolbox-title">{es ? 'Tecnologías que uso' : 'Technologies I use'}</h2></div><p>{es ? 'Abrí una carpeta y seleccioná una tecnología para ver en qué proyectos la usé.' : 'Open a folder and select a technology to see the projects I used it in.'}</p></div>
       <SkillsFolders client:visible locale={locale} groups={c.skills} usage={getTechnologyUsage(locale)}/>
     </div>
-    <ProfileCredentials locale={locale}/>
   </section>
   <section class="contact-section page-shell py-24 md:py-32" id="contact" aria-labelledby="contact-title">
     <div class="contact-panel rounded-3xl bg-primary p-7 text-primary-foreground md:p-16"><p class="mb-8 text-sm">{es ? 'Contacto' : 'Contact'}</p><h2 id="contact-title" class="contact-title font-bold tracking-tighter" data-reveal>{c.contactTitle.join(' ')}</h2><div class="mt-10 flex flex-col justify-between gap-8 md:flex-row md:items-end"><a class="contact-email text-lg font-bold md:text-2xl" href={`mailto:${profile.email}`}>{profile.email}</a><a class={buttonVariants({ variant: 'inverse', size: 'lg' })} href={`mailto:${profile.email}`}>{c.actions.email}</a></div></div>

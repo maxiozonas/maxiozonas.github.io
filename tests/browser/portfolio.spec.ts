@@ -156,7 +156,7 @@ test('project selection supports pointer and keyboard, and native route transiti
   await expect(quinta.locator('details')).toHaveJSProperty('open', true);
   await catalejo.locator('.project-index-choice-link').focus();
   await expect(catalejo.locator('details')).toHaveJSProperty('open', true);
-  await catalejo.locator('.project-index-visual img').evaluate(element => (element as HTMLImageElement).decode());
+  await catalejo.locator('.project-index-visual img').first().evaluate(element => (element as HTMLImageElement).decode());
   await page.screenshot({ path: 'artifacts/screenshots/project-index-selection.png' });
   await catalejo.locator('.project-index-choice-link').click();
   await expect(page).toHaveURL(/\/es\/projects\/catalejo-travel\/$/);
@@ -314,7 +314,8 @@ test('mobile detail, reduced motion and controls remain usable', async ({ page }
   await page.goto('/es/');
   expect(await page.locator('.pin-spacer').count()).toBe(0);
   await expect(page.locator('.logoloop__track, [data-technology-band]')).toHaveCount(0);
-  expect(await page.locator('.work-wheel-sectors path').first().evaluate(element => getComputedStyle(element).transitionDuration)).toBe('0s');
+  await expect(page.locator('.work-steps')).toHaveAttribute('data-animate', 'false');
+  await expect(page.locator('.work-card[data-active="true"]')).toHaveCount(5);
   await page.waitForTimeout(1400);
   await page.screenshot({ path: 'artifacts/screenshots/es-mobile-light.png' });
   await page.locator('#theme-toggle').evaluate(element => (element as HTMLButtonElement).click());
@@ -382,10 +383,18 @@ for (const locale of ['es', 'en']) {
 test('work map and technology folders respond to pointer, keyboard and mobile selection', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/es/');
-  await page.locator('.work-map').scrollIntoViewIfNeeded();
-  await expect(page.locator('.work-map [data-hydrated="true"]')).toHaveCount(1);
-  await page.locator('.work-map').getByRole('button', { name: 'Acompañar', exact: true }).click();
-  await expect(page.locator('.work-map-detail h3')).toHaveText('Soporte y mantenimiento');
+  const steps = page.locator('.work-steps');
+  await steps.scrollIntoViewIfNeeded();
+  await expect(steps).toHaveAttribute('data-stack', 'true');
+  await expect(steps.locator('.work-card')).toHaveCount(5);
+  const first = steps.locator('.work-card').first();
+  await first.scrollIntoViewIfNeeded();
+  await expect(first).toHaveAttribute('data-active', 'true');
+  const last = steps.locator('.work-card').last();
+  await last.scrollIntoViewIfNeeded();
+  await expect(last).toHaveAttribute('data-active', 'true');
+  await expect(last.locator('h3')).toHaveText('Soporte y mantenimiento');
+  await expect.poll(() => first.evaluate(element => getComputedStyle(element).transform)).not.toBe('none');
   await page.locator('.skills-folders').scrollIntoViewIfNeeded();
   await expect(page.locator('.skills-folders')).toHaveAttribute('data-hydrated', 'true');
   const web = page.locator('.folder-float').filter({ has: page.locator('summary', { hasText: 'Web y backend' }) });

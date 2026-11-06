@@ -1,7 +1,7 @@
 import { useEffect, useRef, type PointerEvent } from 'react';
 import type { Locale, Project } from '@/data/content';
-import { projectSrcset } from '@/lib/project-images';
-import ProjectOverview from './ProjectOverview';
+import ProjectDevices from './ProjectDevices';
+import ProjectOverviewWindow from './ProjectOverviewWindow';
 
 export default function ProjectIndex({ projects, locale }: { projects: Project[]; locale: Locale }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -35,6 +35,18 @@ export default function ProjectIndex({ projects, locale }: { projects: Project[]
     select(event.currentTarget);
   };
 
+  // Soft parallax: the scene leans a little towards the pointer (CSS decides if it applies).
+  const lean = (event: PointerEvent<HTMLElement>) => {
+    if (event.pointerType !== 'mouse') return;
+    const box = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty('--px', ((event.clientX - box.left) / box.width * 2 - 1).toFixed(3));
+    event.currentTarget.style.setProperty('--py', ((event.clientY - box.top) / box.height * 2 - 1).toFixed(3));
+  };
+  const settle = (event: PointerEvent<HTMLElement>) => {
+    event.currentTarget.style.removeProperty('--px');
+    event.currentTarget.style.removeProperty('--py');
+  };
+
   return <div ref={rootRef} className="project-index" data-project-index>
     {projects.map((project, index) => {
       const href = `/${locale}/projects/${project.slug}/`;
@@ -50,11 +62,10 @@ export default function ProjectIndex({ projects, locale }: { projects: Project[]
             <span className="project-index-hide-label">{es ? 'Ocultar' : 'Hide'}</span>
           </summary>
           <div className="project-index-panel" role="region" aria-labelledby={label}>
-            <a className="project-index-visual" href={href} aria-label={`${es ? 'Ver caso' : 'View case'}: ${project.name}`}>
-              {project.overview ? <ProjectOverview overview={project.overview} transitionName={`project-${project.slug}`}/> : <picture>
-                <source srcSet={projectSrcset(project.slug)} sizes="(max-width: 767px) 90vw, (max-width: 1440px) 48vw, 675px" type="image/webp"/>
-                <img src={project.image} alt={project.imageAlt} width={1440} height={900} loading="lazy" decoding="async" style={{ viewTransitionName: `project-${project.slug}` }}/>
-              </picture>}
+            <a className="project-index-visual" href={href} aria-label={`${es ? 'Ver caso' : 'View case'}: ${project.name}`} onPointerMove={lean} onPointerLeave={settle}>
+              {project.overview
+                ? <ProjectOverviewWindow overview={project.overview} title="Food Partners" transitionName={`project-${project.slug}`}/>
+                : <ProjectDevices project={project} locale={locale} variant="stage" shared/>}
             </a>
             <div className="project-index-caption">
               <p className="project-index-full-name" style={{ viewTransitionName: `title-${project.slug}` }}>{project.name}</p>

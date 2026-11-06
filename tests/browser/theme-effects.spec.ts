@@ -33,7 +33,8 @@ for (const initialTheme of ['light', 'dark']) {
           for (let pixel = 0; pixel < pixels.length; pixel += 16) {
             red += pixels[pixel]; green += pixels[pixel + 1]; blue += pixels[pixel + 2]; alpha += pixels[pixel + 3];
           }
-          resolve(alpha > 1000 && (dark ? green > blue && red > blue : blue > red));
+          // Emerald accent: the rays must lean green over red, in both themes.
+          resolve(alpha > 1000 && green > red && green > blue);
         };
         window.dispatchEvent(new PointerEvent('pointermove', { clientX: 420, clientY: 200, pointerType: 'mouse' }));
       }), theme === 'dark')).toBe(true);
