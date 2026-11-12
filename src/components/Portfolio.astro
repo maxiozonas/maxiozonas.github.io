@@ -12,8 +12,7 @@ import ExperienceChapters from './ExperienceChapters.astro';
 import SkillsFolders from './SkillsFolders';
 import WorkSteps from './WorkSteps';
 import { getTechnologyUsage } from '../data/technology-usage';
-import ProjectIndex from './ProjectIndex';
-import ProjectWall from './ProjectWall';
+import ProjectDeck from './ProjectDeck';
 import ContactEmail from './ContactEmail';
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
@@ -38,8 +37,7 @@ const es = locale === 'es';
   <ProfileCredentials locale={locale}/>
   <section id="projects" class="projects-section page-shell pb-20 pt-10 md:pb-32 md:pt-16" aria-labelledby="projects-title">
     <div class="projects-heading"><h2 id="projects-title" class="section-title" data-reveal>{c.projectsTitle}</h2><p>{c.projectsIntro}</p></div>
-    <ProjectWall client:visible projects={c.projects} locale={locale}/>
-    <ProjectIndex client:visible projects={c.projects} locale={locale}/>
+    <ProjectDeck client:visible projects={c.projects} locale={locale}/>
   </section>
   <section class="profile-section page-shell pb-12 pt-24 md:pb-16 md:pt-32" id="process" aria-labelledby="profile-title">
     <div class="profile-copy">

@@ -12,8 +12,9 @@ for (const file of files) {
     continue;
   }
   await sharp(input).resize({ width: 1440, withoutEnlargement: true }).webp({ quality: 85 }).toFile(`public/projects/${slug}.webp`);
-  for (const width of [480, 768, 1080]) {
-    await sharp(input).resize({ width }).webp({ quality: 82 }).toFile(`public/projects/${slug}-${width}.webp`);
+  // 640, 900 and 1280 let the project cards pick a file close to their on-screen size, which keeps them sharp.
+  for (const width of [480, 640, 768, 900, 1080, 1280]) {
+    await sharp(input).resize({ width }).webp({ quality: [640, 900, 1280].includes(width) ? 86 : 82 }).toFile(`public/projects/${slug}-${width}.webp`);
   }
 }
 console.log(`Optimized ${files.length} project screenshots for mobile, tablet and desktop.`);

@@ -548,48 +548,12 @@ main, .site-footer { position: relative; z-index: 1; }
 .projects-section { padding-block: 40px 64px; }
 .projects-heading { margin-bottom: 40px; }
 .projects-heading > p { max-width: 55ch; margin-top: 18px; font-size: 18px; line-height: 1.6; color: var(--muted-foreground); }
-.project-index { position: relative; min-height: 600px; padding-right: 57%; }
-.project-index-choice-link { display: flex; flex-direction: column; justify-content: center; min-height: 88px; padding: 16px 4px; cursor: pointer; }
-.project-index-name { font-size: clamp(23px, 2.25vw, 32px); font-weight: 700; line-height: 1.15; letter-spacing: -.035em; transition: color .2s, transform .3s; }
-.project-index-entry:not(:has(details[open])) .project-index-name { color: var(--muted-foreground); }
-.project-index-type { margin-top: 7px; color: var(--muted-foreground); font-size: 13px; line-height: 1.4; }
-.project-index-entry:has(details[open]) .project-index-name { color: var(--brand); transform: translateX(8px); }
-.project-index-entry:has(details[open]) .project-index-type { transform: translateX(8px); }
-.project-index-entry:not(:has(details[open])) .project-index-choice-link:hover .project-index-name { color: var(--foreground); }
-.project-index-disclosure { display: none; list-style: none; }
-.project-index-disclosure::-webkit-details-marker { display: none; }
-.project-index-panel { position: absolute; right: 0; top: 0; width: 52%; }
-.project-index-visual { display: block; overflow: hidden; background: var(--secondary); }
-.project-index-visual picture { display: block; }
-.project-index-visual img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: contain; }
-.project-index-visual .project-overview { display: flex; flex-direction: column; justify-content: center; min-height: 0; aspect-ratio: 16 / 10; padding: clamp(22px, 2.5vw, 36px); }
-.project-index-visual .project-overview-heading { margin-bottom: 22px; font-size: 13px; }
-.project-index-visual .project-overview-areas { grid-template-columns: 1fr; gap: 20px; }
-.project-index-visual .project-overview-areas dt { margin-bottom: 6px; font-size: 21px; text-wrap: pretty; }
-.project-index-visual .project-overview-areas dd { max-width: 57ch; font-size: 14px; line-height: 1.5; }
-.project-index-caption { margin-top: 22px; }
-.project-index-full-name { font-size: 18px; font-weight: 700; letter-spacing: -.015em; }
-.project-index-summary { max-width: 58ch; margin-top: 8px; color: var(--muted-foreground); font-size: 16px; line-height: 1.6; }
-.project-index-links { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 24px; margin-top: 12px; font-size: 14px; }
-.project-index-links > a { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; font-weight: 700; }
-.project-index-case { color: var(--brand); }
-.project-index-links > a:hover { text-decoration: underline; text-underline-offset: 5px; }
-.project-index-links > a:active { transform: translateY(1px); }
-.project-index-affiliation { margin-left: auto; color: var(--muted-foreground); font-size: 13px; }
-.project-index-affiliation a { display: inline-flex; align-items: center; min-height: 44px; color: var(--foreground); }
-.project-index-affiliation a:hover { text-decoration: underline; text-underline-offset: 5px; }
 @media (prefers-reduced-motion: no-preference) {
-  .project-index-item[open] .project-index-panel { animation: project-preview-enter .3s ease-out; }
   @keyframes project-preview-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 }
 @media (min-width: 768px) and (max-width: 1023px) {
   .hero-bottom { gap: 28px; }
   .hero-typographic .hero-actions a { padding-inline: 18px; }
-  .project-index { padding-right: 55%; }
-  .project-index-panel { width: 51%; }
-  .project-index-visual .project-overview { aspect-ratio: auto; padding: 24px; }
-  .project-index-visual .project-overview-areas dt { font-size: 19px; }
-  .project-index-affiliation { margin-left: 0; }
 }
 
 /* Experience: heading here; the badges and role panels live in ExperienceBadges.css. */
@@ -608,55 +572,16 @@ main, .site-footer { position: relative; z-index: 1; }
   .projects-section { padding-top: 20px; }
   .projects-heading { margin-bottom: 28px; }
   .projects-heading > p { margin-top: 14px; font-size: 16px; }
-  .project-index { min-height: 0; padding-right: 0; }
-  .project-index-entry { position: relative; }
-  .project-index-choice-link { min-height: 82px; padding-inline: 0 92px; }
-  .project-index-name { font-size: 26px; }
-  .project-index-type { font-size: 13px; }
-  .project-index-entry:has(details[open]) .project-index-name,
-  .project-index-entry:has(details[open]) .project-index-type { transform: none; }
-  .project-index-disclosure { position: absolute; top: 19px; right: 0; display: flex; align-items: center; justify-content: flex-end; min-height: 44px; color: var(--muted-foreground); font-size: 12px; }
-  .project-index-hide-label, .project-index-item[open] .project-index-preview-label { display: none; }
-  .project-index-item[open] .project-index-hide-label { display: inline; }
-  .project-index-panel { position: static; width: 100%; padding-block: 6px 24px; }
-  .project-index-visual .project-overview { aspect-ratio: auto; padding: 24px; }
-  .project-index-visual .project-overview-areas dt { font-size: 20px; }
-  .project-index-caption { margin-top: 18px; }
-  .project-index-summary { font-size: 15px; }
-  .project-index-affiliation { margin-left: 0; }
 }
 
 /* Project previews: a staged composition instead of a flat box. */
-.project-index-visual { position: relative; isolation: isolate; overflow: visible; background: transparent; --px: 0; --py: 0; }
-.project-index-visual::before { content: ''; position: absolute; inset: -12% -8%; z-index: -1; background: radial-gradient(55% 55% at 58% 50%, rgba(var(--glow-color), .24), transparent 72%); pointer-events: none; }
-.project-index-visual:focus-visible { outline-offset: 6px; }
-.project-devices--stage { position: relative; display: flex; align-items: center; aspect-ratio: 16 / 10; margin-bottom: 5%; background: transparent; }
-.project-devices--stage .project-desktop { width: 86%; margin: 0; }
-.project-devices--stage .project-browser { border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 34px 60px -32px rgba(0, 0, 0, .55); }
-.project-devices--stage .project-browser-bar { gap: 10px; padding: 9px 12px; font-size: 11px; }
-.project-devices--stage .project-phone { right: 0; bottom: -6%; z-index: 2; width: 23%; margin: 0; }
-.project-devices--stage .project-phone-frame { padding: 11px 4px 5px; border-radius: 20px; box-shadow: 0 26px 44px -22px rgba(0, 0, 0, .6); }
-.project-devices--stage .project-phone .project-screen { border-radius: 14px; }
-.project-devices--stage .phone-camera { top: 4px; width: 18px; height: 3px; }
-.project-devices--stage .device-caption { display: none; }
 @media (prefers-reduced-motion: no-preference) and (hover: hover) {
-  .project-devices--stage .project-desktop { transform: perspective(1400px) rotateY(calc(-5deg + var(--px) * 3deg)) rotateX(calc(var(--py) * -2.5deg)); transform-origin: 30% 50%; transition: transform .35s ease-out; }
-  .project-devices--stage .project-phone { transform: translate3d(calc(var(--px) * -10px), calc(var(--py) * -8px), 0); transition: transform .35s ease-out; }
-  .project-devices--stage .project-phone-frame { animation: stage-float 5s ease-in-out infinite; }
   @keyframes stage-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
   @keyframes stage-pulse { 0% { box-shadow: 0 0 0 0 rgba(var(--glow-color), .55); } 100% { box-shadow: 0 0 0 10px rgba(var(--glow-color), 0); } }
 }
-@media (max-width: 767px) { .project-devices--stage .project-desktop { width: 88%; } .project-devices--stage .project-phone { width: 24%; } }
-.project-index-visual .project-device-image { aspect-ratio: auto; }
 
 /* Projects: names at the scale of the working stages, so the section holds its own. */
 @media (min-width: 768px) {
-  .project-index { padding-right: 53%; }
-  .project-index-panel { width: 50%; }
-  .project-index-choice-link { min-height: 98px; padding-block: 10px; }
-  .project-index-name { font-size: clamp(28px, 3.9vw, 56px); line-height: 1.02; letter-spacing: -.05em; transition: color .3s, transform .5s cubic-bezier(.23, 1, .32, 1); }
-  .project-index-type { margin-top: 8px; font-size: 14px; transition: transform .5s cubic-bezier(.23, 1, .32, 1); }
-  .project-index-entry:has(details[open]) .project-index-name, .project-index-entry:has(details[open]) .project-index-type { transform: translateX(12px); }
 }
 
 /* Hero backdrop: full-bleed contour map behind the name, fading into the page below. */

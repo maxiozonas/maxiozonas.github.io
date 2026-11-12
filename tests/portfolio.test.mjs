@@ -23,7 +23,8 @@ describe('static bilingual portfolio', () => {
       assert.ok(html.includes('Ozonas'));
       for (const id of ['main-content', 'experience', 'projects', 'contact']) assert.ok(html.includes(`id="${id}"`));
       for (const text of ['Tech Lead', 'Food Partners Patagonia S.A.', 'Yogur Griego Rey', 'Gili', 'UTN']) assert.ok(html.includes(text));
-      assert.equal((html.match(/<details[^>]*class="project-index-item/g) ?? []).length, projects.length);
+      assert.equal((html.match(/class="deck-option"/g) ?? []).length, projects.length);
+      assert.equal((html.match(/class="swap-card"/g) ?? []).length, projects.length);
       assert.doesNotMatch(html, /Full Stack Developer/);
       assert.ok(html.includes(`href="/cv-maximo-ozonas-${locale}.pdf"`));
       // The CV opens in a new tab instead of downloading.
@@ -87,8 +88,7 @@ describe('static bilingual portfolio', () => {
       assert.match(home, /id="experience-xenova"/);
       assert.doesNotMatch(home, /id="experience-food-partners"|cofounder|cofundador/i);
       assert.ok(home.includes(`href="/${locale}/projects/food-partners/"`));
-      assert.match(home, /class="project-index-entry" data-project="food-partners"/);
-      assert.match(home, /class="project-index-item"[^>]*open/);
+      assert.match(home, /data-project="food-partners"/);
       assert.doesNotMatch(home, /erp-diagram|featured-project-copy/);
       assert.match(detail, /Mi Legajo/);
       assert.match(detail, /Centinela/);

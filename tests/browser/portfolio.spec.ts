@@ -3,27 +3,37 @@ import AxeBuilder from '@axe-core/playwright';
 import { mkdirSync } from 'node:fs';
 mkdirSync('artifacts/screenshots', { recursive: true });
 
-test('project index keeps the complete website image visible in a compact section', async ({ page }) => {
+const option = (page: import('@playwright/test').Page, slug: string) => page.locator(`.deck-option[data-project="${slug}"]`);
+
+test('projects pair a wheel of names with a stack of cards', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/es/');
   await page.locator('#projects').scrollIntoViewIfNeeded();
-  await expect(page.locator('.project-index')).toHaveAttribute('data-hydrated', 'true');
-  await page.locator('[data-project="madryn-buceo"] .project-index-choice-link').hover();
-  const preview = page.locator('[data-project="madryn-buceo"] .project-index-visual');
-  await preview.scrollIntoViewIfNeeded();
-  const image = preview.locator('img').first();
-  await image.evaluate(element => (element as HTMLImageElement).decode());
-  const visible = await image.evaluate(element => {
-    const img = element as HTMLImageElement;
-    const rect = img.getBoundingClientRect();
-    return { height: rect.height, expectedHeight: rect.width * img.naturalHeight / img.naturalWidth };
-  });
-  expect(Math.abs(visible.height - visible.expectedHeight)).toBeLessThan(2);
+  await expect(page.locator('.project-deck')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.deck-option')).toHaveCount(6);
+  await expect(page.locator('.swap-card')).toHaveCount(6);
+  const front = page.locator('.swap-card[data-pos="0"]');
+  await expect(front).toHaveAttribute('data-slug', 'food-partners');
+  await expect(option(page, 'food-partners')).toHaveAttribute('aria-current', 'true');
+  // The stack sits to the right of the wheel, and the front card is straight.
+  const wheel = (await page.locator('.deck-wheel').boundingBox())!;
+  const stage = (await page.locator('.swap-stage').boundingBox())!;
+  expect(stage.x).toBeGreaterThan(wheel.x + wheel.width * .5);
+  expect(await front.evaluate(element => new DOMMatrixReadOnly(getComputedStyle(element).transform).b)).toBe(0);
+  expect(await page.locator('.swap-card[data-pos="1"]').evaluate(element => new DOMMatrixReadOnly(getComputedStyle(element).transform).b)).toBeGreaterThan(0);
+  // A name selects its card; both captures of the front card are loaded.
+  await option(page, 'madryn-buceo').click();
+  await expect(front).toHaveAttribute('data-slug', 'madryn-buceo');
+  await expect(page.locator('.deck-option[aria-current="true"]')).toHaveCount(1);
+  await expect(page.locator('.deck-detail[data-active="true"]')).toContainText('Ver caso');
+  await expect(front.locator('img')).toHaveCount(2);
+  for (const image of await front.locator('img').all()) {
+    await image.evaluate(element => (element as HTMLImageElement).decode());
+    expect(await image.evaluate(element => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  }
   expect(await page.locator('#projects').evaluate(element => element.getBoundingClientRect().height)).toBeLessThan(1100);
-  await expect(page.locator('.project-index-panel:visible')).toHaveCount(1);
-  await expect(page.locator('.project-index svg')).toHaveCount(0);
-  expect(await page.locator('.project-index-entry').first().evaluate(element => getComputedStyle(element).borderBottomWidth)).toBe('0px');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(1440);
 });
 
 for (const locale of ['es', 'en']) {
@@ -97,7 +107,7 @@ for (const locale of ['es', 'en']) {
       for (const chapter of await page.locator('.experience-chapter').all()) {
         expect(await chapter.evaluate(element => getComputedStyle(element).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
       }
-      for (const image of await page.locator('.project-index-item[open] img').all()) {
+      for (const image of await page.locator('.swap-card[data-pos="0"] img').all()) {
         await image.evaluate(element => element.scrollIntoView({ behavior: 'instant', block: 'center' }));
         await expect(image).toHaveJSProperty('complete', true);
         expect(await image.evaluate(element => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
@@ -111,8 +121,9 @@ for (const locale of ['es', 'en']) {
       await page.screenshot({ path: `artifacts/screenshots/${locale}-full-${theme}.png`, fullPage: true });
       const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
       expect(audit.violations).toEqual([]);
-      await page.locator('[data-project="catalejo-travel"] .project-index-choice-link').hover();
-      await page.locator('[data-project="catalejo-travel"] .project-index-visual').click();
+      await option(page, 'catalejo-travel').click();
+      await expect(page.locator('.swap-card[data-pos="0"]')).toHaveAttribute('data-slug', 'catalejo-travel');
+      await page.locator('.swap-card[data-pos="0"]').click();
       await expect(page).toHaveURL(new RegExp(`/${locale}/projects/catalejo-travel/`));
       await expect(page.locator('.detail-heading h1')).toHaveText('Catalejo Travel');
       expect(await page.locator('link[rel="canonical"]').getAttribute('href')).toContain(`/${locale}/projects/catalejo-travel/`);
@@ -129,50 +140,14 @@ for (const locale of ['es', 'en']) {
       await expect(page).toHaveURL(new RegExp(`/${locale === 'es' ? 'en' : 'es'}/projects/catalejo-travel/`));
       await page.locator('.back-link').click();
       await expect(page).toHaveURL(/#projects$/);
-      await expect(page.locator('.project-index-item')).toHaveCount(6);
+      await expect(page.locator('.deck-option')).toHaveCount(6);
     });
   }
 }
 
-test('project wall brakes on hover, opens the card and leads to the case page', async ({ page }) => {
+test('project cards advance on their own, pause on hover and lead to the case page', async ({ page }) => {
+  test.setTimeout(60000);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/es/');
-  const wall = page.locator('.wall');
-  await wall.scrollIntoViewIfNeeded();
-  await expect(wall).toHaveAttribute('data-hydrated', 'true');
-  await expect(wall).toBeVisible();
-  await expect(page.locator('.project-index-item:visible')).toHaveCount(0);
-  const row = wall.locator('.wall-row').first();
-  const position = () => row.evaluate(element => new DOMMatrixReadOnly(getComputedStyle(element).transform).e);
-  const before = await position();
-  await expect.poll(position).not.toBe(before);
-  // A name underneath opens the card of that project closest to the centre.
-  await page.locator('[data-project="catalejo-travel"] .project-index-choice-link').hover();
-  const card = wall.locator('.wall-tile[data-open="true"]');
-  await expect(card).toHaveCount(1);
-  await expect(card).toHaveAttribute('data-slug', 'catalejo-travel');
-  await expect(card.locator('.wall-caption')).toBeVisible();
-  await expect(card.locator('.wall-caption')).toContainText('Ver caso');
-  await page.waitForTimeout(1500);
-  const braked = await position();
-  await page.waitForTimeout(300);
-  expect(Math.abs(await position() - braked)).toBeLessThan(.5);
-  // Cards open straight from the pointer as well, and the whole card is the link.
-  const middle = (await wall.boundingBox())!.y + (await wall.boundingBox())!.height / 2;
-  // Sweep a little: a single position can fall on the gap between two cards.
-  for (let step = 0; step < 12 && await card.count() === 0; step++) {
-    await page.mouse.move(560 + step * 45, middle + step * 12);
-    await page.waitForTimeout(80);
-  }
-  await expect(card).toHaveCount(1);
-  const slug = await card.getAttribute('data-slug');
-  await card.click();
-  await expect(page).toHaveURL(new RegExp(`/es/projects/${slug}/$`));
-});
-
-test('project selection supports pointer and keyboard, and native route transitions run', async ({ page }) => {
-  // Below the wall breakpoint the index with its preview panel is the layout.
-  await page.setViewportSize({ width: 1100, height: 800 });
   await page.addInitScript(() => {
     window.addEventListener('pageswap', event => {
       sessionStorage.setItem('portfolio-transition', String(Boolean((event as PageSwapEvent).viewTransition)));
@@ -180,30 +155,37 @@ test('project selection supports pointer and keyboard, and native route transiti
   });
   await page.goto('/es/');
   await page.locator('#projects').scrollIntoViewIfNeeded();
-  await expect(page.locator('.project-index')).toHaveAttribute('data-hydrated', 'true');
-  const catalejo = page.locator('[data-project="catalejo-travel"]');
-  await catalejo.locator('.project-index-choice-link').hover();
-  await expect(catalejo.locator('details')).toHaveJSProperty('open', true);
-  await expect(page.locator('.project-index-item[open]')).toHaveCount(1);
-  const quinta = page.locator('[data-project="quinta-pata"]');
-  await quinta.locator('.project-index-choice-link').focus();
-  await expect(quinta.locator('details')).toHaveJSProperty('open', true);
-  // Hover must not hide the links in a panel that currently contains keyboard focus.
-  await quinta.locator('.project-index-case').focus();
-  await catalejo.locator('.project-index-choice-link').hover();
-  await expect(quinta.locator('details')).toHaveJSProperty('open', true);
-  await catalejo.locator('.project-index-choice-link').focus();
-  await expect(catalejo.locator('details')).toHaveJSProperty('open', true);
-  await catalejo.locator('.project-index-visual img').first().evaluate(element => (element as HTMLImageElement).decode());
-  await page.screenshot({ path: 'artifacts/screenshots/project-index-selection.png' });
-  await catalejo.locator('.project-index-choice-link').click();
-  await expect(page).toHaveURL(/\/es\/projects\/catalejo-travel\/$/);
+  await expect(page.locator('.project-deck')).toHaveAttribute('data-hydrated', 'true');
+  const front = page.locator('.swap-card[data-pos="0"]');
+  await expect(front).toHaveAttribute('data-slug', 'food-partners');
+  await page.mouse.move(5, 5);
+  // Left alone, the front card drops away and the next project steps forward, on the wheel too.
+  await expect(front).toHaveAttribute('data-slug', 'catalejo-travel', { timeout: 9000 });
+  await expect(option(page, 'catalejo-travel')).toHaveAttribute('aria-current', 'true');
+  // Once it has arrived, the new front card is straight.
+  await expect.poll(() => front.evaluate(element => Math.abs(new DOMMatrixReadOnly(getComputedStyle(element).transform).b))).toBeLessThan(.001);
+  // Pointing at the section holds the current card.
+  await option(page, 'quinta-pata').click();
+  await expect(front).toHaveAttribute('data-slug', 'quinta-pata');
+  await page.waitForTimeout(5400);
+  await expect(front).toHaveAttribute('data-slug', 'quinta-pata');
+  // A card behind comes to the front (only a strip of it shows); the front card is the link.
+  const behind = (await page.locator('.swap-card[data-pos="1"]').boundingBox())!;
+  await page.mouse.click(behind.x + behind.width - 7, behind.y + behind.height * .45);
+  await expect(front).toHaveAttribute('data-slug', 'inspira-ingenieria');
+  await expect(page).toHaveURL(/\/es\/$/);
+  await front.click();
+  await expect(page).toHaveURL(/\/es\/projects\/inspira-ingenieria\/$/);
   expect(await page.evaluate(() => sessionStorage.getItem('portfolio-transition'))).toBe('true');
   await page.goBack();
-  await expect(page.locator('.project-index-item')).toHaveCount(6);
-  await page.locator('[data-project="quinta-pata"] .project-index-choice-link').focus();
+  // Keyboard: focusing a name selects it, the arrows move along the wheel and Enter opens the case.
+  await option(page, 'food-partners').focus();
+  await expect(front).toHaveAttribute('data-slug', 'food-partners');
+  await page.keyboard.press('ArrowDown');
+  await expect(option(page, 'catalejo-travel')).toBeFocused();
+  await expect(front).toHaveAttribute('data-slug', 'catalejo-travel');
   await page.keyboard.press('Enter');
-  await expect(page).toHaveURL(/\/es\/projects\/quinta-pata\/$/);
+  await expect(page).toHaveURL(/\/es\/projects\/catalejo-travel\/$/);
 });
 
 test('typographic hero reacts locally to the pointer and resets for reduced motion', async ({ page }) => {
@@ -235,25 +217,21 @@ test('typographic hero reacts locally to the pointer and resets for reduced moti
   expect(errors).toEqual([]);
 });
 
-test('mobile project disclosures can close and regain a desktop selection after resizing', async ({ page }) => {
+test('on mobile the card stack sits above the wheel of names', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/es/');
   await page.locator('#projects').scrollIntoViewIfNeeded();
-  await expect(page.locator('.project-index')).toHaveAttribute('data-hydrated', 'true');
-  const food = page.locator('[data-project="food-partners"]');
-  await food.locator('.project-index-disclosure').click();
-  await expect(page.locator('.project-index-item[open]')).toHaveCount(0);
-  const catalejo = page.locator('[data-project="catalejo-travel"]');
-  await catalejo.locator('.project-index-disclosure').click();
-  await expect(catalejo.locator('details')).toHaveJSProperty('open', true);
-  await catalejo.locator('.project-index-disclosure').click();
-  await expect(catalejo.locator('details')).toHaveJSProperty('open', false);
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await expect(page.locator('.project-index-item[open]')).toHaveCount(1);
-  const index = (await page.locator('.project-index').boundingBox())!;
-  const panel = (await page.locator('.project-index-panel:visible').boundingBox())!;
-  expect(panel.y + panel.height).toBeLessThanOrEqual(index.y + index.height + 1);
+  await expect(page.locator('.project-deck')).toHaveAttribute('data-hydrated', 'true');
+  const stage = (await page.locator('.swap-stage').boundingBox())!;
+  const wheel = (await page.locator('.deck-wheel').boundingBox())!;
+  expect(wheel.y).toBeGreaterThan(stage.y + stage.height);
+  expect(stage.x).toBeGreaterThanOrEqual(0);
+  expect(stage.x + stage.width).toBeLessThanOrEqual(390);
+  await option(page, 'catalejo-travel').click();
+  await expect(page.locator('.swap-card[data-pos="0"]')).toHaveAttribute('data-slug', 'catalejo-travel');
+  await expect(page.locator('.deck-detail[data-active="true"] .deck-summary')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
 });
 
 test('theme persists and follows system preference before manual selection', async ({ page }) => {
@@ -348,9 +326,14 @@ test('mobile detail, reduced motion and controls remain usable', async ({ page }
   await page.screenshot({ path: 'artifacts/screenshots/es-mobile-light.png' });
   await page.locator('#theme-toggle').evaluate(element => (element as HTMLButtonElement).click());
   await page.screenshot({ path: 'artifacts/screenshots/es-mobile-dark.png' });
-  await page.locator('[data-project="madryn-buceo"] .project-index-disclosure').click();
-  await expect(page.locator('.project-index-item[open]')).toHaveCount(1);
-  await page.locator('[data-project="madryn-buceo"] .project-index-visual').click();
+  await page.locator('#projects').scrollIntoViewIfNeeded();
+  await expect(page.locator('.project-deck')).toHaveAttribute('data-hydrated', 'true');
+  await option(page, 'madryn-buceo').click();
+  await expect(option(page, 'madryn-buceo')).toHaveAttribute('aria-current', 'true');
+  // A name only selects, however many times it is tapped; the card opens the case.
+  await option(page, 'madryn-buceo').click();
+  await expect(page).toHaveURL(/\/es\/$/);
+  await page.locator('.swap-card[data-pos="0"]').click();
   await expect(page.locator('.detail-heading h1')).toHaveText('Madryn Buceo');
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
   for (const paragraph of await page.locator('.detail-deliverables > p').all()) {
@@ -369,7 +352,7 @@ test('portfolio and project scope work without JavaScript', async ({ browser }) 
   await expect(page.locator('.job-summary')).toHaveCount(2);
   await expect(page.locator('#experience-xenova')).toContainText('Tech Lead');
   await expect(page.locator('#experience-gili')).toBeVisible();
-  await expect(page.locator('[data-project="food-partners"]')).toContainText('ERP');
+  await expect(page.locator('#projects')).toContainText('ERP');
   await page.setViewportSize({ width: 1440, height: 900 });
   await expect(page.locator('[data-stack-motion="true"]')).toHaveCount(0);
   for (const chapter of await page.locator('.experience-chapter').all()) {
@@ -377,7 +360,7 @@ test('portfolio and project scope work without JavaScript', async ({ browser }) 
     expect(await chapter.evaluate(element => getComputedStyle(element).opacity)).toBe('1');
   }
   await expect(page.locator('.hero-artwork')).toHaveCount(0);
-  await page.locator('[data-project="quinta-pata"] .project-index-choice-link').click();
+  await option(page, 'quinta-pata').click();
   await expect(page.locator('#scope-title')).toHaveText('Alcance del trabajo');
   await context.close();
 });
@@ -467,7 +450,7 @@ test('work map and technology folders respond to pointer, keyboard and mobile se
   await expect(page).toHaveURL(/\/es\/projects\/quinta-pata\/$/);
 });
 
-test('experience precedes the compact index and reduced motion stops effects', async ({ page }) => {
+test('experience precedes the projects and reduced motion stops effects', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('theme', 'dark'));
   await page.goto('/es/');
   const sections = await page.locator('main > section').evaluateAll(elements => elements.map(element => element.id));
@@ -486,12 +469,13 @@ test('experience precedes the compact index and reduced motion stops effects', a
   await expect(atmosphere).toHaveCount(0);
   expect(await context.evaluate(gl => gl!.isContextLost())).toBeTruthy();
   await page.locator('#projects').scrollIntoViewIfNeeded();
-  const featured = page.locator('[data-project="food-partners"]');
-  await featured.locator('.project-index-choice-link').hover();
-  await expect(page.locator('.project-index-item')).toHaveCount(6);
-  await expect(page.locator('.project-index-panel:visible')).toHaveCount(1);
-  await expect(page.locator('.magic-bento-card')).toHaveCount(0);
+  await expect(page.locator('.deck-option')).toHaveCount(6);
   // Food Partners shows captures of its institutional site, like every other project.
-  await expect(featured.locator('.project-index-visual img')).toHaveCount(2);
-  expect(await featured.locator('.project-index-panel').evaluate(element => getComputedStyle(element).animationName)).toBe('none');
+  await expect(page.locator('.swap-card[data-slug="food-partners"] img')).toHaveCount(2);
+  // With reduced motion the stack does not advance on its own.
+  const front = page.locator('.swap-card[data-pos="0"]');
+  const slug = await front.getAttribute('data-slug');
+  await page.mouse.move(5, 5);
+  await page.waitForTimeout(5400);
+  await expect(front).toHaveAttribute('data-slug', slug!);
 });
