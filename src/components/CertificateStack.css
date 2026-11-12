@@ -1,0 +1,37 @@
+/* Education and languages: text on the left, a pile of certificates on the right. */
+.credentials { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); align-items: center; gap: clamp(32px, 5vw, 80px); padding-block: clamp(56px, 8vw, 110px) clamp(40px, 6vw, 80px); }
+.credentials-title { font-size: clamp(32px, 3.6vw, 52px); font-weight: 700; line-height: 1.05; letter-spacing: -.045em; text-wrap: balance; }
+.credentials-list { display: grid; gap: 28px; margin: 34px 0 0; }
+.credentials-list dt { font-size: 14px; line-height: 1.3; color: var(--muted-foreground); }
+.credentials-list dd { margin: 8px 0 0; }
+.credentials-degree { font-size: clamp(19px, 1.7vw, 23px); font-weight: 700; line-height: 1.25; letter-spacing: -.02em; text-wrap: balance; }
+.credentials-institution { margin-top: 6px; font-size: 15px; line-height: 1.5; color: var(--muted-foreground); }
+.credentials-languages { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; font-size: 17px; line-height: 1.4; }
+.credentials-languages strong { font-weight: 700; }
+.credentials-languages span { color: var(--muted-foreground); }
+
+.certs { --cert-w: clamp(200px, 17vw, 244px); container-type: inline-size; position: relative; display: grid; place-items: center; height: calc(var(--cert-w) * .9 + 70px); }
+/* The fan never grows wider than the column, however many certificates there are. */
+.cert { --offset: calc(var(--i) - (var(--n) - 1) / 2); --step: min(calc(var(--cert-w) * .93), calc((100cqw - var(--cert-w)) / max(1, var(--n) - 1))); position: absolute; width: var(--cert-w); aspect-ratio: 10 / 7.5; z-index: calc(var(--n) - var(--depth)); transform: translate(calc(var(--depth) * 9px), calc(var(--depth) * -7px)) rotate(calc((var(--depth) * 5deg - 4deg) * (1 - 2 * mod(var(--depth), 2)))); transition: transform .65s cubic-bezier(.34, 1.3, .64, 1), z-index 0s .15s; }
+.cert-paper { display: flex; flex-direction: column; height: 100%; padding: 9% 9% 8%; overflow: hidden; border-radius: 8px; background: linear-gradient(150deg, #fbfaf5, #efece1); color: #17171a; box-shadow: 0 1px 0 rgba(255, 255, 255, .8) inset, 0 22px 40px -22px rgba(0, 0, 0, .6), 0 0 0 1px rgba(0, 0, 0, .08); transition: transform .35s cubic-bezier(.23, 1, .32, 1), box-shadow .35s; }
+.cert-mark { width: 34%; }
+[data-theme] .cert-mark img { filter: brightness(0); }
+.cert-kind { font-size: 11px; font-weight: 700; line-height: 1.2; letter-spacing: .02em; color: #047857; }
+.cert-title { margin-top: auto; padding-top: 8%; font-size: calc(var(--cert-w) * .068); font-weight: 700; line-height: 1.12; letter-spacing: -.03em; text-wrap: balance; }
+.cert-language .cert-title { margin-top: 8%; padding-top: 0; font-size: calc(var(--cert-w) * .15); letter-spacing: -.05em; }
+.cert-detail { margin-top: 5px; font-size: calc(var(--cert-w) * .048); line-height: 1.3; color: #52525b; }
+.cert-language .cert-detail { margin-top: auto; font-size: calc(var(--cert-w) * .06); font-weight: 600; color: #17171a; }
+.cert-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 5%; padding-top: 4%; border-top: 1px solid rgba(0, 0, 0, .14); font-size: calc(var(--cert-w) * .045); font-weight: 600; color: #52525b; }
+.cert-seal { width: calc(var(--cert-w) * .11); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, #047857 0 42%, transparent 44% 56%, #047857 58% 66%, transparent 68%); }
+
+@media (hover: hover) and (pointer: fine) {
+  /* Fan out in document order, whatever is on top of the pile. */
+  .certs:hover .cert { z-index: calc(var(--i) + 1); transform: translateX(calc(var(--offset) * var(--step))) rotate(calc(var(--offset) * 6deg)) translateY(calc(var(--offset) * var(--offset) * 10px)); transition-delay: calc(var(--i) * 40ms), 0s; }
+  .certs:hover .cert:hover { z-index: calc(var(--n) + 2); }
+  .certs:hover .cert:hover .cert-paper { transform: translateY(-14px) scale(1.04); box-shadow: 0 1px 0 rgba(255, 255, 255, .8) inset, 0 34px 50px -22px rgba(0, 0, 0, .7), 0 0 0 1px rgba(0, 0, 0, .08); }
+}
+@media (max-width: 899px) {
+  .credentials { grid-template-columns: 1fr; gap: 12px; }
+  .certs { --cert-w: clamp(200px, 60vw, 260px); order: -1; cursor: pointer; }
+}
+@media (prefers-reduced-motion: reduce) { .cert, .cert-paper { transition: none; } }

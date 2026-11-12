@@ -281,13 +281,13 @@ export const content: Record<Locale, PortfolioContent> = {
     },
     actions: {
       experience: "View experience",
-      download: "Download CV",
+      download: "View CV",
       visit: "Visit website",
       details: "View project",
       email: "Email me",
       github: "GitHub",
       linkedin: "LinkedIn",
-      downloadLabel: "Download CV in",
+      downloadLabel: "View CV in",
     },
     labels: {
       featuredExperience: "Featured experience",
@@ -309,7 +309,7 @@ export const content: Record<Locale, PortfolioContent> = {
         "role": "Development Lead",
         "period": "Oct 2025 - Present",
         "summary": "Web and mobile applications for sales and logistics.",
-        "description": "Led application development at Gili, integrated existing systems and coordinated technical deliveries with the teams using the software.",
+        "description": "I lead application development at Gili, integrate existing systems and coordinate technical deliveries with the teams using the software.",
         "capabilities": [
           "Laravel",
           "React",
@@ -321,11 +321,11 @@ export const content: Record<Locale, PortfolioContent> = {
         "scope": [
           {
             "title": "Sales, logistics and ecommerce",
-            "description": "Built solutions for commercial operations, logistics, ecommerce and internal support. Integrated Flexxus and Magento to connect business information with the tools used by each team."
+            "description": "I build solutions for commercial operations, logistics, ecommerce and internal support. I integrate Flexxus and Magento to connect business information with the tools used by each team."
           },
           {
             "title": "Development and delivery",
-            "description": "Worked from discovery and architecture through testing, deployments and server operations. Coordinated priorities and external vendors with business teams."
+            "description": "I work from discovery and architecture through testing, deployments and server operations. I coordinate priorities and external vendors with business teams."
           }
         ]
       },
@@ -335,7 +335,7 @@ export const content: Record<Locale, PortfolioContent> = {
         "logo": { "src": "/companies/xenova.png", "width": 4167, "height": 1490 },
         "url": "https://xenova.com.ar/en",
         "role": "Tech Lead · Developer",
-        "period": "Present",
+        "period": "2025 - Present",
         "summary": "Technical leadership for client projects and Xenova's own products.",
         "description": "I handle requirements and scope with clients, define the architecture and coordinate the development team. I also build frontend and backend features and take responsibility for testing, deployments and support.",
         "capabilities": [
@@ -397,13 +397,13 @@ export const content: Record<Locale, PortfolioContent> = {
     },
     actions: {
       experience: "Ver experiencia",
-      download: "Descargar CV",
+      download: "Ver CV",
       visit: "Visitar sitio",
       details: "Ver proyecto",
       email: "Escribirme",
       github: "GitHub",
       linkedin: "LinkedIn",
-      downloadLabel: "Descargar CV en",
+      downloadLabel: "Ver CV en",
     },
     labels: {
       featuredExperience: "Experiencia destacada",
@@ -425,7 +425,7 @@ export const content: Record<Locale, PortfolioContent> = {
         "role": "Líder de Desarrollo",
         "period": "Oct 2025 - Actualidad",
         "summary": "Aplicaciones web y móviles para ventas y logística.",
-        "description": "Lideré el desarrollo de aplicaciones en Gili, integré sistemas existentes y coordiné las entregas con los equipos que usan el software.",
+        "description": "Lidero el desarrollo de aplicaciones en Gili, integro sistemas existentes y coordino las entregas con los equipos que usan el software.",
         "capabilities": [
           "Laravel",
           "React",
@@ -437,11 +437,11 @@ export const content: Record<Locale, PortfolioContent> = {
         "scope": [
           {
             "title": "Ventas, logística y ecommerce",
-            "description": "Construí soluciones para atención comercial, logística, ecommerce y soporte interno. Integré Flexxus y Magento para conectar la información del negocio con las herramientas de cada equipo."
+            "description": "Construyo soluciones para atención comercial, logística, ecommerce y soporte interno. Integro Flexxus y Magento para conectar la información del negocio con las herramientas de cada equipo."
           },
           {
             "title": "Desarrollo y gestión",
-            "description": "Trabajé desde el relevamiento y la arquitectura hasta las pruebas, los despliegues y la operación de servidores. Coordiné prioridades y proveedores externos con las áreas de negocio."
+            "description": "Trabajo desde el relevamiento y la arquitectura hasta las pruebas, los despliegues y la operación de servidores. Coordino prioridades y proveedores externos con las áreas de negocio."
           }
         ]
       },
@@ -451,7 +451,7 @@ export const content: Record<Locale, PortfolioContent> = {
         "logo": { "src": "/companies/xenova.png", "width": 4167, "height": 1490 },
         "url": "https://xenova.com.ar/es",
         "role": "Tech Lead · Developer",
-        "period": "Actualidad",
+        "period": "2025 - Actualidad",
         "summary": "Desarrollo y coordinación de proyectos de clientes y productos propios de Xenova.",
         "description": "Me ocupo del relevamiento y el alcance con los clientes, defino la arquitectura y coordino al equipo de desarrollo. También desarrollo frontend y backend y me hago cargo de las pruebas, los despliegues y el soporte.",
         "capabilities": [

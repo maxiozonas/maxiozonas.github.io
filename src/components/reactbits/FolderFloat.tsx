@@ -23,6 +23,9 @@ export default function FolderFloat({ label, sublabel, groupName, frontColor, ba
   const summary = useRef<HTMLElement>(null);
   const openedByHover = useRef(false);
   const detailId = useId();
+  // Keep the last panel mounted so it can fade out with the folder.
+  const lastDetail = useRef(detail);
+  if (detail) lastDetail.current = detail;
   return <details
     ref={root}
     name={groupName}
@@ -85,6 +88,6 @@ export default function FolderFloat({ label, sublabel, groupName, frontColor, ba
         {item.content}<span className="folder-float__item-name" aria-hidden="true">{item.label}</span>
       </button>)}
     </div>
-    <div id={detailId} className="folder-float__detail">{detail}</div>
+    <div id={detailId} className="folder-float__detail" data-visible={detail ? 'true' : 'false'} inert={!detail}>{lastDetail.current}</div>
   </details>;
 }

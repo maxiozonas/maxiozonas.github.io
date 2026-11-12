@@ -26,12 +26,15 @@ describe('static bilingual portfolio', () => {
       assert.equal((html.match(/<details[^>]*class="project-index-item/g) ?? []).length, projects.length);
       assert.doesNotMatch(html, /Full Stack Developer/);
       assert.ok(html.includes(`href="/cv-maximo-ozonas-${locale}.pdf"`));
+      // The CV opens in a new tab instead of downloading.
+      assert.doesNotMatch(html, /cv-maximo-ozonas-[a-z]{2}\.pdf"[^>]*\sdownload/);
+      assert.match(html, /href="\/cv-maximo-ozonas-[a-z]{2}\.pdf" target="_blank"/);
       assert.doesNotMatch(html, /[—–]|repl-input|data-cmd=/);
       assert.match(html, /data-project-index/);
       assert.match(html, /hero-typographic/);
       assert.match(html, /data-background="light-rays"/);
       assert.doesNotMatch(html, /data-background="ghost-fibers"|id="fluid"/);
-      assert.equal((html.match(/class="experience-chapter scroll-stack-card"/g) ?? []).length, 2);
+      assert.equal((html.match(/class="experience-chapter"/g) ?? []).length, 2);
       assert.match(html, /id="company-gili"/);
       assert.match(html, /id="company-xenova"/);
       assert.doesNotMatch(html, /experience-card|experience-spotlight|experience-intro/);
@@ -53,7 +56,7 @@ describe('static bilingual portfolio', () => {
         assert.match(detail, new RegExp(`view-transition-name:\\s*project-${slug}`));
         assert.ok(home.includes(`view-transition-name:project-${slug}`));
         assert.match(detail, /Project scope|Alcance del trabajo/);
-        if (slug !== 'food-partners') {
+        {
           for (const ext of ['png', 'webp']) assert.ok(existsSync(join(root, 'public', 'projects', `${slug}.${ext}`)));
           assert.ok(statSync(join(root, 'public', 'projects', `${slug}.webp`)).size < 200000);
           assert.match(detail, /project-devices--detail/);
@@ -92,7 +95,8 @@ describe('static bilingual portfolio', () => {
       assert.match(detail, /Desarrollado en|Built at/);
       assert.doesNotMatch(detail, /class="button button-primary"/);
       assert.match(detail, /project-overview-areas/);
-      assert.doesNotMatch(home + detail, /\/projects\/food-partners[^"\s]*\.(?:png|webp)/);
+      // The institutional site is shown; the internal ERP is described by area.
+      assert.match(home + detail, /\/projects\/food-partners[^"\s]*\.webp/);
       assert.match(home, /\/companies\/xenova\.png/);
       assert.match(home, /Tech Lead · Developer/);
       assert.doesNotMatch(home, /Technical Director|Dirección técnica/);

@@ -1,7 +1,6 @@
 import { useEffect, useRef, type PointerEvent } from 'react';
 import type { Locale, Project } from '@/data/content';
 import ProjectDevices from './ProjectDevices';
-import ProjectOverviewWindow from './ProjectOverviewWindow';
 
 export default function ProjectIndex({ projects, locale }: { projects: Project[]; locale: Locale }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -63,9 +62,7 @@ export default function ProjectIndex({ projects, locale }: { projects: Project[]
           </summary>
           <div className="project-index-panel" role="region" aria-labelledby={label}>
             <a className="project-index-visual" href={href} aria-label={`${es ? 'Ver caso' : 'View case'}: ${project.name}`} onPointerMove={lean} onPointerLeave={settle}>
-              {project.overview
-                ? <ProjectOverviewWindow overview={project.overview} title="Food Partners" transitionName={`project-${project.slug}`}/>
-                : <ProjectDevices project={project} locale={locale} variant="stage" shared/>}
+              <ProjectDevices project={project} locale={locale} variant="stage" shared/>
             </a>
             <div className="project-index-caption">
               <p className="project-index-full-name" style={{ viewTransitionName: `title-${project.slug}` }}>{project.name}</p>

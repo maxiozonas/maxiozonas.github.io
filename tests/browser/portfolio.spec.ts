@@ -134,7 +134,45 @@ for (const locale of ['es', 'en']) {
   }
 }
 
+test('project wall brakes on hover, opens the card and leads to the case page', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/es/');
+  const wall = page.locator('.wall');
+  await wall.scrollIntoViewIfNeeded();
+  await expect(wall).toHaveAttribute('data-hydrated', 'true');
+  await expect(wall).toBeVisible();
+  await expect(page.locator('.project-index-item:visible')).toHaveCount(0);
+  const row = wall.locator('.wall-row').first();
+  const position = () => row.evaluate(element => new DOMMatrixReadOnly(getComputedStyle(element).transform).e);
+  const before = await position();
+  await expect.poll(position).not.toBe(before);
+  // A name underneath opens the card of that project closest to the centre.
+  await page.locator('[data-project="catalejo-travel"] .project-index-choice-link').hover();
+  const card = wall.locator('.wall-tile[data-open="true"]');
+  await expect(card).toHaveCount(1);
+  await expect(card).toHaveAttribute('data-slug', 'catalejo-travel');
+  await expect(card.locator('.wall-caption')).toBeVisible();
+  await expect(card.locator('.wall-caption')).toContainText('Ver caso');
+  await page.waitForTimeout(1500);
+  const braked = await position();
+  await page.waitForTimeout(300);
+  expect(Math.abs(await position() - braked)).toBeLessThan(.5);
+  // Cards open straight from the pointer as well, and the whole card is the link.
+  const middle = (await wall.boundingBox())!.y + (await wall.boundingBox())!.height / 2;
+  // Sweep a little: a single position can fall on the gap between two cards.
+  for (let step = 0; step < 12 && await card.count() === 0; step++) {
+    await page.mouse.move(560 + step * 45, middle + step * 12);
+    await page.waitForTimeout(80);
+  }
+  await expect(card).toHaveCount(1);
+  const slug = await card.getAttribute('data-slug');
+  await card.click();
+  await expect(page).toHaveURL(new RegExp(`/es/projects/${slug}/$`));
+});
+
 test('project selection supports pointer and keyboard, and native route transitions run', async ({ page }) => {
+  // Below the wall breakpoint the index with its preview panel is the layout.
+  await page.setViewportSize({ width: 1100, height: 800 });
   await page.addInitScript(() => {
     window.addEventListener('pageswap', event => {
       sessionStorage.setItem('portfolio-transition', String(Boolean((event as PageSwapEvent).viewTransition)));
@@ -230,78 +268,65 @@ test('theme persists and follows system preference before manual selection', asy
 });
 
 for (const [width, height] of [[1440, 900], [1366, 600]]) {
-  test(`experience uses full-width chapters without inset cards at ${width}×${height}`, async ({ page }) => {
+  test(`experience shows two badges and one role at a time at ${width}×${height}`, async ({ page }) => {
     await page.setViewportSize({ width, height });
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto('/es/');
-    const chapters = page.locator('.experience-chapter');
-    await expect(chapters).toHaveCount(2);
-    await expect(page.locator('#experience .experience-spotlight, .experience-intro, .pin-spacer')).toHaveCount(0);
-    const heading = (await page.locator('.experience-heading').boundingBox())!;
-    const first = (await chapters.first().boundingBox())!;
-    expect(first.y).toBeGreaterThan(heading.y);
-    for (const chapter of await chapters.all()) {
-      expect((await chapter.boundingBox())!.width).toBe(width);
-      expect(await chapter.evaluate(element => getComputedStyle(element).borderRadius)).toBe('0px');
-      expect(await chapter.evaluate(element => getComputedStyle(element).borderTopWidth)).toBe('0px');
-      const identity = (await chapter.locator('.chapter-identity').boundingBox())!;
-      const story = (await chapter.locator('.chapter-story').boundingBox())!;
-      expect(story.x).toBeGreaterThan(identity.x + identity.width);
-      await expect(chapter.locator('.chapter-role')).toBeVisible();
-      await expect(chapter.locator('.job-scope > div')).toHaveCount(2);
-    }
-  });
-}
-
-for (const [width, height] of [[1366, 768], [1280, 720]]) {
-  test(`transparent chapters hand off without mixing text on a ${width}×${height} notebook`, async ({ page }) => {
-    await page.setViewportSize({ width, height });
-    await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.goto('/es/');
     await page.locator('#experience').scrollIntoViewIfNeeded();
-    const cards = page.locator('.scroll-stack-card');
-    await expect.poll(() => cards.first().evaluate(card => (card as HTMLElement).style.getPropertyValue('--stack-top'))).not.toBe('');
-    const readingPosition = await page.locator('.experience-list').evaluate(root => root.getBoundingClientRect().top + scrollY - parseFloat((root.querySelector('.scroll-stack-card') as HTMLElement).style.getPropertyValue('--stack-top')));
-    await page.evaluate(top => window.scrollTo({ top, behavior: 'instant' }), readingPosition);
-    await expect.poll(() => cards.first().evaluate(card => getComputedStyle(card).opacity)).toBe('1');
-    await expect(cards.first().locator('.job-scope').last()).toBeVisible();
-    const target = await cards.nth(1).evaluate((card, viewportHeight) => card.getBoundingClientRect().top + scrollY - viewportHeight * .45, height);
-    await page.evaluate(top => window.scrollTo({ top, behavior: 'instant' }), target);
-    await expect.poll(() => cards.first().evaluate(card => new DOMMatrixReadOnly(getComputedStyle(card).transform).a)).toBeLessThan(.995);
-    const first = (await cards.first().boundingBox())!;
-    const next = (await cards.nth(1).boundingBox())!;
-    expect(first.y + first.height).toBeGreaterThan(next.y + 20);
-    await expect.poll(() => cards.first().evaluate(card => getComputedStyle(card).opacity)).toBe('0');
-    await expect(cards.first()).toBeHidden();
-    await expect(cards.nth(1)).toBeVisible();
-    await page.evaluate(top => window.scrollTo({ top, behavior: 'instant' }), readingPosition);
-    await expect.poll(() => cards.first().evaluate(card => getComputedStyle(card).opacity)).toBe('1');
-    await expect(cards.first()).toBeVisible();
-    await page.evaluate(top => window.scrollTo({ top, behavior: 'instant' }), target);
-    await expect.poll(() => cards.first().evaluate(card => getComputedStyle(card).opacity)).toBe('0');
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    await expect.poll(() => cards.first().evaluate(card => getComputedStyle(card).transform)).toBe('none');
-    expect(await cards.first().evaluate(card => getComputedStyle(card).opacity)).toBe('1');
-    await expect(cards.first()).toBeVisible();
-    expect(await cards.first().evaluate(card => getComputedStyle(card).position)).toBe('relative');
-    expect(await cards.first().evaluate(card => (card as HTMLElement).style.getPropertyValue('--stack-top'))).toBe('');
+    const badges = page.locator('.badge');
+    await expect(page.locator('.badges')).toHaveAttribute('data-hydrated', 'true');
+    await expect(badges).toHaveCount(2);
+    await expect(page.locator('#experience .pin-spacer, .scroll-stack')).toHaveCount(0);
+    const gili = page.locator('#experience-gili');
+    const xenova = page.locator('#experience-xenova');
+    await expect(badges.first()).toHaveAttribute('aria-selected', 'true');
+    await expect(gili).toBeVisible();
+    await expect(xenova).toBeHidden();
+    // Badges hang side by side, to the left of the role they describe.
+    const first = (await badges.first().boundingBox())!;
+    const second = (await badges.nth(1).boundingBox())!;
+    expect(second.x).toBeGreaterThan(first.x + first.width * .6);
+    expect((await gili.boundingBox())!.x).toBeGreaterThan(second.x + second.width * .5);
+    await badges.nth(1).hover();
+    await expect(badges.nth(1)).toHaveAttribute('aria-selected', 'true');
+    await expect(xenova).toBeVisible();
+    await expect(gili).toBeHidden();
+    await expect(xenova.locator('.job-scope > div')).toHaveCount(2);
+    expect(await xenova.locator('.chapter-related a').count()).toBeGreaterThanOrEqual(3);
+    await badges.nth(1).focus();
+    await page.keyboard.press('ArrowLeft');
+    await expect(badges.first()).toHaveAttribute('aria-selected', 'true');
+    await expect(badges.first()).toBeFocused();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
   });
 }
 
-test('experience chapters keep all content readable in one column on mobile', async ({ page }) => {
+test('a technology link to a role selects its badge', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/es/#experience-xenova');
+  await page.locator('#experience').scrollIntoViewIfNeeded();
+  await expect(page.locator('.badges')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('#company-xenova')).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('#experience-xenova')).toBeVisible();
+});
+
+test('experience badges and roles stay readable on mobile', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const width of [390, 320]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/es/');
-    for (const chapter of await page.locator('.experience-chapter').all()) {
-      const identity = (await chapter.locator('.chapter-identity').boundingBox())!;
-      const story = (await chapter.locator('.chapter-story').boundingBox())!;
-      expect(story.y).toBeGreaterThan(identity.y + identity.height);
-      expect(await chapter.evaluate(element => getComputedStyle(element).position)).toBe('relative');
-      for (const description of await chapter.locator('.job-scope dd').all()) {
-        await description.scrollIntoViewIfNeeded();
-        await expect(description).toBeVisible();
-      }
+    await page.locator('#experience').scrollIntoViewIfNeeded();
+    await expect(page.locator('.badges')).toHaveAttribute('data-hydrated', 'true');
+    for (const badge of await page.locator('.badge').all()) {
+      const box = (await badge.boundingBox())!;
+      expect(box.x).toBeGreaterThanOrEqual(0);
+      expect(box.x + box.width).toBeLessThanOrEqual(width);
+    }
+    await page.locator('#company-xenova').click();
+    const role = page.locator('#experience-xenova');
+    await expect(role).toBeVisible();
+    for (const description of await role.locator('.job-scope dd').all()) {
+      await description.scrollIntoViewIfNeeded();
+      await expect(description).toBeVisible();
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
   }
@@ -314,8 +339,11 @@ test('mobile detail, reduced motion and controls remain usable', async ({ page }
   await page.goto('/es/');
   expect(await page.locator('.pin-spacer').count()).toBe(0);
   await expect(page.locator('.logoloop__track, [data-technology-band]')).toHaveCount(0);
-  await expect(page.locator('.work-steps')).toHaveAttribute('data-animate', 'false');
-  await expect(page.locator('.work-card[data-active="true"]')).toHaveCount(5);
+  await expect(page.locator('.work-panel')).toHaveCount(5);
+  await page.locator('.work-steps').scrollIntoViewIfNeeded();
+  await expect(page.locator('.work-steps')).toHaveAttribute('data-hydrated', 'true');
+  await page.locator('.work-panel-tab').nth(2).click();
+  await expect(page.locator('.work-panel').nth(2).locator('.work-panel-text')).toBeVisible();
   await page.waitForTimeout(1400);
   await page.screenshot({ path: 'artifacts/screenshots/es-mobile-light.png' });
   await page.locator('#theme-toggle').evaluate(element => (element as HTMLButtonElement).click());
@@ -339,7 +367,8 @@ test('portfolio and project scope work without JavaScript', async ({ browser }) 
   await page.goto('/es/');
   await expect(page.locator('#hero-title')).toBeVisible();
   await expect(page.locator('.job-summary')).toHaveCount(2);
-  await expect(page.locator('#experience-xenova .job-heading')).toContainText('Tech Lead');
+  await expect(page.locator('#experience-xenova')).toContainText('Tech Lead');
+  await expect(page.locator('#experience-gili')).toBeVisible();
   await expect(page.locator('[data-project="food-partners"]')).toContainText('ERP');
   await page.setViewportSize({ width: 1440, height: 900 });
   await expect(page.locator('[data-stack-motion="true"]')).toHaveCount(0);
@@ -353,6 +382,10 @@ test('portfolio and project scope work without JavaScript', async ({ browser }) 
   await context.close();
 });
 
+// Marks fly out of the folder with a staggered spring; hovering one mid-flight
+// makes Playwright retry with a scroll, which moves the page under the pointer.
+const settled = (mark: import('@playwright/test').Locator) => mark.evaluate(element => Promise.all(element.getAnimations().map(animation => animation.finished)));
+
 for (const locale of ['es', 'en']) {
   for (const reducedMotion of ['no-preference', 'reduce'] as const) {
     test(`${locale}: technology folders close after hover with ${reducedMotion} motion`, async ({ page }) => {
@@ -364,6 +397,7 @@ for (const locale of ['es', 'en']) {
       const folder = page.locator('.folder-float').nth(1);
       await folder.locator('summary').hover();
       await expect(folder).toHaveJSProperty('open', true);
+      await settled(folder.getByRole('button', { name: 'Laravel', exact: true }));
       await folder.getByRole('button', { name: 'Laravel', exact: true }).hover();
       await expect(folder.locator('h3')).toHaveText('Laravel');
       await page.mouse.move(0, 0);
@@ -385,22 +419,29 @@ test('work map and technology folders respond to pointer, keyboard and mobile se
   await page.goto('/es/');
   const steps = page.locator('.work-steps');
   await steps.scrollIntoViewIfNeeded();
-  await expect(steps).toHaveAttribute('data-stack', 'true');
-  await expect(steps.locator('.work-card')).toHaveCount(5);
-  const first = steps.locator('.work-card').first();
-  await first.scrollIntoViewIfNeeded();
-  await expect(first).toHaveAttribute('data-active', 'true');
-  const last = steps.locator('.work-card').last();
-  await last.scrollIntoViewIfNeeded();
-  await expect(last).toHaveAttribute('data-active', 'true');
-  await expect(last.locator('h3')).toHaveText('Soporte y mantenimiento');
-  await expect.poll(() => first.evaluate(element => getComputedStyle(element).transform)).not.toBe('none');
+  await expect(steps).toHaveAttribute('data-hydrated', 'true');
+  const panels = steps.locator('.work-panel');
+  await expect(panels).toHaveCount(5);
+  await expect(panels.first()).toHaveAttribute('data-active', 'true');
+  await panels.last().hover();
+  await expect(panels.last()).toHaveAttribute('data-active', 'true');
+  await expect(panels.last().locator('h3')).toBeVisible();
+  await expect(panels.last().locator('h3')).toContainText('Soporte y mantenimiento');
+  await expect(panels.last().locator('.work-panel-text')).toBeVisible();
+  await expect(panels.first().locator('.work-panel-text')).toBeHidden();
+  await expect(steps.locator('.work-panel[data-active="true"]')).toHaveCount(1);
+  await expect.poll(async () => (await panels.last().boundingBox())!.height / (await panels.first().boundingBox())!.height).toBeGreaterThan(1.8);
+  await panels.nth(3).locator('.work-panel-tab').focus();
+  await page.keyboard.press('ArrowUp');
+  await expect(panels.nth(2)).toHaveAttribute('data-active', 'true');
+  await expect(panels.nth(2).locator('.work-panel-tab')).toBeFocused();
   await page.locator('.skills-folders').scrollIntoViewIfNeeded();
   await expect(page.locator('.skills-folders')).toHaveAttribute('data-hydrated', 'true');
   const web = page.locator('.folder-float').filter({ has: page.locator('summary', { hasText: 'Web y backend' }) });
   await web.locator('summary').hover();
   await web.locator('summary').click();
   await expect(web).toHaveJSProperty('open', true);
+  await settled(web.getByRole('button', { name: 'Laravel', exact: true }));
   await web.getByRole('button', { name: 'Laravel', exact: true }).hover();
   await expect(web.locator('h3')).toHaveText('Laravel');
   await expect(web.locator('.folder-projects')).toContainText('Catalejo Travel');
@@ -450,7 +491,7 @@ test('experience precedes the compact index and reduced motion stops effects', a
   await expect(page.locator('.project-index-item')).toHaveCount(6);
   await expect(page.locator('.project-index-panel:visible')).toHaveCount(1);
   await expect(page.locator('.magic-bento-card')).toHaveCount(0);
-  await expect(featured.locator('.project-index-visual img')).toHaveCount(0);
-  await expect(featured.locator('.project-overview')).toContainText('Mi Legajo');
+  // Food Partners shows captures of its institutional site, like every other project.
+  await expect(featured.locator('.project-index-visual img')).toHaveCount(2);
   expect(await featured.locator('.project-index-panel').evaluate(element => getComputedStyle(element).animationName)).toBe('none');
 });

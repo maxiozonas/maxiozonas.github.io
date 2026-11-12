@@ -2,6 +2,7 @@
 import Base from '../../../layouts/Base.astro';
 import Header from '../../../components/Header.astro';
 import Footer from '../../../components/Footer.astro';
+import ProjectOverview from '../../../components/ProjectOverview';
 import ProjectImage from '../../../components/ProjectImage.astro';
 import TechIcon from '../../../components/TechIcon.astro';
 import Motion from '../../../components/Motion.astro';
@@ -36,8 +37,12 @@ const contribution = projectContributions[locale][project.slug] ?? project.descr
       <dl class="detail-facts"><div><dt>{es ? 'Entregables' : 'Deliverables'}</dt><dd>{study.deliverable}</dd></div><div><dt>{es ? 'Enfoque' : 'Focus'}</dt><dd>{study.focus}</dd></div><div><dt>{es ? 'Tecnologías' : 'Technologies'}</dt><dd><ul class="detail-stack">{project.stack.map(technology => <li><TechIcon name={technology}/></li>)}</ul></dd></div></dl>
     </div>
     <section class="case-showcase" aria-labelledby="showcase-title">
-      <div class="case-showcase-heading"><h2 id="showcase-title">{project.overview ? (es ? 'La aplicación' : 'The application') : (es ? 'La web, en escritorio y móvil' : 'The website, on desktop and mobile')}</h2>{!project.overview && <p>{es ? 'Sitio público' : 'Public website'}</p>}</div>
-      <div class:list={['detail-image', { 'detail-image-overview': Boolean(project.overview) }]}><ProjectImage project={project} priority shared large/></div>
+      <div class="case-showcase-heading"><h2 id="showcase-title">{es ? 'La web, en escritorio y móvil' : 'The website, on desktop and mobile'}</h2><p>{project.overview ? (es ? 'Sitio institucional' : 'Corporate website') : (es ? 'Sitio público' : 'Public website')}</p></div>
+      <div class="detail-image"><ProjectImage project={project} priority shared large/></div>
+      {project.overview && <div class="case-erp">
+        <div class="case-showcase-heading"><h2>{es ? 'El ERP, por áreas' : 'The ERP, by area'}</h2><p>{es ? 'Uso interno, sin capturas públicas' : 'Internal use, no public captures'}</p></div>
+        <div class="detail-image detail-image-overview"><ProjectOverview overview={project.overview}/></div>
+      </div>}
     </section>
     <div class="case-body">
       <nav class="case-navigation" aria-label={es ? 'Secciones del proyecto' : 'Project sections'}>

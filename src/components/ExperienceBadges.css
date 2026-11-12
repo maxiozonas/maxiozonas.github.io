@@ -1,0 +1,75 @@
+/* Experience: two staff badges on lanyards and the selected role beside them. */
+.badges { display: grid; gap: 40px; }
+.badge-rack { display: none; }
+.experience-chapter { position: relative; min-width: 0; background: transparent; }
+.experience-chapter + .experience-chapter { margin-top: 64px; }
+.chapter-kicker { font-size: 15px; font-weight: 700; line-height: 1.3; color: var(--brand); }
+.experience-chapter .job-summary { max-width: 26ch; margin: 12px 0 0; font-size: clamp(28px, 3vw, 42px); font-weight: 700; line-height: 1.12; letter-spacing: -.035em; text-wrap: balance; }
+.experience-chapter .job-description { max-width: 62ch; margin-top: 20px; font-size: 17px; line-height: 1.65; color: var(--muted-foreground); }
+.experience-chapter .job-scope { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; margin: 32px 0 0; }
+.experience-chapter .job-scope dt { font-size: 17px; font-weight: 700; line-height: 1.3; letter-spacing: -.015em; }
+.experience-chapter .job-scope dd { max-width: 42ch; margin-top: 10px; font-size: 15px; line-height: 1.65; color: var(--muted-foreground); }
+.chapter-related { margin-top: 30px; }
+.chapter-related > p { font-size: 14px; color: var(--muted-foreground); }
+.chapter-related ul { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
+.chapter-related a { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 5px 14px 5px 5px; border: 1px solid var(--border); border-radius: 12px; background: var(--card); font-size: 14px; font-weight: 700; transition: border-color .2s, color .2s; }
+.chapter-related a:hover { border-color: var(--brand); color: var(--brand); }
+.chapter-system { display: inline-flex; align-items: center; min-height: 44px; padding: 5px 16px; border: 1px solid var(--border); border-radius: 12px; font-size: 14px; font-weight: 700; }
+.chapter-related img { width: 54px; height: 34px; border-radius: 7px; object-fit: cover; object-position: top; }
+.chapter-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--border); }
+.chapter-foot .chapter-technologies { display: flex; flex-wrap: wrap; gap: 12px 22px; max-width: none; margin: 0; padding: 0; list-style: none; font-size: 13px; }
+.chapter-foot .tech-icon { width: 20px; height: 20px; }
+.chapter-foot .chapter-company-link { margin-top: 0; }
+@media (max-width: 767px) {
+  .experience-chapter .job-scope { grid-template-columns: 1fr; gap: 22px; margin-top: 26px; }
+  .experience-chapter .job-description { font-size: 16px; }
+}
+
+/* With JavaScript: the rack of badges, and one role at a time. */
+[data-js] .badges { grid-template-columns: minmax(0, 1fr); gap: clamp(28px, 4vw, 48px); }
+[data-js] .badge-rack { --strap: clamp(70px, 9vw, 130px); --card-w: clamp(142px, 40vw, 208px); position: relative; display: flex; justify-content: center; gap: clamp(14px, 4vw, 44px); margin-top: calc(var(--strap) * -.35); padding-bottom: 26px; }
+[data-js] .badge-details { display: grid; }
+[data-js] .experience-chapter { grid-area: 1 / 1; margin-top: 0; transition: opacity .35s .1s, transform .5s cubic-bezier(.23, 1, .32, 1) .1s, visibility 0s; }
+[data-js] .experience-chapter:not([data-active="true"]) { opacity: 0; visibility: hidden; transform: translateY(14px); pointer-events: none; transition: opacity .18s, transform .18s, visibility 0s .18s; }
+
+.badge { --accent: #f4f4f5; --pull: 0px; position: relative; display: block; padding: 0; color: #fafafa; text-align: left; cursor: pointer; filter: saturate(.35) brightness(.72); transform: scale(.95); transform-origin: 50% 0; transition: filter .35s, transform .5s cubic-bezier(.23, 1, .32, 1); }
+/* The sway lives on an inner element so the button itself keeps a steady hit area. */
+.badge-swing { display: flex; flex-direction: column; align-items: center; transform-origin: 50% 0; }
+.badge[data-company="xenova"] { --accent: #d6f25c; }
+.badge[aria-selected="true"] { --pull: 16px; filter: none; transform: none; }
+.badge:focus-visible { outline: none; }
+.badge:focus-visible .badge-card { outline: 2px solid var(--ring); outline-offset: 5px; }
+.badge-strap { width: 24px; height: calc(var(--strap) + var(--pull)); background: linear-gradient(90deg, rgba(0, 0, 0, .28), transparent 30%, transparent 70%, rgba(0, 0, 0, .28)), var(--accent); -webkit-mask-image: linear-gradient(transparent, #000 45%); mask-image: linear-gradient(transparent, #000 45%); transition: height .55s cubic-bezier(.34, 1.4, .64, 1); }
+[data-theme="light"] .badge:not([data-company="xenova"]) { --accent: #27272a; }
+.badge-clip { position: relative; width: 30px; height: 30px; margin-top: -2px; border-radius: 6px 6px 10px 10px; background: linear-gradient(#d4d4d8, #8b8b93); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .6); }
+.badge-clip::after { content: ''; position: absolute; left: 50%; top: 20px; width: 16px; height: 22px; margin-left: -8px; border: 3px solid #a1a1aa; border-radius: 9px; }
+.badge-card { position: relative; display: flex; flex-direction: column; width: var(--card-w); aspect-ratio: 5 / 7.2; margin-top: 8px; padding: 46px 18px 0; overflow: hidden; border: 1px solid rgba(255, 255, 255, .12); border-radius: 20px; background: linear-gradient(160deg, #1d1d22, #0d0d10 62%); box-shadow: 0 30px 50px -26px rgba(0, 0, 0, .7); transform: perspective(900px) rotateY(calc(var(--lean-x, 0) * 9deg)) rotateX(calc(var(--lean-y, 0) * -7deg)); transition: transform .3s ease-out, box-shadow .35s, border-color .35s; }
+.badge[aria-selected="true"] .badge-card { border-color: color-mix(in srgb, var(--accent) 55%, transparent); box-shadow: 0 36px 60px -26px rgba(0, 0, 0, .8), 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent); }
+.badge-slot { position: absolute; top: 16px; left: 50%; width: 44px; height: 10px; margin-left: -22px; border-radius: 6px; background: var(--background); box-shadow: inset 0 1px 2px rgba(0, 0, 0, .5); }
+.badge-logo { position: relative; display: block; }
+.badge-logo img { display: block; width: 100%; height: auto; }
+.badge-logo-gili { width: 46%; }
+.badge-logo-xenova { width: 82%; aspect-ratio: 340 / 77; overflow: hidden; }
+.badge-logo-xenova img { position: absolute; top: -36.9%; left: -7.5%; width: 118%; max-width: none; }
+.badge-holder { margin-top: auto; font-size: 12px; line-height: 1.3; color: rgba(250, 250, 250, .62); }
+.badge-role { margin-top: 4px; font-size: clamp(15px, 1.5vw, 19px); font-weight: 700; line-height: 1.15; letter-spacing: -.025em; text-wrap: balance; }
+.badge-foot { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin: 14px -18px 0; padding: 9px 14px; background: var(--accent); color: #0d0d10; font-size: 10.5px; font-weight: 700; line-height: 1.2; white-space: nowrap; }
+.badge-status { display: inline-flex; align-items: center; gap: 5px; }
+.badge-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #0d0d10; }
+[data-theme="light"] .badge:not([data-company="xenova"]) .badge-foot { color: #fafafa; }
+[data-theme="light"] .badge:not([data-company="xenova"]) .badge-status::before { background: #fafafa; }
+
+@media (max-width: 1023px) { .badge-status { gap: 0; font-size: 0; } .badge-foot { font-size: 10px; } }
+@media (min-width: 1024px) {
+  [data-js] .badges { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); align-items: start; gap: clamp(40px, 5vw, 80px); }
+  [data-js] .badge-rack { --strap: clamp(110px, 12vw, 170px); --card-w: clamp(176px, 15.5vw, 226px); position: sticky; top: 108px; justify-content: flex-start; margin-top: -8px; }
+  [data-js] .badge-details { padding-top: 26px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .badge-swing { animation: badge-sway 4.6s ease-in-out infinite alternate; animation-delay: calc(var(--n) * -1.7s); }
+  .badge:nth-child(2) .badge-swing { animation-duration: 5.4s; animation-direction: alternate-reverse; }
+  @keyframes badge-sway { from { transform: rotate(-1.8deg); } to { transform: rotate(1.8deg); } }
+}
+@media (prefers-reduced-motion: reduce) {
+  .badge, .badge-strap, .badge-card, [data-js] .experience-chapter { transition: none; }
+}
