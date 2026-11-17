@@ -608,3 +608,32 @@ main, .site-footer { position: relative; z-index: 1; }
 .contact-links { display: flex; flex-wrap: wrap; gap: 10px; }
 .contact-links .social-button { font-size: 13px; color: var(--foreground); }
 @media (prefers-reduced-motion: reduce) { .contact-email, .contact-copy { transition: none; } }
+
+/* Hero entrance: pure CSS so it plays from first paint, before hydration.
+   Rule draws across the preface, each glyph rises out of its own slot, the
+   surname tints to the brand colour in a wave. 
+   Every animation only fills backwards, so once finished the glyphs hand their
+   transform back to the pointer effect (glyph-pressure) and the scroll drift. */
+.hero-rule { flex: 1; height: 1px; background: var(--border); transform-origin: left center; }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-typographic {
+    --hero-ease: cubic-bezier(.16, 1, .3, 1);
+    --hero-glyph-delay: calc(.2s + var(--i, 0) * .05s);
+  }
+  .hero-typographic .hero-preface > p { animation: hero-fade-up .8s var(--hero-ease) backwards; }
+  .hero-typographic .hero-preface > p:last-child { animation-delay: .35s; }
+  .hero-typographic .hero-rule { animation: hero-rule 1.4s var(--hero-ease) .1s backwards; }
+  .hero-typographic .hero-glyph-slot { animation: hero-slot 1.2s linear var(--hero-glyph-delay) backwards; }
+  .hero-typographic .hero-glyph { animation: hero-glyph 1.2s var(--hero-ease) var(--hero-glyph-delay) backwards; }
+  .hero-typographic .hero-surname .hero-glyph { animation: hero-glyph 1.2s var(--hero-ease) var(--hero-glyph-delay) backwards, hero-tint .9s ease calc(var(--hero-glyph-delay) + .45s) backwards; }
+  .hero-typographic .hero-intro { animation: hero-fade-up 1s var(--hero-ease) .8s backwards; }
+  .hero-typographic .hero-actions-wrap { animation: hero-fade-up 1s var(--hero-ease) .95s backwards; }
+  .hero-typographic .hero-backdrop { animation: hero-backdrop 2.4s ease .1s backwards; }
+}
+@keyframes hero-fade-up { from { opacity: 0; transform: translateY(18px); filter: blur(6px); } }
+@keyframes hero-rule { from { transform: scaleX(0); } }
+/* Open at the top so accents and the pressure lift never clip; closed at the baseline. */
+@keyframes hero-slot { from, to { clip-path: inset(-60% -30% 0 -30%); } }
+@keyframes hero-glyph { from { transform: translateY(110%) rotate(9deg); } }
+@keyframes hero-tint { from { color: var(--foreground); } }
+@keyframes hero-backdrop { from { opacity: 0; } }
